@@ -1,8 +1,8 @@
 ### NEW MEXICO PIKA -- Extract climate data for Bandelier Sites
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/Code/XX New Mexico Pika Occupancy & Abundance Analysis - Extract Data for Bandelier.r')
-### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/Code/XX New Mexico Pika Occupancy & Abundance Analysis - Extract Data for Bandelier.r')
+### source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/XX New Mexico Pika Occupancy & Abundance Analysis - Extract Data for Bandelier.r')
+### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/XX New Mexico Pika Occupancy & Abundance Analysis - Extract Data for Bandelier.r')
 ###
 ### This script extracts climate data for select sites at Bandalier. Data is extracted for the 7 yr prior to sampling *each* survey at each site.
 ###
@@ -14,9 +14,9 @@
 ### setup ###
 #############
 
-	# source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/Code/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	# source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
 
-	source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/Code/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
 
 say('###################################')
 say('### process and clean pika data ###')
