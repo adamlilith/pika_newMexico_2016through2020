@@ -1,0 +1,2 @@
+Site "BANDnew" has occupancy code "R/O" for 2016... which should I use?
+Site "Redondo20" has occupancy code "R/G" for 2017... which should I use?
