@@ -1080,260 +1080,260 @@
 
 	# save(pika, file='./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
 	
-say('###################################')
-say('### distributions of predictors ###')
-say('###################################')
+# say('###################################')
+# say('### distributions of predictors ###')
+# say('###################################')
 
-	### generalization
-	thold <- 0.7 # too much correlation!
+	# ### generalization
+	# thold <- 0.7 # too much correlation!
 
-	### data
-	load('./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
-	file <- './Predictors/Predictor Variables 2021-06-09 Modified Sub-lethal Heat.xlsx'
-	univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
+	# ### data
+	# load('./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
+	# file <- './Predictors/Predictor Variables 2021-06-09 Modified Sub-lethal Heat.xlsx'
+	# univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
 
-	### occupancy predictors
-	########################
+	# ### occupancy predictors
+	# ########################
 	
-		pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
+		# pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
 		
-		preds <- univariatePredTable$var[univariatePredTable$useOccAbund]
+		# preds <- univariatePredTable$var[univariatePredTable$useOccAbund]
 
-		for (occWindow in occWindows_y) {
+		# for (occWindow in occWindows_y) {
 			
-			figs <- list()
-			for (countPred in seq_along(preds)) {
+			# figs <- list()
+			# for (countPred in seq_along(preds)) {
 			
-				pred <- preds[countPred]
+				# pred <- preds[countPred]
 				
-				predIndex <- which(univariatePredTable$var == pred)
+				# predIndex <- which(univariatePredTable$var == pred)
 			
-				predNice <- univariatePredTable$varNice[predIndex]
-				predDescriptorUnit <- paste0(univariatePredTable$unitDescriptor[predIndex], ' (', univariatePredTable$unit[predIndex], ')')
+				# predNice <- univariatePredTable$varNice[predIndex]
+				# predDescriptorUnit <- paste0(univariatePredTable$unitDescriptor[predIndex], ' (', univariatePredTable$unit[predIndex], ')')
 			
-				predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
+				# predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
 			
-				mus <- data.frame(
-					latestOccStatus = c('0 never', '1 old', '2 occupied'),
-					mu = c(
-						mean(pika[pika$latestOccStatus == '0 never', predWindow]),
-						mean(pika[pika$latestOccStatus == '1 old', predWindow]),
-						mean(pika[pika$latestOccStatus == '2 occupied', predWindow])
-					)
-				)
+				# mus <- data.frame(
+					# latestOccStatus = c('0 never', '1 old', '2 occupied'),
+					# mu = c(
+						# mean(pika[pika$latestOccStatus == '0 never', predWindow]),
+						# mean(pika[pika$latestOccStatus == '1 old', predWindow]),
+						# mean(pika[pika$latestOccStatus == '2 occupied', predWindow])
+					# )
+				# )
 
-				say(predWindow)
+				# say(predWindow)
 
 
-				thisData <- pika[ , c('latestOccStatus', predWindow)]
-				names(thisData)[2] <- 'value'
+				# thisData <- pika[ , c('latestOccStatus', predWindow)]
+				# names(thisData)[2] <- 'value'
 				
-				figs[[countPred]] <- ggplot(data=thisData, aes(x=value, col=latestOccStatus, fill=latestOccStatus)) +
-					geom_density(size=1) +
-					scale_color_manual(values=c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen')) +
-					scale_fill_manual(values=alpha(c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen'), 0.2)) +
-					labs(title=predNice, subtitle=pred, x=predDescriptorUnit, y=NULL) +
-					geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
-					theme(legend.position='none', plot.title=element_text(face='bold'))
+				# figs[[countPred]] <- ggplot(data=thisData, aes(x=value, col=latestOccStatus, fill=latestOccStatus)) +
+					# geom_density(size=1) +
+					# scale_color_manual(values=c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen')) +
+					# scale_fill_manual(values=alpha(c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen'), 0.2)) +
+					# labs(title=predNice, subtitle=pred, x=predDescriptorUnit, y=NULL) +
+					# geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
+					# theme(legend.position='none', plot.title=element_text(face='bold'))
 					
-				figs[[countPred]]
+				# figs[[countPred]]
 					
-			} # next predictor
+			# } # next predictor
 
-			main <- plot_grid(
-				figs[[1]],
-				figs[[2]],
-				figs[[3]],
-				figs[[4]],
-				figs[[5]],
-				figs[[6]],
-				figs[[7]],
-				figs[[8]],
-				figs[[9]],
-				figs[[10]],
-				figs[[11]],
-				figs[[12]],
-				figs[[13]],
-				figs[[14]],
-				figs[[15]],
-				figs[[16]],
-				figs[[17]],
-				align='h', ncol=4, rel_widths=1)
+			# main <- plot_grid(
+				# figs[[1]],
+				# figs[[2]],
+				# figs[[3]],
+				# figs[[4]],
+				# figs[[5]],
+				# figs[[6]],
+				# figs[[7]],
+				# figs[[8]],
+				# figs[[9]],
+				# figs[[10]],
+				# figs[[11]],
+				# figs[[12]],
+				# figs[[13]],
+				# figs[[14]],
+				# figs[[15]],
+				# figs[[16]],
+				# figs[[17]],
+				# align='h', ncol=4, rel_widths=1)
 		
-			main
+			# main
 		
-			ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window.png'), width=8.5, height=11, units='in')
+			# ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window.png'), width=8.5, height=11, units='in')
 
-		} # next occupancy window
+		# } # next occupancy window
 
-	### density predictors
-	######################
+	# ### density predictors
+	# ######################
 	
-		preds <- names(pika)[grepl(names(pika), pattern='densVar_')]
+		# preds <- names(pika)[grepl(names(pika), pattern='densVar_')]
 
-		figs <- list()
-		for (countPred in seq_along(preds)) {
+		# figs <- list()
+		# for (countPred in seq_along(preds)) {
 		
-			predFull <- preds[countPred]
-			timePeriod <- if (grepl(predFull, pattern='1yrPrior')) { 'prior year' } else { 'same year'}
+			# predFull <- preds[countPred]
+			# timePeriod <- if (grepl(predFull, pattern='1yrPrior')) { 'prior year' } else { 'same year'}
 			
-			say(predFull)
+			# say(predFull)
 			
-			pred <- gsub(predFull, pattern='densVar_', replacement='')
-			pred <- gsub(pred, pattern='_1yrPrior', replacement='')
-			pred <- gsub(pred, pattern='_0yrPrior', replacement='')
+			# pred <- gsub(predFull, pattern='densVar_', replacement='')
+			# pred <- gsub(pred, pattern='_1yrPrior', replacement='')
+			# pred <- gsub(pred, pattern='_0yrPrior', replacement='')
 			
-			predIndex <- which(univariatePredTable$var == pred)
+			# predIndex <- which(univariatePredTable$var == pred)
 		
-			predNice <- univariatePredTable$varNice[predIndex]
-			predDescriptorUnit <- paste0(univariatePredTable$unitDescriptor[predIndex], ' (', univariatePredTable$unit[predIndex], ')')
+			# predNice <- univariatePredTable$varNice[predIndex]
+			# predDescriptorUnit <- paste0(univariatePredTable$unitDescriptor[predIndex], ' (', univariatePredTable$unit[predIndex], ')')
 		
-			thisData <- pika[ , c('latestDensity', predFull)]
-			names(thisData)[2] <- 'value'
-			thisData <- thisData[complete.cases(thisData), ]
+			# thisData <- pika[ , c('latestDensity', predFull)]
+			# names(thisData)[2] <- 'value'
+			# thisData <- thisData[complete.cases(thisData), ]
 
-			subtitle <- paste0(timePeriod, ' (', pred, ')')
+			# subtitle <- paste0(timePeriod, ' (', pred, ')')
 				
-			figs[[countPred]] <- ggplot(data=thisData, aes(x=value, y=latestDensity)) +
-				geom_point(size=2, shape=16, col='gray40') +
-				labs(title=predNice, subtitle=subtitle, x=predDescriptorUnit, y='Abundance') +
-				theme(
-					legend.position='none',
-					plot.title=element_text(face='bold', size=8),
-					plot.subtitle=element_text(size=6),
-					axis.text.x=element_text(size=7),
-					axis.text.y=element_text(size=7)
-				)
+			# figs[[countPred]] <- ggplot(data=thisData, aes(x=value, y=latestDensity)) +
+				# geom_point(size=2, shape=16, col='gray40') +
+				# labs(title=predNice, subtitle=subtitle, x=predDescriptorUnit, y='Abundance') +
+				# theme(
+					# legend.position='none',
+					# plot.title=element_text(face='bold', size=8),
+					# plot.subtitle=element_text(size=6),
+					# axis.text.x=element_text(size=7),
+					# axis.text.y=element_text(size=7)
+				# )
 				
-		} # next predictor
+		# } # next predictor
 
-		main <- plot_grid(
-			figs[[1]],
-			figs[[2]],
-			figs[[3]],
-			figs[[4]],
-			figs[[5]],
-			figs[[6]],
-			figs[[7]],
-			figs[[8]],
-			figs[[9]],
-			figs[[10]],
-			figs[[11]],
-			figs[[12]],
-			figs[[13]],
-			figs[[14]],
-			figs[[15]],
-			figs[[16]],
-			figs[[17]],
-			figs[[18]],
-			figs[[19]],
-			figs[[20]],
-			figs[[21]],
-			figs[[22]],
-			figs[[23]],
-			figs[[24]],
-			figs[[25]],
-			figs[[26]],
-			figs[[27]],
-			align='h', ncol=6, rel_widths=1)
+		# main <- plot_grid(
+			# figs[[1]],
+			# figs[[2]],
+			# figs[[3]],
+			# figs[[4]],
+			# figs[[5]],
+			# figs[[6]],
+			# figs[[7]],
+			# figs[[8]],
+			# figs[[9]],
+			# figs[[10]],
+			# figs[[11]],
+			# figs[[12]],
+			# figs[[13]],
+			# figs[[14]],
+			# figs[[15]],
+			# figs[[16]],
+			# figs[[17]],
+			# figs[[18]],
+			# figs[[19]],
+			# figs[[20]],
+			# figs[[21]],
+			# figs[[22]],
+			# figs[[23]],
+			# figs[[24]],
+			# figs[[25]],
+			# figs[[26]],
+			# figs[[27]],
+			# align='h', ncol=6, rel_widths=1)
 	
-		ggsave(plot=main, paste0('./Figures & Tables/Distributions of Density Variables.png'), width=11, height=8.5, units='in')
+		# ggsave(plot=main, paste0('./Figures & Tables/Distributions of Density Variables.png'), width=11, height=8.5, units='in')
 
-	### correlations for occupancy variables: heatmap
-	#################################################
+	# ### correlations for occupancy variables: heatmap
+	# #################################################
 	
-		for (occWindow in occWindows_y) {
+		# for (occWindow in occWindows_y) {
 		
-			occVars <- names(pika)[grepl(names(pika), pattern='occVar_')]
-			occVars <- occVars[grepl(occVars, pattern=paste0(occWindow, 'yrWindow'))]
+			# occVars <- names(pika)[grepl(names(pika), pattern='occVar_')]
+			# occVars <- occVars[grepl(occVars, pattern=paste0(occWindow, 'yrWindow'))]
 
-			corr <- cor(pika[ , occVars])
+			# corr <- cor(pika[ , occVars])
 			
-			# change variable names
-			rownames(corr) <- colnames(corr) <- makeNiceVars(colnames(corr), occOrDens='occ')
+			# # change variable names
+			# rownames(corr) <- colnames(corr) <- makeNiceVars(colnames(corr), occOrDens='occ')
 
-			title <- paste0('Occupancy variables with a ', occWindow, '-yr window')
-			fig <- ggcorrplot(corr, hc.order=TRUE, outline.color='white', lab=TRUE, title=title, legend.title='Correlation', show.diag=FALSE)
+			# title <- paste0('Occupancy variables with a ', occWindow, '-yr window')
+			# fig <- ggcorrplot(corr, hc.order=TRUE, outline.color='white', lab=TRUE, title=title, legend.title='Correlation', show.diag=FALSE)
 			
-			ggsave(plot=fig, paste0('./Figures & Tables/Correlations between Occupancy Variables Using a ', occWindow, '-yr Window Heat Map.png'), width=10, height=10, units='in')
+			# ggsave(plot=fig, paste0('./Figures & Tables/Correlations between Occupancy Variables Using a ', occWindow, '-yr Window Heat Map.png'), width=10, height=10, units='in')
 		
-		}
+		# }
 	
-	### correlations for occupancy variables: spoke plot
-	####################################################
+	# ### correlations for occupancy variables: spoke plot
+	# ####################################################
 
-	for (occWindow in occWindows_y) {
+	# for (occWindow in occWindows_y) {
 	
-		occVars <- names(pika)[grepl(names(pika), pattern='occVar_')]
-		occVars <- occVars[grepl(occVars, pattern=paste0(occWindow, 'yrWindow'))]
+		# occVars <- names(pika)[grepl(names(pika), pattern='occVar_')]
+		# occVars <- occVars[grepl(occVars, pattern=paste0(occWindow, 'yrWindow'))]
 
-		corr <- cor(pika[ , occVars])
+		# corr <- cor(pika[ , occVars])
 		
-		# change variable names
-		niceVars <- makeNiceVars(colnames(corr), occOrDens='occ', incTime=FALSE)
+		# # change variable names
+		# niceVars <- makeNiceVars(colnames(corr), occOrDens='occ', incTime=FALSE)
 
-		title <- paste0('Occupancy variables with a ', occWindow, '-yr window')
-		png(paste0('./Figures & Tables/Correlations between Occupancy Variables Using a ', occWindow, '-yr Window Spoke Plot.png'), width=1000, height=1000)
+		# title <- paste0('Occupancy variables with a ', occWindow, '-yr window')
+		# png(paste0('./Figures & Tables/Correlations between Occupancy Variables Using a ', occWindow, '-yr Window Spoke Plot.png'), width=1000, height=1000)
 
-			par(oma=c(3, 10, 3, 3))
-			spoke(pos=corr > thold, neg=corr < -thold, labels=niceVars, ltyNeg='solid', colNeg='red', main=title, cexLabel=1.6, cex.main=1.9)
-			legend('bottomright', inset=-0.01, legend=c(paste0('Positive >', thold), paste0('Negative <-', thold)), lwd=1, col=c('black', 'red'), bty='n', cex=1.8)
+			# par(oma=c(3, 10, 3, 3))
+			# spoke(pos=corr > thold, neg=corr < -thold, labels=niceVars, ltyNeg='solid', colNeg='red', main=title, cexLabel=1.6, cex.main=1.9)
+			# legend('bottomright', inset=-0.01, legend=c(paste0('Positive >', thold), paste0('Negative <-', thold)), lwd=1, col=c('black', 'red'), bty='n', cex=1.8)
 			
-		dev.off()
+		# dev.off()
 
-	}
+	# }
 
 
-	### correlations for density variables: heatmap
-	###############################################
+	# ### correlations for density variables: heatmap
+	# ###############################################
 	
-		densVars <- names(pika)[grepl(names(pika), pattern='densVar_')]
+		# densVars <- names(pika)[grepl(names(pika), pattern='densVar_')]
 
-		recordedDens <- which(!is.na(pika$latestDensSurveyYear))
-		corr <- cor(pika[recordedDens, densVars])
+		# recordedDens <- which(!is.na(pika$latestDensSurveyYear))
+		# corr <- cor(pika[recordedDens, densVars])
 		
-		# change variable names
-		vars <- colnames(corr)
-		vars <- gsub(vars, pattern='densVar_', replacement='')
+		# # change variable names
+		# vars <- colnames(corr)
+		# vars <- gsub(vars, pattern='densVar_', replacement='')
 		
-		times <- rep(NA, length(vars))
-		times[grepl(vars, pattern=paste0('_1yrPrior'))] <- '(1 yr prior)'
-		times[grepl(vars, pattern=paste0('_0yrPrior'))] <- '(same year)'
+		# times <- rep(NA, length(vars))
+		# times[grepl(vars, pattern=paste0('_1yrPrior'))] <- '(1 yr prior)'
+		# times[grepl(vars, pattern=paste0('_0yrPrior'))] <- '(same year)'
 		
-		vars <- gsub(vars, pattern=paste0('_1yrPrior'), replacement='')
-		vars <- gsub(vars, pattern=paste0('_0yrPrior'), replacement='')
-		preds <- univariatePredTable$varNice[match(vars, univariatePredTable$var)]
+		# vars <- gsub(vars, pattern=paste0('_1yrPrior'), replacement='')
+		# vars <- gsub(vars, pattern=paste0('_0yrPrior'), replacement='')
+		# preds <- univariatePredTable$varNice[match(vars, univariatePredTable$var)]
 		
-		preds <- paste(preds, times)
-		colnames(corr) <- rownames(corr) <- preds
+		# preds <- paste(preds, times)
+		# colnames(corr) <- rownames(corr) <- preds
 
-# remove NAs
-nas <- which(preds == 'Sub-lethal heat (22°C) (same year)')
-say('There are ', length(nas), ' NA correlations.')
-if (length(nas) > 0) corr <- corr[-nas, -nas]
+# # remove NAs
+# nas <- which(preds == 'Sub-lethal heat (22°C) (same year)')
+# say('There are ', length(nas), ' NA correlations.')
+# if (length(nas) > 0) corr <- corr[-nas, -nas]
 
-		title <- paste0('Density variables')
-		fig <- ggcorrplot(corr, hc.order=TRUE, outline.color='white', lab=TRUE, title=title, legend.title='Correlation', show.diag=FALSE, lab_size=2.5)
+		# title <- paste0('Density variables')
+		# fig <- ggcorrplot(corr, hc.order=TRUE, outline.color='white', lab=TRUE, title=title, legend.title='Correlation', show.diag=FALSE, lab_size=2.5)
 			
-		ggsave(plot=fig, paste0('./Figures & Tables/Correlations between Density Variables Heat Map.png'), width=11, height=8.5, units='in')
+		# ggsave(plot=fig, paste0('./Figures & Tables/Correlations between Density Variables Heat Map.png'), width=11, height=8.5, units='in')
 		
-	### correlations for density variables: spoke plot
-	####################################################
+	# ### correlations for density variables: spoke plot
+	# ####################################################
 	
-		densVars <- names(pika)[grepl(names(pika), pattern='densVar_')]
-		recordedDens <- which(!is.na(pika$latestDensSurveyYear))
-		corr <- cor(pika[recordedDens, densVars])
+		# densVars <- names(pika)[grepl(names(pika), pattern='densVar_')]
+		# recordedDens <- which(!is.na(pika$latestDensSurveyYear))
+		# corr <- cor(pika[recordedDens, densVars])
 		
-		# change variable names
-		niceVars <- makeNiceVars(colnames(corr), occOrDens='dens', incTime=TRUE, wrapTime=TRUE)
+		# # change variable names
+		# niceVars <- makeNiceVars(colnames(corr), occOrDens='dens', incTime=TRUE, wrapTime=TRUE)
 
-		title <- paste0('Density variables')
-		png(paste0('./Figures & Tables/Correlations between Density Variables Spoke Plot.png'), width=1000, height=1000)
+		# title <- paste0('Density variables')
+		# png(paste0('./Figures & Tables/Correlations between Density Variables Spoke Plot.png'), width=1000, height=1000)
 
-			par(oma=c(3, 10, 3, 3))
-			spoke(pos=corr > thold, neg=corr < -thold, labels=niceVars, ltyNeg='solid', colNeg='red', main=title, cexLabel=1.6, cex.main=1.9)
-			legend('bottomright', inset=-0.01, legend=c(paste0('Positive >', thold), paste0('Negative <-', thold)), lwd=1, col=c('black', 'red'), bty='n', cex=1.8)
+			# par(oma=c(3, 10, 3, 3))
+			# spoke(pos=corr > thold, neg=corr < -thold, labels=niceVars, ltyNeg='solid', colNeg='red', main=title, cexLabel=1.6, cex.main=1.9)
+			# legend('bottomright', inset=-0.01, legend=c(paste0('Positive >', thold), paste0('Negative <-', thold)), lwd=1, col=c('black', 'red'), bty='n', cex=1.8)
 			
-		dev.off()
+		# dev.off()
 		
 say('DONE!!!', level=1, deco='%')

@@ -31,10 +31,6 @@ say('######################################################')
 	pika <- pika[!is.na(pika$latestDensity), ]
 	pika$numHomeRangesScaled <- scale(pika$numHomeRanges)
 
-	# predictors
-	file <- './Predictors/Predictor Variables 2021-04-28 Edits by Adam.xlsx'
-	univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
-
 	y <- pika$latestDensity
 	
 	results <- data.frame()
@@ -46,8 +42,6 @@ say('######################################################')
 
 		vars <- names(pika)[grepl(names(pika), pattern='densVar_')]
 		if (!is.na(densWindow)) vars <- vars[grepl(vars, pattern=paste0('_', densWindow, 'yrPrior'))]
-
-if (any(vars=='densVar_subLethalHeat_d_0yrPrior')) vars <- vars[-which(vars=='densVar_subLethalHeat_d_0yrPrior')]
 
 		x <- scale(pika[ , vars])
 		colnames(x) <- vars
@@ -115,8 +109,6 @@ say('### multivariate DENSITY analysis: all-data models summary ###')
 say('##############################################################')
 
 	# predictors
-	file <- './Predictors/Predictor Variables 2021-04-28 Edits by Adam.xlsx'
-	univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
 
 	results <- read.csv('./Figures & Tables/Density - Multivariate/Density - Multivariate Models Using All Data.csv')
 	

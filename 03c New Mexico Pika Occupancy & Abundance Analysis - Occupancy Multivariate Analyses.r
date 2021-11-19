@@ -35,8 +35,6 @@ say('################################################################')
 	pika$numHomeRangesScaled <- scale(pika$numHomeRanges)
 
 	# predictors
-	file <- './Predictors/Predictor Variables 2021-04-28 Edits by Adam.xlsx'
-	univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
 
 	y <- pika$latestOccStatus
 	
@@ -206,8 +204,6 @@ say('###############################################################')
 	y <- pika$presAbs
 
 	# predictors
-	file <- './Predictors/Predictor Variables 2021-04-28 Edits by Adam.xlsx'
-	univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
 
 	results <- data.frame()
 
@@ -344,8 +340,6 @@ say('### ORDINAL multivariate OCCUPANCY analysis: all-data models summary ###')
 say('########################################################################')
 
 	# predictors
-	file <- './Predictors/Predictor Variables 2021-04-28 Edits by Adam.xlsx'
-	univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
 
 	results <- read.csv('./Figures & Tables/Occupancy - Multivariate/Occupancy - Multivariate Ordinal Models Using All Data.csv')
 	
@@ -377,10 +371,6 @@ say('########################################################################')
 say('#######################################################################')
 say('### BINARY multivariate OCCUPANCY analysis: all-data models summary ###')
 say('#######################################################################')
-
-	# predictors
-	file <- './Predictors/Predictor Variables 2021-04-28 Edits by Adam.xlsx'
-	univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
 
 	results <- read.csv('./Figures & Tables/Occupancy - Multivariate/Occupancy - Multivariate Binary Models Using All Data.csv')
 	

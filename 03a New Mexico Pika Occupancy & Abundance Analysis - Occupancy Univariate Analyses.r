@@ -18,10 +18,10 @@
 #############
 
 	# drive <- 'C:'
-	drive <- 'D:'
-	# drive <- 'E:'
+	# drive <- 'D:'
+	drive <- 'E:'
 
-	source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	source(paste0(drive, '/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
 
 say('##############################################################')
 say('### ORDINAL univariate OCCUPANCY analysis: all-data models ###')
@@ -36,8 +36,6 @@ say('##############################################################')
 	vars <- names(pika)[grepl(names(pika), pattern='occVar_')]
 
 	# predictors
-	file <- './Predictors/Predictor Variables 2021-04-28 Edits by Adam.xlsx'
-	univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
 
 	### using all sites (no cross-validation)
 	#########################################
@@ -186,8 +184,6 @@ say('##############################################################')
 	vars <- names(pika)[grepl(names(pika), pattern='occVar_')]
 
 	# predictors
-	file <- './Predictors/Predictor Variables 2021-04-28 Edits by Adam.xlsx'
-	univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
 	
 	### null models
 	###############

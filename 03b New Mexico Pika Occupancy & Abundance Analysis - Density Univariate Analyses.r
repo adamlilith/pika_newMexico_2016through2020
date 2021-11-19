@@ -26,8 +26,6 @@ say('##################################################')
 	vars <- names(pika)[grepl(names(pika), pattern='densVar_')]
 
 	# predictors
-	file <- './Predictors/Predictor Variables 2021-04-28 Edits by Adam.xlsx'
-	univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
 	
 	### intercept-only models
 	#########################
