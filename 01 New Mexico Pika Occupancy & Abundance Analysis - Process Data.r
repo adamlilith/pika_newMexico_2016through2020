@@ -1,19 +1,20 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/01 New Mexico Pika Occupancy & Abundance Analysis - Process Data.r')
-### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/01 New Mexico Pika Occupancy & Abundance Analysis - Process Data.r')
+### source('C:/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/01 New Mexico Pika Occupancy & Abundance Analysis - Process Data.r')
+### source('E:/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/01 New Mexico Pika Occupancy & Abundance Analysis - Process Data.r')
 ###
 ### CONTENTS ###
 ### process and clean pika data ###
 ### extract environmental data and calculate predictors ###
 ### distributions of predictors ###
+### define regions and folds ###
 
 #############
 ### setup ###
 #############
 
-	source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	source('E:/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
 
 # say('###################################')
 # say('### process and clean pika data ###')
@@ -324,7 +325,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# args=args,
@@ -350,7 +351,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -377,7 +378,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -404,7 +405,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -431,7 +432,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -458,7 +459,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -485,7 +486,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -509,7 +510,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -531,7 +532,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -553,7 +554,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -575,7 +576,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -597,7 +598,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -619,7 +620,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -641,7 +642,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -663,7 +664,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -685,7 +686,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -707,7 +708,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -733,7 +734,7 @@
 				# pika <- extractAndCalcVarForDens(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# pika=pika,
 					# summaryFx=summaryFx,
 					# fail=fail,
@@ -757,7 +758,7 @@
 				# pika <- extractAndCalcVarForDens(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# pika=pika,
 					# summaryFx=summaryFx,
 					# fail=fail,
@@ -782,7 +783,7 @@
 				# pika <- extractAndCalcVarForDens(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# pika=pika,
 					# summaryFx=summaryFx,
 					# fail=fail,
@@ -807,7 +808,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -832,7 +833,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -857,7 +858,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -882,7 +883,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -904,7 +905,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -925,7 +926,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -946,7 +947,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -967,7 +968,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -988,7 +989,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -1009,7 +1010,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -1030,13 +1031,33 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
 				# na.rm=TRUE
 			# )	
 		
+		# ### winterSnow_mm: Total precipitation, December-March
+		# ######################################################
+			
+			# # generalization
+			# thisPred <- 'winterSnow_mm' # name of this variable
+			# prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
+			
+			# # function to summarize values within a year
+			# summaryFx <- sum # may need to put arguments in the actual function call below!
+			
+			# pika <- extractAndCalcVarForDens(
+				# thisPred=thisPred,
+				# prVar=prVar,
+				# predTable=predTable,
+				# pika=pika,
+				# summaryFx=summaryFx,
+				# fail=fail,
+				# na.rm=TRUE
+			# )
+
 		# ### annualPpt_mm: Total annual precipitation, June-May
 		# ######################################################
 			
@@ -1050,7 +1071,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -1070,7 +1091,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -1089,15 +1110,13 @@
 
 	# ### data
 	# load('./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
-	# file <- './Predictors/Predictor Variables 2021-06-09 Modified Sub-lethal Heat.xlsx'
-	# univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
 
 	# ### occupancy predictors
 	# ########################
 	
 		# pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
 		
-		# preds <- univariatePredTable$var[univariatePredTable$useOccAbund]
+		# preds <- predTable$var[predTable$useOccAbund]
 
 		# for (occWindow in occWindows_y) {
 			
@@ -1106,10 +1125,10 @@
 			
 				# pred <- preds[countPred]
 				
-				# predIndex <- which(univariatePredTable$var == pred)
+				# predIndex <- which(predTable$var == pred)
 			
-				# predNice <- univariatePredTable$varNice[predIndex]
-				# predDescriptorUnit <- paste0(univariatePredTable$unitDescriptor[predIndex], ' (', univariatePredTable$unit[predIndex], ')')
+				# predNice <- predTable$varNice[predIndex]
+				# predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
 			
 				# predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
 			
@@ -1140,25 +1159,7 @@
 					
 			# } # next predictor
 
-			# main <- plot_grid(
-				# figs[[1]],
-				# figs[[2]],
-				# figs[[3]],
-				# figs[[4]],
-				# figs[[5]],
-				# figs[[6]],
-				# figs[[7]],
-				# figs[[8]],
-				# figs[[9]],
-				# figs[[10]],
-				# figs[[11]],
-				# figs[[12]],
-				# figs[[13]],
-				# figs[[14]],
-				# figs[[15]],
-				# figs[[16]],
-				# figs[[17]],
-				# align='h', ncol=4, rel_widths=1)
+			# main <- plot_grid(plotlist=figs, align='h', ncol=3, rel_widths=1)
 		
 			# main
 		
@@ -1183,10 +1184,10 @@
 			# pred <- gsub(pred, pattern='_1yrPrior', replacement='')
 			# pred <- gsub(pred, pattern='_0yrPrior', replacement='')
 			
-			# predIndex <- which(univariatePredTable$var == pred)
+			# predIndex <- which(predTable$var == pred)
 		
-			# predNice <- univariatePredTable$varNice[predIndex]
-			# predDescriptorUnit <- paste0(univariatePredTable$unitDescriptor[predIndex], ' (', univariatePredTable$unit[predIndex], ')')
+			# predNice <- predTable$varNice[predIndex]
+			# predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
 		
 			# thisData <- pika[ , c('latestDensity', predFull)]
 			# names(thisData)[2] <- 'value'
@@ -1207,35 +1208,7 @@
 				
 		# } # next predictor
 
-		# main <- plot_grid(
-			# figs[[1]],
-			# figs[[2]],
-			# figs[[3]],
-			# figs[[4]],
-			# figs[[5]],
-			# figs[[6]],
-			# figs[[7]],
-			# figs[[8]],
-			# figs[[9]],
-			# figs[[10]],
-			# figs[[11]],
-			# figs[[12]],
-			# figs[[13]],
-			# figs[[14]],
-			# figs[[15]],
-			# figs[[16]],
-			# figs[[17]],
-			# figs[[18]],
-			# figs[[19]],
-			# figs[[20]],
-			# figs[[21]],
-			# figs[[22]],
-			# figs[[23]],
-			# figs[[24]],
-			# figs[[25]],
-			# figs[[26]],
-			# figs[[27]],
-			# align='h', ncol=6, rel_widths=1)
+		# main <- plot_grid(plotlist=figs, align='h', ncol=6, rel_widths=1)
 	
 		# ggsave(plot=main, paste0('./Figures & Tables/Distributions of Density Variables.png'), width=11, height=8.5, units='in')
 
@@ -1250,7 +1223,7 @@
 			# corr <- cor(pika[ , occVars])
 			
 			# # change variable names
-			# rownames(corr) <- colnames(corr) <- makeNiceVars(colnames(corr), occOrDens='occ')
+			# rownames(corr) <- colnames(corr) <- makeNiceVars(colnames(corr), occOrDens='occupancy')
 
 			# title <- paste0('Occupancy variables with a ', occWindow, '-yr window')
 			# fig <- ggcorrplot(corr, hc.order=TRUE, outline.color='white', lab=TRUE, title=title, legend.title='Correlation', show.diag=FALSE)
@@ -1270,7 +1243,7 @@
 		# corr <- cor(pika[ , occVars])
 		
 		# # change variable names
-		# niceVars <- makeNiceVars(colnames(corr), occOrDens='occ', incTime=FALSE)
+		# niceVars <- makeNiceVars(colnames(corr), occOrDens='occupancy', incTime=FALSE)
 
 		# title <- paste0('Occupancy variables with a ', occWindow, '-yr window')
 		# png(paste0('./Figures & Tables/Correlations between Occupancy Variables Using a ', occWindow, '-yr Window Spoke Plot.png'), width=1000, height=1000)
@@ -1302,15 +1275,10 @@
 		
 		# vars <- gsub(vars, pattern=paste0('_1yrPrior'), replacement='')
 		# vars <- gsub(vars, pattern=paste0('_0yrPrior'), replacement='')
-		# preds <- univariatePredTable$varNice[match(vars, univariatePredTable$var)]
+		# preds <- predTable$varNice[match(vars, predTable$var)]
 		
 		# preds <- paste(preds, times)
 		# colnames(corr) <- rownames(corr) <- preds
-
-# # remove NAs
-# nas <- which(preds == 'Sub-lethal heat (22°C) (same year)')
-# say('There are ', length(nas), ' NA correlations.')
-# if (length(nas) > 0) corr <- corr[-nas, -nas]
 
 		# title <- paste0('Density variables')
 		# fig <- ggcorrplot(corr, hc.order=TRUE, outline.color='white', lab=TRUE, title=title, legend.title='Correlation', show.diag=FALSE, lab_size=2.5)
@@ -1325,7 +1293,7 @@
 		# corr <- cor(pika[recordedDens, densVars])
 		
 		# # change variable names
-		# niceVars <- makeNiceVars(colnames(corr), occOrDens='dens', incTime=TRUE, wrapTime=TRUE)
+		# niceVars <- makeNiceVars(colnames(corr), occOrDens='density', incTime=TRUE, wrapTime=TRUE)
 
 		# title <- paste0('Density variables')
 		# png(paste0('./Figures & Tables/Correlations between Density Variables Spoke Plot.png'), width=1000, height=1000)
@@ -1335,5 +1303,71 @@
 			# legend('bottomright', inset=-0.01, legend=c(paste0('Positive >', thold), paste0('Negative <-', thold)), lwd=1, col=c('black', 'red'), bty='n', cex=1.8)
 			
 		# dev.off()
+
+# say('################################')
+# say('### define regions and folds ###')
+# say('################################')
+
+	# load('./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
+
+	# # define regions
+	# pika$region <- NA
+	# pika$region[pika$longitude < -105.9448 & pika$latitude > 36.29301] <- 'northwest'
+	# pika$region[pika$longitude < -105.9448 & pika$latitude < 36.29301] <- 'southwest'
+	# pika$region[pika$longitude > -105.9448 & pika$latitude > 36.29301] <- 'northeast'
+	# pika$region[pika$longitude > -105.9448 & pika$latitude < 36.29301] <- 'southeast'
 		
+	# # define folds
+	# pika$fold <- NA
+	# for (region in regions) {
+	
+		# lats <- pika$latitude[pika$region == region]
+		# mid <- mean(lats)
+		# pika$fold[pika$region == region & pika$latitude > mid] <- 1
+		# pika$fold[pika$region == region & pika$latitude <= mid] <- 2
+		# if (region == 'northwest') {
+
+			# pika$fold[pika$region == region & ((pika$longitude > -106.1828 & pika$latitude > 36.58048) | pika$latitude > mid)] <- 1
+		
+		# }
+	
+	# }
+
+	# # visual check
+	# sp <- vect(as.matrix(pika[ , ll]), att=pika, crs=getCRS('wgs84'))
+	# plot(sp, col=NA)
+	# points(sp[sp$region == 'northwest' & sp$fold == 1, ], col='red', pch=1)
+	# points(sp[sp$region == 'northwest' & sp$fold == 2, ], col='red', pch=2)
+
+	# points(sp[sp$region == 'southwest' & sp$fold == 1, ], col='green', pch=1)
+	# points(sp[sp$region == 'southwest' & sp$fold == 2, ], col='green', pch=2)
+
+	# points(sp[sp$region == 'northeast' & sp$fold == 1, ], col='blue', pch=1)
+	# points(sp[sp$region == 'northeast' & sp$fold == 2, ], col='blue', pch=2)
+
+	# points(sp[sp$region == 'southeast' & sp$fold == 1, ], col='orange', pch=1)
+	# points(sp[sp$region == 'southeast' & sp$fold == 2, ], col='orange', pch=2)
+
+	# # sample size checks
+	# for (region in regions) {
+
+		# say(region, ' ============================')
+		# for (fold in 1:2) {
+
+			# for (occStatus in occStatuses) {
+
+				# n <- sum(pika$latestOccStatus[pika$region == region & pika$fold == fold]==occStatus)
+				# say('fold ', fold, ': ', occStatus, ' ', n)
+			# }
+			
+		# }
+		
+	# }
+
+	# # presence/absence
+	# pika$presAbs <- 0
+	# pika$presAbs[pika$latestOccStatus == '2 occupied'] <- 1
+
+	# save(pika, file='./Data/03 New Mexico Pika - Assigned Folds.rda')
+	
 say('DONE!!!', level=1, deco='%')

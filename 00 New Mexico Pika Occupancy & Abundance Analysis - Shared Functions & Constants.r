@@ -1,8 +1,8 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
-### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+### source('C:/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+### source('E:/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
 ###
 ### CONTENTS ###
 ### setup ###
@@ -14,6 +14,9 @@
 ### implement elastic net for density model ###
 ### extract PRISM values and calculate derived variable for OCCUPANCY predictors ###
 ### extract PRISM values and calculate derived variable for DENSITY predictors ###
+### generate models ###
+### make formulae with nice names ###
+### extract coefficients and terms for a set of 4 models ###
 
 #############
 ### setup ###
@@ -29,7 +32,7 @@
 	# drive <- 'D:'
 	drive <- 'E:'
 	
-	setwd(paste0(drive, '/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)'))
+	setwd(paste0(drive, '/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)'))
 
 	# library(rainbow) # www.github.com/adamlilith/rainbow
 	library(legendary) # www.github.com/adamlilith/legendary
@@ -51,19 +54,24 @@
 	library(terra)
 	library(tidyverse)
 	
+	ff <- listFiles(paste0(drive, '/ecology/Drive/R/airUpThere/R'))
+	for (f in ff) source(f)
+	
 	ll <- c('longitude', 'latitude')
 	surveyYears <- 2016:2020
 	occWindows_y <- c(7, 10) # time span for occupancy variables (calculate up to these years prior to survey year)
 	densWindows_y <- c(0, 1) # time offset for density variables (calculate these years prior to survey year)
+	regions <- c('northwest', 'southwest', 'northeast', 'southeast')
+	occStatuses <- c('0 never', '1 old', '2 occupied')
 
 	# predictor table
-	file <- './Predictors/Univariate Predictor Variables 2021-11-03 Selected Sub-Lethal heat 18deg.xlsx'
+	file <- './Predictors/Univariate Predictor Variables 2021-12-03 Added Winter Summer Descriptor.xlsx'
 	predTable <- read_excel(file, sheet='Predictor Variables', skip=1)
 
 	dirCreate('./Figures & Tables')
-	dirCreate('./Figures & Tables/Occupancy - Univariate')
+	dirCreate('./Figures & Tables/Occupancy - Simple Models')
 	dirCreate('./Figures & Tables/Occupancy - Multivariate')
-	dirCreate('./Figures & Tables/Density - Univariate')
+	dirCreate('./Figures & Tables/Density - Simple Models')
 	dirCreate('./Figures & Tables/Density - Multivariate')
 
 	occCol <- 'chartreuse'
@@ -77,12 +85,12 @@
 	makeNiceVars <- function(vars, occOrDens, incTime=TRUE, wrapTime=FALSE) {
 	
 		# vars 		vector of variable names
-		# occOrDens 'occ' or 'dens'
+		# occOrDens 'occupancy' or 'density'
 		# incTime	include time frame in parentheses?
 		# wrapTime  insert "\n" before time?
 	
 		# time frame
-		if (occOrDens == 'occ') {
+		if (occOrDens == 'occupancy') {
 		
 			timeFrame <- substr(vars, nchar(vars) - 9, nchar(vars) - 8)
 			for (i in seq_along(timeFrame)) if (substr(timeFrame[i], 1, 1) == '_') timeFrame[i] <- substr(timeFrame[i], 2, 2)
@@ -91,7 +99,7 @@
 				vars <- gsub(vars, pattern=paste0('_', occWindow, 'yrWindow'), replacement='')
 			}
 		
-		} else if (occOrDens == 'dens') {
+		} else if (occOrDens == 'density') {
 		
 			timeFrame <- substr(vars, nchar(vars) - 7, nchar(vars) - 7)
 
@@ -108,8 +116,8 @@
 		vars <- predTable$varNice[match(vars, predTable$var)]
 		
 		wrap <- ifelse(wrapTime, '\n', ' ')
-		if (incTime & occOrDens == 'occ') vars <- paste0(vars, wrap, '(', timeFrame, '-yr window)')
-		if (incTime & occOrDens == 'dens') vars <- paste0(vars, wrap, '(', timeFrame, ' yr prior)')
+		if (incTime & occOrDens == 'occupancy') vars <- paste0(vars, wrap, '(', timeFrame, '-yr window)')
+		if (incTime & occOrDens == 'density') vars <- paste0(vars, wrap, '(', timeFrame, ' yr prior)')
 		vars
 	
 	}
@@ -516,4 +524,278 @@
 		
 	}
 
-say('Loaded shared functions and constants for pika New Mexico analysis.', pre=2, post=2)
+#######################
+### generate models ###
+#######################
+
+	### Return a list of models (univariate, bivariate, trivariate)
+	getVars <- function(occOrDens) {
+		
+		# occOrDens	'occupancy' or 'density'
+
+		univars <- predTable$var[predTable$useOccAbund]
+		
+		if (occOrDens == 'occupancy') {
+			univars <- rep(univars, each=2)
+			univars <- paste0(univars, '_', occWindows_y, 'yrWindow')
+		} else if (occOrDens == 'density') {
+			newVars <- character()
+			for (i in 1:nrow(predTable)) {
+				if (predTable$useOccAbund[i]) {
+					newVars <- c(newVars, paste0(predTable$var[i], '_', densWindows_y[2], 'yrPrior'))
+					if (predTable$useAbundSameYear[i]) {
+						newVars <- c(newVars, paste0(predTable$var[i], '_', densWindows_y[1], 'yrPrior'))
+					}
+				}
+			}
+			univars <- newVars
+		}
+
+		univars <- if (occOrDens == 'occupancy') {
+			paste0('occVar_', univars)
+		} else if (occOrDens == 'density') {
+			paste0('densVar_', univars)
+		}
+
+		univars
+		
+	}
+
+	getFormulae <- function(occOrDens) {
+	
+		# occOrDens		'occupancy' or 'density'
+
+		### univariate models
+		univars <- getVars(occOrDens)
+		
+		### bivariate
+		bivars <- read_xlsx(paste0('./Predictors/Bivariate Model Suite__3June2021 (002) [2021-06-07b ', occOrDens, '].xlsx'))
+		bivars <- as.data.frame(bivars)
+		
+		# remove redundant models
+		for (i in 1:nrow(bivars)) {
+			term1 <- bivars$term1[i]
+			term2 <- bivars$term2[i]
+			if (term1 > term2) {
+				bivars$term1[i] <- term2
+				bivars$term2[i] <- term1
+			}
+		}
+		
+		dups <- duplicated(bivars[ , c('term1', 'term2')])
+		bivars <- bivars[!dups, ]
+		term1 <- bivars$term1
+		term2 <- bivars$term2
+
+		# get predictors that can be from same year as sampling
+		if (occOrDens == 'density') {
+			
+			term1useSameYear <- predTable$useAbundSameYear[match(term1, predTable$var)]
+			term2useSameYear <- predTable$useAbundSameYear[match(term2, predTable$var)]
+
+			useSameYear <- term1useSameYear & term2useSameYear
+			
+			sameYearTerm1 <- sameYearTerm2 <- character()
+			for (i in seq_along(useSameYear)) {
+				if (useSameYear[i]) {
+					sameYearTerm1 <- c(sameYearTerm1, paste0(term1[i], '_', densWindows_y[1], 'yrPrior'))
+					sameYearTerm2 <- c(sameYearTerm2, paste0(term2[i], '_', densWindows_y[1], 'yrPrior'))
+				}
+			}
+			
+			term1 <- paste0(term1, '_', densWindows_y[2], 'yrPrior')
+			term2 <- paste0(term2, '_', densWindows_y[2], 'yrPrior')
+				
+			term1 <- c(term1, sameYearTerm1)
+			term2 <- c(term2, sameYearTerm2)
+			
+			term1 <- paste0('densVar_', term1)
+			term2 <- paste0('densVar_', term2)
+
+		} else if (occOrDens=='occupancy') {
+
+			term1 <- paste0('occVar_', term1)
+			term2 <- paste0('occVar_', term2)
+			
+			term1 <- paste0(rep(term1, each=2), '_', occWindows_y, 'yrWindow')
+			term2 <- paste0(rep(term2, each=2), '_', occWindows_y, 'yrWindow')
+			
+		}
+			
+		bivars <- paste0(term1, ' + ', term2)
+		
+		### trivariate
+		trivars <- read_xlsx(paste0('./Predictors/Trivariate 3-predictor models (including some interactions) [2021-06-07b ', occOrDens, '].xlsx'))
+		trivars <- as.data.frame(trivars)
+		
+		# remove redundant models
+		for (i in 1:nrow(trivars)) {
+			term1 <- trivars$term1[i]
+			term2 <- trivars$term2[i]
+			if (term1 > term2) {
+				trivars$term1[i] <- term2
+				trivars$term2[i] <- term1
+			}
+		}
+		
+		dups <- duplicated(trivars[ , c('term1', 'term2', 'term3')])
+		trivars <- trivars[!dups, ]
+		term1 <- trivars$term1
+		term2 <- trivars$term2
+		term3 <- trivars$term3
+
+		# get predictors that can be from same year as sampling
+		if (occOrDens == 'density') {
+			
+			term1useSameYear <- predTable$useAbundSameYear[match(term1, predTable$var)]
+			term2useSameYear <- predTable$useAbundSameYear[match(term2, predTable$var)]
+			term3useSameYear <- predTable$useAbundSameYear[match(term3, predTable$var)]
+
+			useSameYear <- term1useSameYear & term2useSameYear & term3useSameYear
+			
+			sameYearTerm1 <- sameYearTerm2 <- sameYearTerm3 <- fxBetweenTerms1and2 <- character()
+			for (i in seq_along(useSameYear)) {
+				if (useSameYear[i]) {
+					sameYearTerm1 <- c(sameYearTerm1, paste0(term1[i], '_', densWindows_y[1], 'yrPrior'))
+					sameYearTerm2 <- c(sameYearTerm2, paste0(term2[i], '_', densWindows_y[1], 'yrPrior'))
+					sameYearTerm3 <- c(sameYearTerm3, paste0(term3[i], '_', densWindows_y[1], 'yrPrior'))
+					fxBetweenTerms1and2 <- c(fxBetweenTerms1and2, trivars$fxBetweenTerms1and2[trivars$term1 == term1[i] & trivars$term2 == term2[i] & trivars$term3 == term3[i]])
+				}
+			}
+			
+			sameYearTerm1 <- paste0('densVar_', sameYearTerm1)
+			sameYearTerm2 <- paste0('densVar_', sameYearTerm2)
+			sameYearTerm3 <- paste0('densVar_', sameYearTerm3)
+			trivarsSameYear <- paste(sameYearTerm1, fxBetweenTerms1and2, sameYearTerm2, '+', sameYearTerm3)
+
+			term1 <- paste0('densVar_', term1)
+			term2 <- paste0('densVar_', term2)
+			term3 <- paste0('densVar_', term3)
+
+			term1 <- paste0(term1, '_', densWindows_y[2], 'yrPrior')
+			term2 <- paste0(term2, '_', densWindows_y[2], 'yrPrior')
+			term3 <- paste0(term3, '_', densWindows_y[2], 'yrPrior')
+			
+			trivars <- c(paste(term1, trivars$fxBetweenTerms1and2, term2, ' + ', term3), trivarsSameYear)
+				
+		} else if (occOrDens=='occupancy') {
+
+			term1 <- paste0('occVar_', term1)
+			term2 <- paste0('occVar_', term2)
+			term3 <- paste0('occVar_', term3)
+
+			term1 <- paste0(rep(term1, each=2), '_', occWindows_y, 'yrWindow')
+			term2 <- paste0(rep(term2, each=2), '_', occWindows_y, 'yrWindow')
+			term3 <- paste0(rep(term3, each=2), '_', occWindows_y, 'yrWindow')
+
+			trivars <- paste0(term1, ' ', rep(trivars$fxBetweenTerms1and2, each=2), ' ', term2, ' + ', term3)
+
+		}
+		
+		models <- c(univars, bivars, trivars)
+		models
+		
+	}
+
+#####################################
+### make formulae with nice names ###
+#####################################
+
+	niceFormulae <- function(x, occOrDens, around1='', around2='') {
+	
+		# x			formulae (as characters)
+		# occOrDens	'occupancy' or 'density'
+		# around1 	symbols to put around each term
+		# around2 	symbols to put around each term
+		
+		timeFrame <- rep(NA, length(x))
+		if (occOrDens == 'occupancy') {
+			for (occWindow_y in occWindows_y) {
+				foundIt <- grepl(x, pattern=paste0(occWindow_y, 'yrWindow'))
+				if (any(foundIt)) timeFrame[foundIt] <- occWindow_y
+			}
+		} else if (occOrDens == 'density') {
+			for (densWindow_y in densWindows_y) {
+				foundIt <- grepl(x, pattern=paste0(densWindow_y, 'yrPrior'))
+				if (any(foundIt)) timeFrame[foundIt] <- densWindow_y
+			}
+		}
+
+		for (i in seq_along(x)) x[i] <- gsub(x[i], pattern=paste0('_', timeFrame[i], 'yrWindow'), replacement='')
+		for (i in seq_along(x)) x[i] <- gsub(x[i], pattern=paste0('_', timeFrame[i], 'yrPrior'), replacement='')
+		timeFrame <- paste0(' (', timeFrame, '-yr)')
+		
+		x <- gsub(x, pattern='occVar_', replacement='')
+		x <- gsub(x, pattern='densVar_', replacement='')
+			
+		for (i in 1:nrow(predTable)) {
+		
+			pattern <- predTable$var[i]
+			replaceWith <- predTable$varNice[i]
+			replaceWith <- paste0(around1, replaceWith, around2)
+			
+			x <- gsub(x, pattern=pattern, replacement=replaceWith)
+		
+		}
+		
+		x <- paste0(x, timeFrame)
+		x
+		
+	}
+
+############################################################
+### extract coefficients and terms for a set of 4 models ###
+############################################################
+extractTerms <- function(...) {
+	
+	# ...	objects of class "glm"
+	
+	models <- list(...)
+	n <- length(models)
+	
+	term1 <- term2 <- term3 <- term4 <- rep(NA, n)
+	for (countModel in 1:n) {
+	
+		coefs <- coefficients(models[[countModel]])
+		if (any(names(coefs) == '(Intercept)')) coefs <- coefs[names(coefs) != '(Intercept)']
+		if (any(names(coefs) == 'numHomeRangesScaled')) coefs <- coefs[names(coefs) != 'numHomeRangesScaled']
+		if (any(names(coefs) == 'regionnorthwest')) coefs <- coefs[names(coefs) != 'regionnorthwest']
+		if (any(names(coefs) == 'regionsoutheast')) coefs <- coefs[names(coefs) != 'regionsoutheast']
+		if (any(names(coefs) == 'regionsouthwest')) coefs <- coefs[names(coefs) != 'regionsouthwest']
+
+		term <- coefs[1]
+		term1[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
+
+		if (length(coefs) > 1) {
+			term <- coefs[2]
+			term2[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
+		}
+	
+		if (length(coefs) > 2) {
+			term <- coefs[3]
+			term3[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
+		}
+	
+		if (length(coefs) > 3) {
+			term <- coefs[4]
+			term4[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
+		}
+	
+	}
+	
+	occOrDens <- if (grepl(term1[1], pattern='occVar_')) {
+		'occupancy'
+	} else {
+		'density'
+	}
+	
+	term1 <- niceFormulae(term1, occOrDens=occOrDens)
+	term2 <- niceFormulae(term2, occOrDens=occOrDens)
+	term3 <- niceFormulae(term3, occOrDens=occOrDens)
+	term4 <- niceFormulae(term4, occOrDens=occOrDens)
+
+	list(term1=term1, term2=term2, term3=term3, term4=term4)
+	
+}
+
+say('Loaded shared functions and constants for pika New Mexico analysis.', level=1)

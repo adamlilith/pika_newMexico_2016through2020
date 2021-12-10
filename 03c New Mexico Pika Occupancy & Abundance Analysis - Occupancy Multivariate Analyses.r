@@ -1,7 +1,7 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/03c New Mexico Pika Occupancy & Abundance Analysis - Occupancy Multivariate Analyses.r')
+### source('E:/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/03c New Mexico Pika Occupancy & Abundance Analysis - Occupancy Multivariate Analyses.r')
 ###
 ### CONTENTS ###
 ### setup ###
@@ -14,7 +14,7 @@
 ### setup ###
 #############
 
-	source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	source('E:/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
 
 	### generalization
 	alphas <- seq(0, 1, by=0.05)
@@ -46,7 +46,7 @@ say('################################################################')
 	for (occWindow in c(occWindows_y, NA)) {
 	# for (occWindow in c(occWindows_y)) {
 
-		vars <- names(pika)[grepl(names(pika), pattern='occVar_')]
+		vars <- getVars('occupancy')
 		if (!is.na(occWindow)) vars <- vars[grepl(vars, pattern=paste0('_', occWindow, 'yrWindow'))]
 
 		x <- scale(pika[ , vars])
@@ -190,6 +190,7 @@ say('################################################################')
 	rownames(results) <- NULL
 	
 	write.csv(results, './Figures & Tables/Occupancy - Multivariate/Occupancy - Multivariate Ordinal Models Using All Data.csv', row.names=FALSE)
+	
 say('###############################################################')
 say('### BINARY multivariate OCCUPANCY analysis: all-data models ###')
 say('###############################################################')
@@ -213,7 +214,7 @@ say('###############################################################')
 	for (occWindow in c(occWindows_y, NA)) {
 	# for (occWindow in c(occWindows_y)) {
 
-		vars <- names(pika)[grepl(names(pika), pattern='occVar_')]
+		vars <- getVars('occupancy')
 		if (!is.na(occWindow)) vars <- vars[grepl(vars, pattern=paste0('_', occWindow, 'yrWindow'))]
 
 		x <- scale(pika[ , vars])
@@ -348,15 +349,15 @@ say('########################################################################')
 	
 	best <- best[order(abs(best$coeffVal)), ]
 
-	if (any(best$coeff == 'nw')) best <- best[-which(best$coeff == 'nw'), ] 
-	if (any(best$coeff == 'sw')) best <- best[-which(best$coeff == 'sw'), ] 
-	if (any(best$coeff == 'ne')) best <- best[-which(best$coeff == 'ne'), ] 
-	if (any(best$coeff == 'se')) best <- best[-which(best$coeff == 'se'), ] 
+	if (any(best$coeff == 'northwest')) best <- best[-which(best$coeff == 'northwest'), ] 
+	if (any(best$coeff == 'southwest')) best <- best[-which(best$coeff == 'southwest'), ] 
+	if (any(best$coeff == 'northeast')) best <- best[-which(best$coeff == 'northeast'), ] 
+	if (any(best$coeff == 'southeast')) best <- best[-which(best$coeff == 'southeast'), ] 
 	if (any(best$coeff == 'numHomeRanges')) best <- best[-which(best$coeff == 'numHomeRanges'), ] 
 	
-	incTime <- (nrow(best) > length(univariatePredTable$var[univariatePredTable$useOccAbund]))
+	incTime <- (nrow(best) > length(predTable$var[predTable$useOccAbund]))
 
-	best$varNice <- makeNiceVars(best$coeff, occOrDens='occ', incTime=TRUE)
+	best$varNice <- makeNiceVars(best$coeff, occOrDens='occupancy', incTime=TRUE)
 	best$varNice <- factor(best$varNice, levels=best$varNice)
 	
 	coeffs <- ggplot(best, aes(x=coeffVal, y=varNice)) +
@@ -379,15 +380,15 @@ say('#######################################################################')
 	
 	best <- best[order(abs(best$coeffVal)), ]
 
-	if (any(best$coeff == 'nw')) best <- best[-which(best$coeff == 'nw'), ] 
-	if (any(best$coeff == 'sw')) best <- best[-which(best$coeff == 'sw'), ] 
-	if (any(best$coeff == 'ne')) best <- best[-which(best$coeff == 'ne'), ] 
-	if (any(best$coeff == 'se')) best <- best[-which(best$coeff == 'se'), ] 
+	if (any(best$coeff == 'northwest')) best <- best[-which(best$coeff == 'northwest'), ] 
+	if (any(best$coeff == 'southwest')) best <- best[-which(best$coeff == 'southwest'), ] 
+	if (any(best$coeff == 'northeast')) best <- best[-which(best$coeff == 'northeast'), ] 
+	if (any(best$coeff == 'southeast')) best <- best[-which(best$coeff == 'southeast'), ] 
 	if (any(best$coeff == 'numHomeRanges')) best <- best[-which(best$coeff == 'numHomeRanges'), ] 
 	
-	incTime <- (nrow(best) > length(univariatePredTable$var[univariatePredTable$useOccAbund]))
+	incTime <- (nrow(best) > length(predTable$var[predTable$useOccAbund]))
 
-	best$varNice <- makeNiceVars(best$coeff, occOrDens='occ', incTime=TRUE)
+	best$varNice <- makeNiceVars(best$coeff, occOrDens='occupancy', incTime=TRUE)
 	best$varNice <- factor(best$varNice, levels=best$varNice)
 	
 	coeffs <- ggplot(best, aes(x=coeffVal, y=varNice)) +

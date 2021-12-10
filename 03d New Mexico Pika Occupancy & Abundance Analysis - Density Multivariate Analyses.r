@@ -1,7 +1,7 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/03d New Mexico Pika Occupancy & Abundance Analysis - Density Multivariate Analyses.r')
+### source('E:/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/03d New Mexico Pika Occupancy & Abundance Analysis - Density Multivariate Analyses.r')
 ###
 ### CONTENTS ###
 ### setup ###
@@ -12,7 +12,8 @@
 ### setup ###
 #############
 
-	source('/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	drive <- 'E:'
+	source(paste0('/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
 
 	### generalization
 	alphas <- seq(0, 1, by=0.05)
@@ -40,7 +41,7 @@ say('######################################################')
 
 	for (densWindow in c(densWindows_y, NA)) {
 
-		vars <- names(pika)[grepl(names(pika), pattern='densVar_')]
+		vars <- getVars('density')
 		if (!is.na(densWindow)) vars <- vars[grepl(vars, pattern=paste0('_', densWindow, 'yrPrior'))]
 
 		x <- scale(pika[ , vars])
@@ -117,19 +118,18 @@ say('##############################################################')
 	
 	best <- best[order(abs(best$coeffVal)), ]
 
-	if (any(best$coeff == 'nw')) best <- best[-which(best$coeff == 'nw'), ] 
-	if (any(best$coeff == 'sw')) best <- best[-which(best$coeff == 'sw'), ] 
-	if (any(best$coeff == 'ne')) best <- best[-which(best$coeff == 'ne'), ] 
-	if (any(best$coeff == 'se')) best <- best[-which(best$coeff == 'se'), ] 
+	if (any(best$coeff == 'northwest')) best <- best[-which(best$coeff == 'northwest'), ] 
+	if (any(best$coeff == 'southwest')) best <- best[-which(best$coeff == 'southwest'), ] 
+	if (any(best$coeff == 'northeast')) best <- best[-which(best$coeff == 'northeast'), ] 
+	if (any(best$coeff == 'southeast')) best <- best[-which(best$coeff == 'southeast'), ] 
 	
-	best$varNice <- makeNiceVars(best$coeff, occOrDens='dens', incTime=TRUE)
+	best$varNice <- makeNiceVars(best$coeff, occOrDens='density', incTime=TRUE)
 	best$varNice <- factor(best$varNice, levels=best$varNice)
 	
 	coeffs <- ggplot(best, aes(x=coeffVal, y=varNice)) +
 		geom_point() +
 		xlab('Coefficient value') + ylab(NULL) +
 		theme(axis.text = element_text(size=7), axis.title = element_text(size = 8))
-
 
 	pdf('./Figures & Tables/Density - Multivariate/Density Multivariate Model Coefficients.pdf', width=3.25, height=4.5)
 		print(coeffs)
