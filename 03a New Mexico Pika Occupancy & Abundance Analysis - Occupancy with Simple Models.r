@@ -36,7 +36,7 @@
 	# pika[ , vars] <- scale(pika[ , vars])
 
 	# # models
-	# formulae <- getFormulae('occupancy')
+	# formulae <- getFormulaeOcc('occupancy')
 
 	# ### using all sites (no cross-validation)
 	# #########################################
@@ -193,7 +193,7 @@
 	# pika[ , vars] <- scale(pika[ , vars])
 
 	# # models
-	# formulae <- getFormulae('occupancy')
+	# formulae <- getFormulaeOcc('occupancy')
 
 	# ### null models
 	# ###############
@@ -343,7 +343,7 @@
 	# pika[ , vars] <- scale(pika[ , vars])
 
 	# # models
-	# formulae <- getFormulae('occupancy')
+	# formulae <- getFormulaeOcc('occupancy')
 
 	# folds <- expand.grid(nwFold=1:2, swFold=1:2, neFold=1:2, seFold=1:2)
 
@@ -523,7 +523,7 @@
 	# pika[ , vars] <- scale(pika[ , vars])
 
 	# # models
-	# formulae <- getFormulae('occupancy')
+	# formulae <- getFormulaeOcc('occupancy')
 
 	# folds <- expand.grid(nwFold=1:2, swFold=1:2, neFold=1:2, seFold=1:2)
 
