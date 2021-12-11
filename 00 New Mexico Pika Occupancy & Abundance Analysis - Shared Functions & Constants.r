@@ -65,7 +65,7 @@
 	occStatuses <- c('0 never', '1 old', '2 occupied')
 
 	# predictor table
-	file <- './Predictors/Univariate Predictor Variables 2021-12-03 Added Winter Summer Descriptor.xlsx'
+	file <- './Predictors/Univariate Predictor Variables 2021-12-10 Added Flag for Density Predictors with 0- or 1-yr Lag.xlsx'
 	predTable <- read_excel(file, sheet='Predictor Variables', skip=1)
 
 	dirCreate('./Figures & Tables')
@@ -524,9 +524,9 @@
 		
 	}
 
-#######################
-### generate models ###
-#######################
+##########################
+### generate variables ###
+##########################
 
 	### Return a list of models (univariate, bivariate, trivariate)
 	getVars <- function(occOrDens) {
@@ -542,10 +542,15 @@
 			newVars <- character()
 			for (i in 1:nrow(predTable)) {
 				if (predTable$useOccAbund[i]) {
-					newVars <- c(newVars, paste0(predTable$var[i], '_', densWindows_y[2], 'yrPrior'))
-					if (predTable$useAbundSameYear[i]) {
-						newVars <- c(newVars, paste0(predTable$var[i], '_', densWindows_y[1], 'yrPrior'))
+					yearsPrior <- if (predTable$densityVarYearsPrior[i] == 'zero') {
+						0
+					} else if (predTable$densityVarYearsPrior[i] == 'one') {
+						1
+					} else if (predTable$densityVarYearsPrior[i] == 'both') {
+						0:1
 					}
+					thisVar <- paste0(predTable$var[i], '_', yearsPrior, 'yrPrior')
+					newVars <- c(newVars, thisVar)
 				}
 			}
 			univars <- newVars
@@ -561,15 +566,17 @@
 		
 	}
 
-	getFormulae <- function(occOrDens) {
-	
-		# occOrDens		'occupancy' or 'density'
+##################################
+### generate models: occupancy ###
+##################################
 
+	getFormulaeOcc <- function() {
+	
 		### univariate models
-		univars <- getVars(occOrDens)
+		univars <- getVars('occupancy')
 		
 		### bivariate
-		bivars <- read_xlsx(paste0('./Predictors/Bivariate Model Suite__3June2021 (002) [2021-06-07b ', occOrDens, '].xlsx'))
+		bivars <- read_xlsx(paste0('./Predictors/Bivariate Model Suite__3June2021 (002) [2021-06-07b occupancy].xlsx'))
 		bivars <- as.data.frame(bivars)
 		
 		# remove redundant models
@@ -587,45 +594,16 @@
 		term1 <- bivars$term1
 		term2 <- bivars$term2
 
-		# get predictors that can be from same year as sampling
-		if (occOrDens == 'density') {
-			
-			term1useSameYear <- predTable$useAbundSameYear[match(term1, predTable$var)]
-			term2useSameYear <- predTable$useAbundSameYear[match(term2, predTable$var)]
-
-			useSameYear <- term1useSameYear & term2useSameYear
-			
-			sameYearTerm1 <- sameYearTerm2 <- character()
-			for (i in seq_along(useSameYear)) {
-				if (useSameYear[i]) {
-					sameYearTerm1 <- c(sameYearTerm1, paste0(term1[i], '_', densWindows_y[1], 'yrPrior'))
-					sameYearTerm2 <- c(sameYearTerm2, paste0(term2[i], '_', densWindows_y[1], 'yrPrior'))
-				}
-			}
-			
-			term1 <- paste0(term1, '_', densWindows_y[2], 'yrPrior')
-			term2 <- paste0(term2, '_', densWindows_y[2], 'yrPrior')
-				
-			term1 <- c(term1, sameYearTerm1)
-			term2 <- c(term2, sameYearTerm2)
-			
-			term1 <- paste0('densVar_', term1)
-			term2 <- paste0('densVar_', term2)
-
-		} else if (occOrDens=='occupancy') {
-
-			term1 <- paste0('occVar_', term1)
-			term2 <- paste0('occVar_', term2)
-			
-			term1 <- paste0(rep(term1, each=2), '_', occWindows_y, 'yrWindow')
-			term2 <- paste0(rep(term2, each=2), '_', occWindows_y, 'yrWindow')
-			
-		}
+		term1 <- paste0('occVar_', term1)
+		term2 <- paste0('occVar_', term2)
+		
+		term1 <- paste0(rep(term1, each=2), '_', occWindows_y, 'yrWindow')
+		term2 <- paste0(rep(term2, each=2), '_', occWindows_y, 'yrWindow')
 			
 		bivars <- paste0(term1, ' + ', term2)
 		
 		### trivariate
-		trivars <- read_xlsx(paste0('./Predictors/Trivariate 3-predictor models (including some interactions) [2021-06-07b ', occOrDens, '].xlsx'))
+		trivars <- read_xlsx(paste0('./Predictors/Trivariate 3-predictor models (including some interactions) [2021-06-07b occupancy].xlsx'))
 		trivars <- as.data.frame(trivars)
 		
 		# remove redundant models
@@ -644,55 +622,167 @@
 		term2 <- trivars$term2
 		term3 <- trivars$term3
 
-		# get predictors that can be from same year as sampling
-		if (occOrDens == 'density') {
-			
-			term1useSameYear <- predTable$useAbundSameYear[match(term1, predTable$var)]
-			term2useSameYear <- predTable$useAbundSameYear[match(term2, predTable$var)]
-			term3useSameYear <- predTable$useAbundSameYear[match(term3, predTable$var)]
+		term1 <- paste0('occVar_', term1)
+		term2 <- paste0('occVar_', term2)
+		term3 <- paste0('occVar_', term3)
 
-			useSameYear <- term1useSameYear & term2useSameYear & term3useSameYear
-			
-			sameYearTerm1 <- sameYearTerm2 <- sameYearTerm3 <- fxBetweenTerms1and2 <- character()
-			for (i in seq_along(useSameYear)) {
-				if (useSameYear[i]) {
-					sameYearTerm1 <- c(sameYearTerm1, paste0(term1[i], '_', densWindows_y[1], 'yrPrior'))
-					sameYearTerm2 <- c(sameYearTerm2, paste0(term2[i], '_', densWindows_y[1], 'yrPrior'))
-					sameYearTerm3 <- c(sameYearTerm3, paste0(term3[i], '_', densWindows_y[1], 'yrPrior'))
-					fxBetweenTerms1and2 <- c(fxBetweenTerms1and2, trivars$fxBetweenTerms1and2[trivars$term1 == term1[i] & trivars$term2 == term2[i] & trivars$term3 == term3[i]])
-				}
-			}
-			
-			sameYearTerm1 <- paste0('densVar_', sameYearTerm1)
-			sameYearTerm2 <- paste0('densVar_', sameYearTerm2)
-			sameYearTerm3 <- paste0('densVar_', sameYearTerm3)
-			trivarsSameYear <- paste(sameYearTerm1, fxBetweenTerms1and2, sameYearTerm2, '+', sameYearTerm3)
+		term1 <- paste0(rep(term1, each=2), '_', occWindows_y, 'yrWindow')
+		term2 <- paste0(rep(term2, each=2), '_', occWindows_y, 'yrWindow')
+		term3 <- paste0(rep(term3, each=2), '_', occWindows_y, 'yrWindow')
 
-			term1 <- paste0('densVar_', term1)
-			term2 <- paste0('densVar_', term2)
-			term3 <- paste0('densVar_', term3)
+		trivars <- paste0(term1, ' ', rep(trivars$fxBetweenTerms1and2, each=2), ' ', term2, ' + ', term3)
 
-			term1 <- paste0(term1, '_', densWindows_y[2], 'yrPrior')
-			term2 <- paste0(term2, '_', densWindows_y[2], 'yrPrior')
-			term3 <- paste0(term3, '_', densWindows_y[2], 'yrPrior')
+		models <- c(univars, bivars, trivars)
+		models
+		
+	}
+
+##################################
+### generate models: density ###
+##################################
+
+	getFormulaeDens <- function() {
+	
+		models <- read_xlsx(paste0('./Predictors/!Models for Density 2021-12-09.xlsx'))
+		models <- as.data.frame(models)
+	
+		### remove redundant bivariate models
+		bivars <- models[models$modelOrder == 'bivariate', ]
+		
+		for (i in 1:nrow(bivars)) {
+			term1 <- bivars$term1[i]
+			term2 <- bivars$term2[i]
+			if (term1 > term2) {
 			
-			trivars <- c(paste(term1, trivars$fxBetweenTerms1and2, term2, ' + ', term3), trivarsSameYear)
+				bivars$term1[i] <- term2
+				bivars$term2[i] <- term1
 				
-		} else if (occOrDens=='occupancy') {
-
-			term1 <- paste0('occVar_', term1)
-			term2 <- paste0('occVar_', term2)
-			term3 <- paste0('occVar_', term3)
-
-			term1 <- paste0(rep(term1, each=2), '_', occWindows_y, 'yrWindow')
-			term2 <- paste0(rep(term2, each=2), '_', occWindows_y, 'yrWindow')
-			term3 <- paste0(rep(term3, each=2), '_', occWindows_y, 'yrWindow')
-
-			trivars <- paste0(term1, ' ', rep(trivars$fxBetweenTerms1and2, each=2), ' ', term2, ' + ', term3)
-
+				yearsPriorTerm1 <- bivars$yearsPriorTerm1[i]
+				yearsPriorTerm2 <- bivars$yearsPriorTerm2[i]
+				bivars$yearsPriorTerm1[i] <- yearsPriorTerm2
+				bivars$yearsPriorTerm2[i] <- yearsPriorTerm1
+				
+			}
 		}
 		
-		models <- c(univars, bivars, trivars)
+		dups <- duplicated(bivars[ , c('term1', 'term2')])
+		bivars <- bivars[!dups, ]
+
+		### remove redundant trivariate models
+		trivars <- models[models$modelOrder == 'trivariate', ]
+		
+		for (i in 1:nrow(trivars)) {
+			term1 <- trivars$term1[i]
+			term2 <- trivars$term2[i]
+			if (term1 > term2) {
+				trivars$term1[i] <- term2
+				trivars$term2[i] <- term1
+
+				yearsPriorTerm1 <- trivars$yearsPriorTerm1[i]
+				yearsPriorTerm2 <- trivars$yearsPriorTerm2[i]
+				trivars$yearsPriorTerm1[i] <- yearsPriorTerm2
+				trivars$yearsPriorTerm2[i] <- yearsPriorTerm1
+			}
+		}
+		
+		dups <- duplicated(trivars[ , c('term1', 'term2', 'term3')])
+		trivars <- trivars[!dups, ]
+
+		### add years-prior windows: bivariate
+		bivarModels <- character()
+		for (i in 1:nrow(bivars)) {
+		
+			term1 <- if (bivars$yearsPriorTerm1[i] == 'zero') {
+				paste0('densVar_', bivars$term1[i], '_0yrPrior')
+			} else if (bivars$yearsPriorTerm1[i] == 'one') {
+				paste0('densVar_', bivars$term1[i], '_1yrPrior')
+			} else if (bivars$yearsPriorTerm1[i] == 'both') {
+				c(
+					paste0('densVar_', bivars$term1[i], '_0yrPrior'),
+					paste0('densVar_', bivars$term1[i], '_1yrPrior')
+				)
+			}
+			
+			term2 <- if (bivars$yearsPriorTerm2[i] == 'zero') {
+				paste0('densVar_', bivars$term2[i], '_0yrPrior')
+			} else if (bivars$yearsPriorTerm2[i] == 'one') {
+				paste0('densVar_', bivars$term2[i], '_1yrPrior')
+			} else if (bivars$yearsPriorTerm2[i] == 'both') {
+				c(
+					paste0('densVar_', bivars$term2[i], '_0yrPrior'),
+					paste0('densVar_', bivars$term2[i], '_1yrPrior')
+				)
+			}
+			
+			theseModels <- if (length(term1 < 2) | length(term2) < 2) {
+				paste(term1, term2, sep=paste0(' ', bivars$fxBetweenTerm1AndTerm2[i], ' '))
+			} else {
+				c(
+					paste(term1[1], term2[1], sep=paste0(' ', bivars$fxBetweenTerm1AndTerm2[i], ' ')),
+					paste(term1[2], term2[1], sep=paste0(' ', bivars$fxBetweenTerm1AndTerm2[i], ' ')),
+					paste(term1[1], term2[2], sep=paste0(' ', bivars$fxBetweenTerm1AndTerm2[i], ' ')),
+					paste(term1[2], term2[2], sep=paste0(' ', bivars$fxBetweenTerm1AndTerm2[i], ' '))
+				)
+			}
+			
+			bivarModels <- c(bivarModels, theseModels)
+			
+		} # next bivariate model form
+		
+		### add years-prior windows: trivariate
+		trivarModels <- character()
+		for (i in 1:nrow(trivars)) {
+		
+			term1 <- if (trivars$yearsPriorTerm1[i] == 'zero') {
+				paste0('densVar_', trivars$term1[i], '_0yrPrior')
+			} else if (trivars$yearsPriorTerm1[i] == 'one') {
+				paste0('densVar_', trivars$term1[i], '_1yrPrior')
+			} else if (trivars$yearsPriorTerm1[i] == 'both') {
+				c(
+					paste0('densVar_', trivars$term1[i], '_0yrPrior'),
+					paste0('densVar_', trivars$term1[i], '_1yrPrior')
+				)
+			}
+			
+			term2 <- if (trivars$yearsPriorTerm2[i] == 'zero') {
+				paste0('densVar_', trivars$term2[i], '_0yrPrior')
+			} else if (trivars$yearsPriorTerm2[i] == 'one') {
+				paste0('densVar_', trivars$term2[i], '_1yrPrior')
+			} else if (trivars$yearsPriorTerm2[i] == 'both') {
+				c(
+					paste0('densVar_', trivars$term2[i], '_0yrPrior'),
+					paste0('densVar_', trivars$term2[i], '_1yrPrior')
+				)
+			}
+			
+			term3 <- if (trivars$yearsPriorTerm3[i] == 'zero') {
+				paste0('densVar_', trivars$term3[i], '_0yrPrior')
+			} else if (trivars$yearsPriorTerm3[i] == 'one') {
+				paste0('densVar_', trivars$term3[i], '_1yrPrior')
+			} else if (trivars$yearsPriorTerm3[i] == 'both') {
+				c(
+					paste0('densVar_', trivars$term3[i], '_0yrPrior'),
+					paste0('densVar_', trivars$term3[i], '_1yrPrior')
+				)
+			}
+			
+			theseModels <- if (length(term1 < 2) | length(term2) < 2) {
+				paste(term1, term2, sep=paste0(' ', trivars$fxBetweenTerm1AndTerm2[i], ' '))
+			} else {
+				c(
+					paste(term1[1], term2[1], sep=paste0(' ', trivars$fxBetweenTerm1AndTerm2[i], ' ')),
+					paste(term1[2], term2[1], sep=paste0(' ', trivars$fxBetweenTerm1AndTerm2[i], ' ')),
+					paste(term1[1], term2[2], sep=paste0(' ', trivars$fxBetweenTerm1AndTerm2[i], ' ')),
+					paste(term1[2], term2[2], sep=paste0(' ', trivars$fxBetweenTerm1AndTerm2[i], ' '))
+				)
+			}
+			
+			theseModels <- paste(theseModels, rep(term3, each=length(theseModels)), sep=' + ')
+			trivarModels <- c(trivarModels, theseModels)
+			
+		} # next bivariate model form
+
+		models <- c(bivarModels, trivarModels)
 		models
 		
 	}
