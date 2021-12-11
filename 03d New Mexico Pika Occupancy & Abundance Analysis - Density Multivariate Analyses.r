@@ -35,13 +35,14 @@ say('######################################################')
 	
 	vars <- getVars('density')
 
-	x <- scale(pika[ , vars])
-	colnames(x) <- vars
-
-	
 	### climate model without region
 	###############################
+
+		say('sans region')
 		
+		x <- scale(pika[ , vars])
+		colnames(x) <- vars
+
 		modelNum <- 1
 		region <- FALSE
 		model <- optDensity(x=x, y=y, alphas=alphas)
@@ -56,6 +57,8 @@ say('######################################################')
 
 	### climate + region
 	####################
+		
+		say('with region')
 		
 		modelNum <- 2
 		region <- TRUE

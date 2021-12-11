@@ -134,9 +134,9 @@ say('###########################')
 	imp <- imp[order(imp$sum, decreasing=TRUE), ]
 	write.csv(imp, './Figures & Tables/Summary of Occupancy Results.csv', row.names=FALSE)
 	
-say('###########################')
+say('#########################')
 say('### summarize density ###')
-say('###########################')
+say('#########################')
 
 	vars <- getVars('density')
 
@@ -149,7 +149,7 @@ say('###########################')
 	### binary AIC
 	##############
 	
-		results <- read.csv('./Figures & Tables/Density - Simple Models/Density - Simple GLMs Using All Data - Both Years Prior.csv')
+		results <- read.csv('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv')
 		
 		results <- results[results$weight >= minAicWeight, , drop=FALSE]
 	
@@ -163,11 +163,10 @@ say('###########################')
 	###########################
 	
 		results <- read.csv('./Figures & Tables/Density - Simple Models/Density - Simple GLMs Cross-validation Results.csv')
-		results$timeFrame[is.na(results$timeFrame)] <- -1
 		
-		results <- aggregate(results, by=list(results$model, results$timeFrame, results$region), FUN=mean)
-		results$model <- results$timeFrame <- results$numHomeRanges <- results$region <- NULL
-		names(results)[1:4] <- c('model', 'timeFrame', 'numHomeRanges', 'region')
+		results <- aggregate(results, by=list(results$model, results$region), FUN=mean)
+		results$model <- results$numHomeRanges <- results$region <- NULL
+		names(results)[1:3] <- c('model', 'numHomeRanges', 'region')
 		
 		results <- results[order(results$meanAbsPercError, decreasing=FALSE), ]
 		results <- results[1:topModels, , drop=FALSE]

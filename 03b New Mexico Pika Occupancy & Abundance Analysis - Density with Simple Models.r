@@ -110,35 +110,15 @@ say('##################################################')
 		### reports
 		###########
 		
-			for (densWindow in c(densWindows_y, NA)) {
+			results$deltaAicc <- results$aicc - min(results$aicc)
+			w <- exp(-0.5 * results$deltaAicc)
+			results$weight <- w / sum(w)
 
-				if (is.na(densWindow)) {
-					thisResults <- results
-					nice <- 'Both Years Prior'
-				} else {
-			
-					thisResults <- rbind(
-						results[grepl(results$model, pattern=paste0(densWindow, 'yrPrior')), ],
-						results[results$var=='(Intercept)', ]
-					)
-					nice <- paste0(densWindow, ' yr Prior')
-					
-				}
-				
-				thisResults$deltaAicc <- thisResults$aicc - min(thisResults$aicc)
-				w <- exp(-0.5 * thisResults$deltaAicc)
-				thisResults$weight <- w / sum(w)
+			results <- results[order(results$weight, decreasing=TRUE), ]
+			rownames(results) <- NULL
 
-				thisResults <- thisResults[order(thisResults$weight, decreasing=TRUE), ]
-				rownames(thisResults) <- NULL
-
-				file <- paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs Using All Data - ', nice, '.csv')
-				write.csv(thisResults, file, row.names=FALSE)
-			
-			} # next window
-				
-		### model diagnostics
-		#####################
+			file <- paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv')
+			write.csv(results, file, row.names=FALSE)
 	
 say('###########################################################')
 say('### univariate DENSITY analysis: cross-validated models ###')
@@ -197,7 +177,6 @@ say('###########################################################')
 				kFoldResults,
 				data.frame(
 					model = '(Intercept)',
-					timeFrame = NA,
 					fold = k,
 					region = c(FALSE, TRUE),
 					rmse = c(rmse1, rmse2),
@@ -256,13 +235,10 @@ say('###########################################################')
 			meanAbsPercError2 <- mean(abs(pred2 - testData$latestDensity) / testData$latestDensity)
 			meanAbsPercError <- c(meanAbsPercError1, meanAbsPercError2)
 			
-			for (densWindow_y in densWindows_y) if (grepl(formula, pattern=paste0(densWindow_y, 'yrPrior'))) timeFrame <- densWindow_y
-			
 			kFoldResults <- rbind(
 				kFoldResults,
 				data.frame(
 					model = formula,
-					timeFrame = timeFrame,
 					fold = k,
 					region = c(FALSE, TRUE),
 					rmse = c(rmse1, rmse2),
@@ -290,9 +266,9 @@ say('###################################################################')
 	nulls <- cbind(nulls, data.frame(modelNice = rep('(Intercept)', nrow(nulls))))
 	
 	clim <- results[results$model != '(Intercept)', ]
-	clim <- aggregate(clim, by=list(clim$model, clim$timeFrame, clim$region), FUN=mean)
-	clim$model <- clim$fold <- clim$timeFrame <- clim$region <- NULL
-	names(clim)[1:3] <- c('model', 'timeFrame', 'region')
+	clim <- aggregate(clim, by=list(clim$model, clim$region), FUN=mean)
+	clim$model <- clim$fold <- clim$region <- NULL
+	names(clim)[1:2] <- c('model', 'region')
 	clim$modelNice <- niceFormulae(clim$model, occOrDens='density')
 
 	results <- rbind(nulls, clim)
