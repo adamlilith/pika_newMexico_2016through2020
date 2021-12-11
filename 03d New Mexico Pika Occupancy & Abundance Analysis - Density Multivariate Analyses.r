@@ -17,7 +17,6 @@
 
 	### generalization
 	alphas <- seq(0, 1, by=0.05)
-	# alphas <- seq(0, 1, by=1)
 	
 say('######################################################')
 say('### multivariate DENSITY analysis: all-data models ###')
@@ -34,72 +33,53 @@ say('######################################################')
 
 	y <- pika$latestDensity
 	
-	results <- data.frame()
+	vars <- getVars('density')
 
-	### model
-	#########
+	x <- scale(pika[ , vars])
+	colnames(x) <- vars
 
-	for (densWindow in c(densWindows_y, NA)) {
-
-		vars <- getVars('density')
-		if (!is.na(densWindow)) vars <- vars[grepl(vars, pattern=paste0('_', densWindow, 'yrPrior'))]
-
-		x <- scale(pika[ , vars])
-		colnames(x) <- vars
-
-		## climate only
+	
+	### climate model without region
+	###############################
 		
-			say('climate model ', densWindow, '-yr window')
+		modelNum <- 1
+		region <- FALSE
+		model <- optDensity(x=x, y=y, alphas=alphas)
 
-			modelNum <- 1
-			region <- FALSE
+		results <- cbind(
+			data.frame(
+				modelNum=modelNum,
+				region=region
+			),
+			model
+		)
 
-			# implement elastic net for density model
-			model <- optDensity(x=x, y=y, alphas=alphas)
+	### climate + region
+	####################
+		
+		modelNum <- 2
+		region <- TRUE
+
+		regionMat <- matrix(0, nrow=nrow(x), ncol=4)
+		colnames(regionMat) <- levels(pika$region)
+		for (i in 1:nrow(regionMat)) {
+			regionMat[i, colnames(regionMat) == pika$region[i]] <- 1
+		}
+		xx <- cbind(x, regionMat)
+
+		# implement elastic net for density model
+		model <- optDensity(x=xx, y=y, alphas=alphas)
 			
-			results <- rbind(
-				results,
-				cbind(
-					data.frame(
-						modelNum=modelNum,
-						densWindow=densWindow,
-						region=region
-					),
-					model
-				)
+		results <- rbind(
+			results,
+			cbind(
+				data.frame(
+					modelNum=modelNum,
+					region=region
+				),
+				model
 			)
-			
-		### climate + region
-		
-			say('climate + region model ', densWindow, '-yr window')
-
-			modelNum <- 2
-			region <- TRUE
-
-			regionMat <- matrix(0, nrow=nrow(x), ncol=4)
-			colnames(regionMat) <- levels(pika$region)
-			for (i in 1:nrow(regionMat)) {
-				regionMat[i, colnames(regionMat) == pika$region[i]] <- 1
-			}
-			xx <- cbind(x, regionMat)
-
-			# implement elastic net for density model
-			model <- optDensity(x=xx, y=y, alphas=alphas)
-			
-			results <- rbind(
-				results,
-				cbind(
-					data.frame(
-						modelNum=modelNum,
-						densWindow=densWindow,
-						region=region
-					),
-					model
-				)
-			)
-			
-		
-	}
+		)
 	
 	rownames(results) <- NULL
 	
