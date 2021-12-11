@@ -280,826 +280,826 @@
 	# ### save
 	# write.csv(pika, './Data/01 New Mexico Pika - Cleaned.csv', row.names=FALSE)
 
-# say('###########################################################')
-# say('### extract environmental data and calculate predictors ###')
-# say('###########################################################')
+say('###########################################################')
+say('### extract environmental data and calculate predictors ###')
+say('###########################################################')
 
-	# say('This step extracts environmental data from PRISM and calculated the derived climate variables as described in the Excel document created by Erik and Maria.', breaks=80)
+	say('This step extracts environmental data from PRISM and calculated the derived climate variables as described in the Excel document created by Erik and Maria.', breaks=80)
 
-	# ### generalization
-	# # fail <- FALSE # if TRUE then fail if predictor has any infinite or NA values!
-	# fail <- TRUE # if TRUE then fail if predictor has any infinite or NA values!
+	### generalization
+	# fail <- FALSE # if TRUE then fail if predictor has any infinite or NA values!
+	fail <- TRUE # if TRUE then fail if predictor has any infinite or NA values!
 	
-	# say('Fail on NA/infinite value: ', fail)
+	say('Fail on NA/infinite value: ', fail)
 
-	# # PRISM daily base directory
-	# # prDir <- 'F:/ecology/Climate/PRISM/acquired_2020/an81'
-	# prDir <- 'I:/Ecology/Climate/PRISM/working/an81'
+	# PRISM daily base directory
+	# prDir <- 'F:/ecology/Climate/PRISM/acquired_2020/an81'
+	prDir <- 'I:/Ecology/Climate/PRISM/working/an81'
 	
-	# # load airUpThere functions for extracting climate data
-	# fxs <- listFiles(paste0(drive, '/Ecology/Drive/R/airUpThere/R'), pattern='.r')
-	# for (fx in fxs) source(fx)
+	# load airUpThere functions for extracting climate data
+	fxs <- listFiles(paste0(drive, '/Ecology/Drive/R/airUpThere/R'), pattern='.r')
+	for (fx in fxs) source(fx)
 	
-	# fxs <- listFiles(paste0(drive, '/Ecology/Drive/R/airUpThere/data'), pattern='.rda')
-	# for (fx in fxs) load(fx)
+	fxs <- listFiles(paste0(drive, '/Ecology/Drive/R/airUpThere/data'), pattern='.rda')
+	for (fx in fxs) load(fx)
 	
-	# ### data
-	# pika <- read.csv('./Data/01 New Mexico Pika - Cleaned.csv')
+	### data
+	pika <- read.csv('./Data/01 New Mexico Pika - Cleaned.csv')
 
-	# ### extract PRISM for OCCCUPANCY variables
-	# ##########################################
+	### extract PRISM for OCCCUPANCY variables
+	##########################################
 
-		# for (mostPriorYear in occWindows_y) {
+		for (mostPriorYear in occWindows_y) {
 
-			# ### chronicCold_C: Average winter temperature (tmean), November-March
-			# #####################################################################
+			### chronicCold_C: Average winter temperature (tmean), November-March
+			#####################################################################
 				
-				# # generalization
-				# thisPred <- 'chronicCold_C' # name of this variable
-				# prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:0 # years along window to extract
+				# generalization
+				thisPred <- 'chronicCold_C' # name of this variable
+				prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:0 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- mean # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- mean # may need to put arguments in the actual function call below!
 
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# args=args,
-					# fail=fail,
-					# summaryFx=summaryFx,
-					# na.rm=TRUE
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					args=args,
+					fail=fail,
+					summaryFx=summaryFx,
+					na.rm=TRUE
+				)	
 
-			# ### subLethalCold_d: Length of longest run with winter minimum temperature (tmin) <5°C, September-March
-			# #######################################################################################################
+			### subLethalCold_d: Length of longest run with winter minimum temperature (tmin) <5°C, September-March
+			#######################################################################################################
 				
-				# # generalization
-				# thisPred <- 'subLethalCold_d' # name of this variable
-				# prVar <- 'tmin' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:0 # years along window to extract
+				# generalization
+				thisPred <- 'subLethalCold_d' # name of this variable
+				prVar <- 'tmin' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:0 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- maxRuns # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- maxRuns # may need to put arguments in the actual function call below!
 				
-				# fx <- function(x, th=th) { x < th }
-				# args <- list(th = 5)
+				fx <- function(x, th=th) { x < th }
+				args <- list(th = 5)
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# failIfAllNA=TRUE,
-					# fx=fx,
-					# args=args
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					failIfAllNA=TRUE,
+					fx=fx,
+					args=args
+				)	
 
-			# ### acuteCold_d: Number of winter days with minimum temperature (tmin) <-10°C, September-March
-			# ##############################################################################################
+			### acuteCold_d: Number of winter days with minimum temperature (tmin) <-10°C, September-March
+			##############################################################################################
 				
-				# # generalization
-				# thisPred <- 'acuteCold_d' # name of this variable
-				# prVar <- 'tmin' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:0 # years along window to extract
+				# generalization
+				thisPred <- 'acuteCold_d' # name of this variable
+				prVar <- 'tmin' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:0 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- totalDays # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- totalDays # may need to put arguments in the actual function call below!
 				
-				# fx <- function(x, th=th) { x < th }
-				# args <- list(th = -10)
+				fx <- function(x, th=th) { x < th }
+				args <- list(th = -10)
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# failIfAllNA=TRUE,
-					# fx=fx,
-					# args=args
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					failIfAllNA=TRUE,
+					fx=fx,
+					args=args
+				)	
 
-			# ### acuteHeat_d: Number of days with maximum temperature ≥26°C, January-June
-			# ############################################################################
+			### acuteHeat_d: Number of days with maximum temperature ≥26°C, January-June
+			############################################################################
 				
-				# # generalization
-				# thisPred <- 'acuteHeat_d' # name of this variable
-				# prVar <- 'tmax' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:1 # years along window to extract
+				# generalization
+				thisPred <- 'acuteHeat_d' # name of this variable
+				prVar <- 'tmax' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:1 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- totalDays # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- totalDays # may need to put arguments in the actual function call below!
 				
-				# fx <- function(x, th=th) { x >= th }
-				# args <- list(th = 26)
+				fx <- function(x, th=th) { x >= th }
+				args <- list(th = 26)
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# failIfAllNA=TRUE,
-					# fx=fx,
-					# args=args
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					failIfAllNA=TRUE,
+					fx=fx,
+					args=args
+				)	
 
-			# ### subLethalHeat22deg_d: Longest run of days with mean (tmean) temperature ≥22°C, January-June
-			# ###############################################################################################
+			### subLethalHeat22deg_d: Longest run of days with mean (tmean) temperature ≥22°C, January-June
+			###############################################################################################
 				
-				# # generalization
-				# thisPred <- 'subLethalHeat22deg_d' # name of this variable
-				# prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:1 # years along window to extract
+				# generalization
+				thisPred <- 'subLethalHeat22deg_d' # name of this variable
+				prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:1 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- maxRuns # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- maxRuns # may need to put arguments in the actual function call below!
 				
-				# fx <- function(x, th=th) { x >= th }
-				# args <- list(th = 22)
+				fx <- function(x, th=th) { x >= th }
+				args <- list(th = 22)
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# failIfAllNA=TRUE,
-					# fx=fx,
-					# args=args
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					failIfAllNA=TRUE,
+					fx=fx,
+					args=args
+				)	
 
-			# ### subLethalHeat20deg_d: Longest run of days with mean (tmean) temperature ≥20°C, January-June
-			# ###############################################################################################
+			### subLethalHeat20deg_d: Longest run of days with mean (tmean) temperature ≥20°C, January-June
+			###############################################################################################
 				
-				# # generalization
-				# thisPred <- 'subLethalHeat20deg_d' # name of this variable
-				# prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:1 # years along window to extract
+				# generalization
+				thisPred <- 'subLethalHeat20deg_d' # name of this variable
+				prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:1 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- maxRuns # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- maxRuns # may need to put arguments in the actual function call below!
 				
-				# fx <- function(x, th=th) { x >= th }
-				# args <- list(th = 20)
+				fx <- function(x, th=th) { x >= th }
+				args <- list(th = 20)
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# failIfAllNA=TRUE,
-					# fx=fx,
-					# args=args
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					failIfAllNA=TRUE,
+					fx=fx,
+					args=args
+				)	
 
-			# ### subLethalHeat18deg_d: Longest run of days with mean (tmean) temperature ≥18°C, January-June
-			# ###############################################################################################
+			### subLethalHeat18deg_d: Longest run of days with mean (tmean) temperature ≥18°C, January-June
+			###############################################################################################
 				
-				# # generalization
-				# thisPred <- 'subLethalHeat18deg_d' # name of this variable
-				# prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:1 # years along window to extract
+				# generalization
+				thisPred <- 'subLethalHeat18deg_d' # name of this variable
+				prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:1 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- maxRuns # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- maxRuns # may need to put arguments in the actual function call below!
 				
-				# fx <- function(x, th=th) { x >= th }
-				# args <- list(th = 18)
+				fx <- function(x, th=th) { x >= th }
+				args <- list(th = 18)
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# failIfAllNA=TRUE,
-					# fx=fx,
-					# args=args
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					failIfAllNA=TRUE,
+					fx=fx,
+					args=args
+				)	
 
-			# ### chronicHeat_C: Mean of summer average temperature (tmean), June-September
-			# #############################################################################
+			### chronicHeat_C: Mean of summer average temperature (tmean), June-September
+			#############################################################################
 				
-				# # generalization
-				# thisPred <- 'chronicHeat_C' # name of this variable
-				# prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:1 # years along window to extract
+				# generalization
+				thisPred <- 'chronicHeat_C' # name of this variable
+				prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:1 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- mean # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- mean # may need to put arguments in the actual function call below!
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# na.rm=TRUE
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					na.rm=TRUE
+				)	
 
-			# ### summerRespiteHeat_C: Mean of summer minimum temperature (tmin), June-September
-			# ###################################################################################
+			### summerRespiteHeat_C: Mean of summer minimum temperature (tmin), June-September
+			###################################################################################
 				
-				# # generalization
-				# thisPred <- 'summerRespiteHeat_C' # name of this variable
-				# prVar <- 'tmin' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:1 # years along window to extract
+				# generalization
+				thisPred <- 'summerRespiteHeat_C' # name of this variable
+				prVar <- 'tmin' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:1 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- mean # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- mean # may need to put arguments in the actual function call below!
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# na.rm=TRUE
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					na.rm=TRUE
+				)	
 
-			# ### chronicMoistStress_hPa: Mean of daily summer minimum vapor pressure deficit (vpdmin), June-September
-			# ########################################################################################################
+			### chronicMoistStress_hPa: Mean of daily summer minimum vapor pressure deficit (vpdmin), June-September
+			########################################################################################################
 				
-				# # generalization
-				# thisPred <- 'chronicMoistStress_hPa' # name of this variable
-				# prVar <- 'vpdmin' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:1 # years along window to extract
+				# generalization
+				thisPred <- 'chronicMoistStress_hPa' # name of this variable
+				prVar <- 'vpdmin' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:1 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- mean # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- mean # may need to put arguments in the actual function call below!
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# na.rm=TRUE
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					na.rm=TRUE
+				)	
 
-			# ### gsVpdMin_hPa: Mean of daily summer minimum vapor pressure deficit (vpdmin), May-September
-			# #############################################################################################
+			### gsVpdMin_hPa: Mean of daily summer minimum vapor pressure deficit (vpdmin), May-September
+			#############################################################################################
 				
-				# # generalization
-				# thisPred <- 'gsVpdMin_hPa' # name of this variable
-				# prVar <- 'vpdmin' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:1 # years along window to extract
+				# generalization
+				thisPred <- 'gsVpdMin_hPa' # name of this variable
+				prVar <- 'vpdmin' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:1 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- mean # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- mean # may need to put arguments in the actual function call below!
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# na.rm=TRUE
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					na.rm=TRUE
+				)	
 
-			# ### peakMoistStress_hPa: Mean of summer maximum vapor pressure deficit (vpdmax), May-September
-			# ##############################################################################################
+			### peakMoistStress_hPa: Mean of summer maximum vapor pressure deficit (vpdmax), May-September
+			##############################################################################################
 				
-				# # generalization
-				# thisPred <- 'peakMoistStress_hPa' # name of this variable
-				# prVar <- 'vpdmax' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:1 # years along window to extract
+				# generalization
+				thisPred <- 'peakMoistStress_hPa' # name of this variable
+				prVar <- 'vpdmax' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:1 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- mean # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- mean # may need to put arguments in the actual function call below!
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# na.rm=TRUE
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					na.rm=TRUE
+				)	
 
-			# ### gsPpt_mm: Total growing-season precipitation (ppt), May-September
-			# #####################################################################
+			### gsPpt_mm: Total growing-season precipitation (ppt), May-September
+			#####################################################################
 				
-				# # generalization
-				# thisPred <- 'gsPpt_mm' # name of this variable
-				# prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:1 # years along window to extract
+				# generalization
+				thisPred <- 'gsPpt_mm' # name of this variable
+				prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:1 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- sum # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- sum # may need to put arguments in the actual function call below!
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# na.rm=TRUE
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					na.rm=TRUE
+				)	
 
-			# ### monsoonPpt_mm: Total monsoon precipitation (ppt), min-June-August
-			# #####################################################################
+			### monsoonPpt_mm: Total monsoon precipitation (ppt), min-June-August
+			#####################################################################
 				
-				# # generalization
-				# thisPred <- 'monsoonPpt_mm' # name of this variable
-				# prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:1 # years along window to extract
+				# generalization
+				thisPred <- 'monsoonPpt_mm' # name of this variable
+				prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:1 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- sum # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- sum # may need to put arguments in the actual function call below!
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# na.rm=TRUE
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					na.rm=TRUE
+				)	
 
-			# ### winterSnow_mm: Total precipitation, December-March
-			# ######################################################
+			### winterSnow_mm: Total precipitation, December-March
+			######################################################
 				
-				# # generalization
-				# thisPred <- 'winterSnow_mm' # name of this variable
-				# prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:0 # years along window to extract
+				# generalization
+				thisPred <- 'winterSnow_mm' # name of this variable
+				prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:0 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- sum # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- sum # may need to put arguments in the actual function call below!
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# na.rm=TRUE
-				# )
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					na.rm=TRUE
+				)
 
-			# ### annualPpt_mm: Total annual precipitation, June-May
-			# ######################################################
+			### annualPpt_mm: Total annual precipitation, June-May
+			######################################################
 				
-				# # generalization
-				# thisPred <- 'annualPpt_mm' # name of this variable
-				# prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:1 # years along window to extract
+				# generalization
+				thisPred <- 'annualPpt_mm' # name of this variable
+				prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:1 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- sum # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- sum # may need to put arguments in the actual function call below!
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# na.rm=TRUE
-				# )	
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					na.rm=TRUE
+				)	
 
-			# ### springPpt_mm: Total spring precipitation (ppt), mid-March-May
-			# #################################################################
+			### springPpt_mm: Total spring precipitation (ppt), mid-March-May
+			#################################################################
 				
-				# # generalization
-				# thisPred <- 'springPpt_mm' # name of this variable
-				# prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
-				# priorYears <- mostPriorYear:0 # years along window to extract
+				# generalization
+				thisPred <- 'springPpt_mm' # name of this variable
+				prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
+				priorYears <- mostPriorYear:0 # years along window to extract
 				
-				# # function to summarize values within a year
-				# summaryFx <- sum # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- sum # may need to put arguments in the actual function call below!
 				
-				# pika <- extractAndCalcVarForOcc(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# priorYears=priorYears,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# na.rm=TRUE
-				# )
+				pika <- extractAndCalcVarForOcc(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					priorYears=priorYears,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					na.rm=TRUE
+				)
 				
-		# } # next most prior year
+		} # next most prior year
 
-	# ### extract PRISM for DENSITY variables
-	# #######################################
+	### extract PRISM for DENSITY variables
+	#######################################
 
-			# ### chronicCold_C: Average winter temperature (tmean), November-March
-			# #####################################################################
+			### chronicCold_C: Average winter temperature (tmean), November-March
+			#####################################################################
 				
-				# # generalization
-				# thisPred <- 'chronicCold_C' # name of this variable
-				# prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
+				# generalization
+				thisPred <- 'chronicCold_C' # name of this variable
+				prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
 				
-				# # function to summarize values within a year
-				# summaryFx <- mean # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- mean # may need to put arguments in the actual function call below!
 
-				# pika <- extractAndCalcVarForDens(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# failIfAllNA=TRUE,
-					# na.rm=TRUE
-				# )	
+				pika <- extractAndCalcVarForDens(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					failIfAllNA=TRUE,
+					na.rm=TRUE
+				)	
 
-			# ### subLethalCold_d: Length of longest run with winter minimum temperature (tmin) <5°C, September-March
-			# #######################################################################################################
+			### subLethalCold_d: Length of longest run with winter minimum temperature (tmin) <5°C, September-March
+			#######################################################################################################
 				
-				# # generalization
-				# thisPred <- 'subLethalCold_d' # name of this variable
-				# prVar <- 'tmin' # variable to extract from PRISM/TerraClimate
+				# generalization
+				thisPred <- 'subLethalCold_d' # name of this variable
+				prVar <- 'tmin' # variable to extract from PRISM/TerraClimate
 				
-				# # function to summarize values within a year
-				# summaryFx <- maxRuns # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- maxRuns # may need to put arguments in the actual function call below!
 				
-				# fx <- function(x, th=th) { x < th }
-				# args <- list(th = 5)
+				fx <- function(x, th=th) { x < th }
+				args <- list(th = 5)
 				
-				# pika <- extractAndCalcVarForDens(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# failIfAllNA=TRUE,
-					# fx=fx,
-					# args=args
-				# )	
+				pika <- extractAndCalcVarForDens(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					failIfAllNA=TRUE,
+					fx=fx,
+					args=args
+				)	
 
-			# ### acuteCold_d: Number of winter days with minimum temperature (tmin) <-10°C, September-March
-			# ##############################################################################################
+			### acuteCold_d: Number of winter days with minimum temperature (tmin) <-10°C, September-March
+			##############################################################################################
 				
-				# # generalization
-				# thisPred <- 'acuteCold_d' # name of this variable
-				# prVar <- 'tmin' # variable to extract from PRISM/TerraClimate
+				# generalization
+				thisPred <- 'acuteCold_d' # name of this variable
+				prVar <- 'tmin' # variable to extract from PRISM/TerraClimate
 				
-				# # function to summarize values within a year
-				# summaryFx <- totalDays # may need to put arguments in the actual function call below!
+				# function to summarize values within a year
+				summaryFx <- totalDays # may need to put arguments in the actual function call below!
 				
-				# fx <- function(x, th=th) { x < th }
-				# args <- list(th = -10)
+				fx <- function(x, th=th) { x < th }
+				args <- list(th = -10)
 				
-				# pika <- extractAndCalcVarForDens(
-					# thisPred=thisPred,
-					# prVar=prVar,
-					# predTable=predTable,
-					# pika=pika,
-					# summaryFx=summaryFx,
-					# fail=fail,
-					# failIfAllNA=TRUE,
-					# fx=fx,
-					# args=args
-				# )	
+				pika <- extractAndCalcVarForDens(
+					thisPred=thisPred,
+					prVar=prVar,
+					predTable=predTable,
+					pika=pika,
+					summaryFx=summaryFx,
+					fail=fail,
+					failIfAllNA=TRUE,
+					fx=fx,
+					args=args
+				)	
 
-		# ### acuteHeat_d: Number of days with maximum temperature ≥26°C, January-June
-		# ############################################################################
+		### acuteHeat_d: Number of days with maximum temperature ≥26°C, January-June
+		############################################################################
 			
-			# # generalization
-			# thisPred <- 'acuteHeat_d' # name of this variable
-			# prVar <- 'tmax' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'acuteHeat_d' # name of this variable
+			prVar <- 'tmax' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- totalDays # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- totalDays # may need to put arguments in the actual function call below!
 			
-			# fx <- function(x, th=th) { x >= th }
-			# args <- list(th = 26)
+			fx <- function(x, th=th) { x >= th }
+			args <- list(th = 26)
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# failIfAllNA=TRUE,
-				# fx=fx,
-				# args=args
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				failIfAllNA=TRUE,
+				fx=fx,
+				args=args
+			)	
 
-		# ### subLethalHeat22deg_d: Longest run of days with mean (tmean) temperature ≥22°C, January-June
-		# ###############################################################################################
+		### subLethalHeat22deg_d: Longest run of days with mean (tmean) temperature ≥22°C, January-June
+		###############################################################################################
 			
-			# # generalization
-			# thisPred <- 'subLethalHeat22deg_d' # name of this variable
-			# prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'subLethalHeat22deg_d' # name of this variable
+			prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- maxRuns # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- maxRuns # may need to put arguments in the actual function call below!
 			
-			# fx <- function(x, th=th) { x >= th }
-			# args <- list(th = 22)
+			fx <- function(x, th=th) { x >= th }
+			args <- list(th = 22)
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# failIfAllNA=TRUE,
-				# fx=fx,
-				# args=args
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				failIfAllNA=TRUE,
+				fx=fx,
+				args=args
+			)	
 
-		# ### subLethalHeat20deg_d: Longest run of days with mean (tmean) temperature ≥20°C, January-June
-		# ###############################################################################################
+		### subLethalHeat20deg_d: Longest run of days with mean (tmean) temperature ≥20°C, January-June
+		###############################################################################################
 			
-			# # generalization
-			# thisPred <- 'subLethalHeat20deg_d' # name of this variable
-			# prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'subLethalHeat20deg_d' # name of this variable
+			prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- maxRuns # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- maxRuns # may need to put arguments in the actual function call below!
 			
-			# fx <- function(x, th=th) { x >= th }
-			# args <- list(th = 20)
+			fx <- function(x, th=th) { x >= th }
+			args <- list(th = 20)
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# failIfAllNA=TRUE,
-				# fx=fx,
-				# args=args
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				failIfAllNA=TRUE,
+				fx=fx,
+				args=args
+			)	
 
-		# ### subLethalHeat18deg_d: Longest run of days with mean (tmean) temperature ≥18°C, January-June
-		# ###############################################################################################
+		### subLethalHeat18deg_d: Longest run of days with mean (tmean) temperature ≥18°C, January-June
+		###############################################################################################
 			
-			# # generalization
-			# thisPred <- 'subLethalHeat18deg_d' # name of this variable
-			# prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'subLethalHeat18deg_d' # name of this variable
+			prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- maxRuns # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- maxRuns # may need to put arguments in the actual function call below!
 			
-			# fx <- function(x, th=th) { x >= th }
-			# args <- list(th = 18)
+			fx <- function(x, th=th) { x >= th }
+			args <- list(th = 18)
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# failIfAllNA=TRUE,
-				# fx=fx,
-				# args=args
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				failIfAllNA=TRUE,
+				fx=fx,
+				args=args
+			)	
 
-		# ### chronicHeat_C: Mean of summer average temperature (tmean), June-September
-		# #############################################################################
+		### chronicHeat_C: Mean of summer average temperature (tmean), June-September
+		#############################################################################
 			
-			# # generalization
-			# thisPred <- 'chronicHeat_C' # name of this variable
-			# prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'chronicHeat_C' # name of this variable
+			prVar <- 'tmean' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- mean # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- mean # may need to put arguments in the actual function call below!
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# failIfAllNA=TRUE,
-				# na.rm=TRUE
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				failIfAllNA=TRUE,
+				na.rm=TRUE
+			)	
 
-		# ### summerRespiteHeat_C: Mean of summer minimum temperature (tmin), June-September
-		# ###################################################################################
+		### summerRespiteHeat_C: Mean of summer minimum temperature (tmin), June-September
+		###################################################################################
 			
-			# # generalization
-			# thisPred <- 'summerRespiteHeat_C' # name of this variable
-			# prVar <- 'tmin' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'summerRespiteHeat_C' # name of this variable
+			prVar <- 'tmin' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- mean # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- mean # may need to put arguments in the actual function call below!
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# failIfAllNA=TRUE,
-				# na.rm=TRUE
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				failIfAllNA=TRUE,
+				na.rm=TRUE
+			)	
 
-		# ### chronicMoistStress_hPa: Mean of daily summer minimum vapor pressure deficit (vpdmin), June-September
-		# ########################################################################################################
+		### chronicMoistStress_hPa: Mean of daily summer minimum vapor pressure deficit (vpdmin), June-September
+		########################################################################################################
 			
-			# # generalization
-			# thisPred <- 'chronicMoistStress_hPa' # name of this variable
-			# prVar <- 'vpdmin' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'chronicMoistStress_hPa' # name of this variable
+			prVar <- 'vpdmin' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- mean # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- mean # may need to put arguments in the actual function call below!
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# failIfAllNA=TRUE,
-				# na.rm=TRUE
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				failIfAllNA=TRUE,
+				na.rm=TRUE
+			)	
 
-		# ### gsVpdMin_hPa: Mean of daily summer minimum vapor pressure deficit (vpdmin), May-September
-		# #############################################################################################
+		### gsVpdMin_hPa: Mean of daily summer minimum vapor pressure deficit (vpdmin), May-September
+		#############################################################################################
 			
-			# # generalization
-			# thisPred <- 'gsVpdMin_hPa' # name of this variable
-			# prVar <- 'vpdmin' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'gsVpdMin_hPa' # name of this variable
+			prVar <- 'vpdmin' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- mean # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- mean # may need to put arguments in the actual function call below!
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# failIfAllNA=TRUE,
-				# na.rm=TRUE
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				failIfAllNA=TRUE,
+				na.rm=TRUE
+			)	
 
-		# ### peakMoistStress_hPa: Mean of summer maximum vapor pressure deficit (vpdmax), May-September
-		# ##############################################################################################
+		### peakMoistStress_hPa: Mean of summer maximum vapor pressure deficit (vpdmax), May-September
+		##############################################################################################
 			
-			# # generalization
-			# thisPred <- 'peakMoistStress_hPa' # name of this variable
-			# prVar <- 'vpdmax' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'peakMoistStress_hPa' # name of this variable
+			prVar <- 'vpdmax' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- mean # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- mean # may need to put arguments in the actual function call below!
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# failIfAllNA=TRUE,
-				# na.rm=TRUE
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				failIfAllNA=TRUE,
+				na.rm=TRUE
+			)	
 
-		# ### gsPpt_mm: Total growing-season precipitation (ppt), May-September
-		# #####################################################################
+		### gsPpt_mm: Total growing-season precipitation (ppt), May-September
+		#####################################################################
 			
-			# # generalization
-			# thisPred <- 'gsPpt_mm' # name of this variable
-			# prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'gsPpt_mm' # name of this variable
+			prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- sum # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- sum # may need to put arguments in the actual function call below!
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# failIfAllNA=TRUE,
-				# na.rm=TRUE
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				failIfAllNA=TRUE,
+				na.rm=TRUE
+			)	
 
-		# ### monsoonPpt_mm: Total monsoon precipitation (ppt), min-June-August
-		# #####################################################################
+		### monsoonPpt_mm: Total monsoon precipitation (ppt), min-June-August
+		#####################################################################
 			
-			# # generalization
-			# thisPred <- 'monsoonPpt_mm' # name of this variable
-			# prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'monsoonPpt_mm' # name of this variable
+			prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- sum # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- sum # may need to put arguments in the actual function call below!
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# na.rm=TRUE
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				na.rm=TRUE
+			)	
 		
-		# ### winterSnow_mm: Total precipitation, December-March
-		# ######################################################
+		### winterSnow_mm: Total precipitation, December-March
+		######################################################
 			
-			# # generalization
-			# thisPred <- 'winterSnow_mm' # name of this variable
-			# prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'winterSnow_mm' # name of this variable
+			prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- sum # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- sum # may need to put arguments in the actual function call below!
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# na.rm=TRUE
-			# )
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				na.rm=TRUE
+			)
 
-		# ### annualPpt_mm: Total annual precipitation, June-May
-		# ######################################################
+		### annualPpt_mm: Total annual precipitation, June-May
+		######################################################
 			
-			# # generalization
-			# thisPred <- 'annualPpt_mm' # name of this variable
-			# prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'annualPpt_mm' # name of this variable
+			prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- sum # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- sum # may need to put arguments in the actual function call below!
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# na.rm=TRUE
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				na.rm=TRUE
+			)	
 
-		# ### springPpt_mm: Total spring precipitation (ppt), mid-March-May
-		# #################################################################
+		### springPpt_mm: Total spring precipitation (ppt), mid-March-May
+		#################################################################
 			
-			# # generalization
-			# thisPred <- 'springPpt_mm' # name of this variable
-			# prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
+			# generalization
+			thisPred <- 'springPpt_mm' # name of this variable
+			prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
 			
-			# # function to summarize values within a year
-			# summaryFx <- sum # may need to put arguments in the actual function call below!
+			# function to summarize values within a year
+			summaryFx <- sum # may need to put arguments in the actual function call below!
 			
-			# pika <- extractAndCalcVarForDens(
-				# thisPred=thisPred,
-				# prVar=prVar,
-				# predTable=predTable,
-				# pika=pika,
-				# summaryFx=summaryFx,
-				# fail=fail,
-				# failIfAllNA=TRUE,
-				# na.rm=TRUE
-			# )	
+			pika <- extractAndCalcVarForDens(
+				thisPred=thisPred,
+				prVar=prVar,
+				predTable=predTable,
+				pika=pika,
+				summaryFx=summaryFx,
+				fail=fail,
+				failIfAllNA=TRUE,
+				na.rm=TRUE
+			)	
 
-	# save(pika, file='./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
+	save(pika, file='./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
 	
 # say('###################################')
 # say('### distributions of predictors ###')
