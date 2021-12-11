@@ -60,7 +60,7 @@ say('##################################################')
 	### climate models
 	##################
 	
-		formulae <- getFormulae('density')
+		formulae <- getFormulaeDens()
 
 		for (formula in formulae) {
 	
@@ -210,7 +210,7 @@ say('###########################################################')
 	### climate models
 	##################
 	
-	formulae <- getFormulae('density')
+	formulae <- getFormulaeDens()
 	for (formula in formulae) {
 
 		say(formula)
