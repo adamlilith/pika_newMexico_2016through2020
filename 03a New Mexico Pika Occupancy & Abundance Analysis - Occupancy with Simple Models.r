@@ -6,7 +6,9 @@
 ### CONTENTS ###
 ### setup ###
 ### ORDINAL simple OCCUPANCY analysis: all-data models ###
+### compile table of predictor weights for ORDINAL simple OCCUPANCY analysis: all-data models ###
 ### BINARY simple OCCUPANCY analysis: all-data models ###
+### compile table of predictor weights for BINARY simple OCCUPANCY analysis: all-data models ###
 ### ORDINAL simple OCCUPANCY analysis: cross-validated models ###
 ### BINARY simple OCCUPANCY analysis: cross-validated models ###
 ### ORDINAL simple OCCUPANCY analysis: cross-validated models summary ###
@@ -36,7 +38,7 @@
 	# pika[ , vars] <- scale(pika[ , vars])
 
 	# # models
-	# formulae <- getFormulaeOcc('occupancy')
+	# formulae <- getFormulaeOcc()
 
 	# ### using all sites (no cross-validation)
 	# #########################################
@@ -73,6 +75,9 @@
 			# pseudoR2_3 <- nagelR2(likeNull, like3, n)
 			# pseudoR2_4 <- nagelR2(likeNull, like4, n)
 			
+			# numHomRangesCoef2 <- coefficients(model2)['numHomeRangesScaled']
+			# numHomRangesCoef4 <- coefficients(model4)['numHomeRangesScaled']
+
 			# pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
 
 			# results <- data.frame(
@@ -82,6 +87,7 @@
 				# term3 = NA,
 				# term4 = NA,
 				# numHomeRanges = numHomeRanges,
+				# homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4),
 				# region = region,
 				# aicc = aicc,
 				# pseudoR2 = pseudoR2
@@ -131,8 +137,11 @@
 			# pseudoR2_3 <- nagelR2(likeNull, like3, n)
 			# pseudoR2_4 <- nagelR2(likeNull, like4, n)
 			
-			# pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
+			# numHomRangesCoef2 <- coefficients(model2)['numHomeRangesScaled']
+			# numHomRangesCoef4 <- coefficients(model4)['numHomeRangesScaled']
 			
+			# pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
+
 			# results <- rbind(
 				# results,
 				# data.frame(
@@ -142,6 +151,7 @@
 					# term3 = term3,
 					# term4 = term4,
 					# numHomeRanges = numHomeRanges,
+					# homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4),
 					# region = region,
 					# aicc = aicc,
 					# pseudoR2 = pseudoR2
@@ -180,6 +190,56 @@
 				
 			# } # next window
 
+# say('#################################################################################################')
+# say('### compile table of predictor weights for ORDINAL simple OCCUPANCY analysis: all-data models ###')
+# say('#################################################################################################')
+
+	# # rank variables by mean AICc weight
+
+	# for (occWindow in c(occWindows_y, NA)) {
+	
+		# nice <- if (is.na(occWindow)) {
+			# paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
+		# } else {
+			# paste0(occWindow, '-yr Window')
+		# }
+	
+		# # get variables
+		# vars <- getVars('occupancy')
+		# if (!is.na(occWindow)) vars <- vars[grepl(vars, pattern=paste0(occWindow, 'yrWindow'))]
+
+		# # get models
+		# file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, '.csv')
+		# models <- read.csv(file)
+		
+		# imp <- data.frame()
+		# for (var in vars) {
+		
+			# index <- which(grepl(models$model, pattern=var))
+			# n <- length(index)
+			# sumWeight <- sum(models$weight[index])
+			# meanWeight <- sumWeight / n
+			
+			# imp <- rbind(
+				# imp,
+				# data.frame(
+					# variable = var,
+					# niceVar = makeNiceVars(var, 'occupancy'),
+					# numModels = n,
+					# sumWeight = sumWeight,
+					# meanWeight = meanWeight
+				# )
+			# )
+			
+		# }
+		
+		# imp <- imp[order(imp$meanWeight, decreasing=TRUE), ]
+
+		# write.csv(imp, paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, ' - Var Import.csv'), row.names=FALSE)
+	
+	# } # next occupancy window
+	
+
 # say('#########################################################')
 # say('### BINARY simple OCCUPANCY analysis: all-data models ###')
 # say('#########################################################')
@@ -193,7 +253,7 @@
 	# pika[ , vars] <- scale(pika[ , vars])
 
 	# # models
-	# formulae <- getFormulaeOcc('occupancy')
+	# formulae <- getFormulaeOcc()
 
 	# ### null models
 	# ###############
@@ -220,6 +280,9 @@
 		
 		# likeNull <- like1
 		
+		# numHomRangesCoef2 <- coefficients(model2)['numHomeRangesScaled']
+		# numHomRangesCoef4 <- coefficients(model4)['numHomeRangesScaled']
+
 		# n <- nrow(pika)
 		# pseudoR2_1 <- nagelR2(likeNull, like1, n)
 		# pseudoR2_2 <- nagelR2(likeNull, like2, n)
@@ -235,6 +298,7 @@
 			# term3 = NA,
 			# term4 = NA,
 			# numHomeRanges = numHomeRanges,
+			# homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4),
 			# region = region,
 			# aicc = aicc,
 			# pseudoR2 = pseudoR2
@@ -278,6 +342,9 @@
 			# like3 <- logLik(model3)
 			# like4 <- logLik(model4)
 			
+			# numHomRangesCoef2 <- coefficients(model2)['numHomeRangesScaled']
+			# numHomRangesCoef4 <- coefficients(model4)['numHomeRangesScaled']
+
 			# pseudoR2_1 <- nagelR2(likeNull, like1, n)
 			# pseudoR2_2 <- nagelR2(likeNull, like2, n)
 			# pseudoR2_3 <- nagelR2(likeNull, like3, n)
@@ -294,6 +361,7 @@
 					# term3 = term3,
 					# term4 = term4,
 					# numHomeRanges = numHomeRanges,
+					# homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4),
 					# region = region,
 					# aicc = aicc,
 					# pseudoR2 = pseudoR2
@@ -330,6 +398,55 @@
 			
 		# } # next window
 
+# say('################################################################################################')
+# say('### compile table of predictor weights for BINARY simple OCCUPANCY analysis: all-data models ###')
+# say('################################################################################################')
+
+	# # rank variables by mean AICc weight
+
+	# for (occWindow in c(occWindows_y, NA)) {
+	
+		# nice <- if (is.na(occWindow)) {
+			# paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
+		# } else {
+			# paste0(occWindow, '-yr Window')
+		# }
+	
+		# # get variables
+		# vars <- getVars('occupancy')
+		# if (!is.na(occWindow)) vars <- vars[grepl(vars, pattern=paste0(occWindow, 'yrWindow'))]
+
+		# # get models
+		# file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, '.csv')
+		# models <- read.csv(file)
+		
+		# imp <- data.frame()
+		# for (var in vars) {
+		
+			# index <- which(grepl(models$model, pattern=var))
+			# n <- length(index)
+			# sumWeight <- sum(models$weight[index])
+			# meanWeight <- sumWeight / n
+			
+			# imp <- rbind(
+				# imp,
+				# data.frame(
+					# variable = var,
+					# niceVar = makeNiceVars(var, 'occupancy'),
+					# numModels = n,
+					# sumWeight = sumWeight,
+					# meanWeight = meanWeight
+				# )
+			# )
+			
+		# }
+		
+		# imp <- imp[order(imp$meanWeight, decreasing=TRUE), ]
+
+		# write.csv(imp, paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, ' - Var Import.csv'), row.names=FALSE)
+	
+	# } # next occupancy window
+
 # say('#################################################################')
 # say('### ORDINAL simple OCCUPANCY analysis: cross-validated models ###')
 # say('#################################################################')
@@ -343,7 +460,7 @@
 	# pika[ , vars] <- scale(pika[ , vars])
 
 	# # models
-	# formulae <- getFormulaeOcc('occupancy')
+	# formulae <- getFormulaeOcc()
 
 	# folds <- expand.grid(nwFold=1:2, swFold=1:2, neFold=1:2, seFold=1:2)
 
@@ -523,7 +640,7 @@
 	# pika[ , vars] <- scale(pika[ , vars])
 
 	# # models
-	# formulae <- getFormulaeOcc('occupancy')
+	# formulae <- getFormulaeOcc()
 
 	# folds <- expand.grid(nwFold=1:2, swFold=1:2, neFold=1:2, seFold=1:2)
 

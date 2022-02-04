@@ -14,7 +14,9 @@
 ### implement elastic net for density model ###
 ### extract PRISM values and calculate derived variable for OCCUPANCY predictors ###
 ### extract PRISM values and calculate derived variable for DENSITY predictors ###
-### generate models ###
+### generate variables ###
+### generate models: occupancy ###
+### generate models: density ###
 ### make formulae with nice names ###
 ### extract coefficients and terms for a set of 4 models ###
 
@@ -528,7 +530,7 @@
 ### generate variables ###
 ##########################
 
-	### Return a list of models (univariate, bivariate, trivariate)
+	### return a list of variables
 	getVars <- function(occOrDens) {
 		
 		# occOrDens	'occupancy' or 'density'
@@ -637,9 +639,9 @@
 		
 	}
 
-##################################
+################################
 ### generate models: density ###
-##################################
+################################
 
 	getFormulaeDens <- function() {
 	
