@@ -1,19 +1,22 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/Code/01 New Mexico Pika Occupancy & Abundance Analysis - Process Data.r')
-### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/Code/01 New Mexico Pika Occupancy & Abundance Analysis - Process Data.r')
+### source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/01 New Mexico Pika Occupancy & Abundance Analysis - Process Data.r')
+### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/01 New Mexico Pika Occupancy & Abundance Analysis - Process Data.r')
 ###
 ### CONTENTS ###
 ### process and clean pika data ###
 ### extract environmental data and calculate predictors ###
-### distributions of predictors ###
+### distributions of predictors across all regions ###
+### define regions and folds ###
+### distributions of predictors by region ###
+### contingency table analysis of site status by region ###
 
 #############
 ### setup ###
 #############
 
-	source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/Code/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
 
 # say('###################################')
 # say('### process and clean pika data ###')
@@ -324,7 +327,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# args=args,
@@ -350,7 +353,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -377,7 +380,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -404,7 +407,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -431,7 +434,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -458,7 +461,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -485,7 +488,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -509,7 +512,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -531,7 +534,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -553,7 +556,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -575,7 +578,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -597,7 +600,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -619,7 +622,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -641,7 +644,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -663,7 +666,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -685,7 +688,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -707,7 +710,7 @@
 				# pika <- extractAndCalcVarForOcc(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# priorYears=priorYears,
 					# pika=pika,
 					# summaryFx=summaryFx,
@@ -733,7 +736,7 @@
 				# pika <- extractAndCalcVarForDens(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# pika=pika,
 					# summaryFx=summaryFx,
 					# fail=fail,
@@ -757,7 +760,7 @@
 				# pika <- extractAndCalcVarForDens(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# pika=pika,
 					# summaryFx=summaryFx,
 					# fail=fail,
@@ -782,7 +785,7 @@
 				# pika <- extractAndCalcVarForDens(
 					# thisPred=thisPred,
 					# prVar=prVar,
-					# univariatePredTable=univariatePredTable,
+					# predTable=predTable,
 					# pika=pika,
 					# summaryFx=summaryFx,
 					# fail=fail,
@@ -807,7 +810,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -832,7 +835,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -857,7 +860,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -882,7 +885,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -904,7 +907,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -925,7 +928,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -946,7 +949,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -967,7 +970,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -988,7 +991,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -1009,7 +1012,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -1030,13 +1033,33 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
 				# na.rm=TRUE
 			# )	
 		
+		# ### winterSnow_mm: Total precipitation, December-March
+		# ######################################################
+			
+			# # generalization
+			# thisPred <- 'winterSnow_mm' # name of this variable
+			# prVar <- 'ppt' # variable to extract from PRISM/TerraClimate
+			
+			# # function to summarize values within a year
+			# summaryFx <- sum # may need to put arguments in the actual function call below!
+			
+			# pika <- extractAndCalcVarForDens(
+				# thisPred=thisPred,
+				# prVar=prVar,
+				# predTable=predTable,
+				# pika=pika,
+				# summaryFx=summaryFx,
+				# fail=fail,
+				# na.rm=TRUE
+			# )
+
 		# ### annualPpt_mm: Total annual precipitation, June-May
 		# ######################################################
 			
@@ -1050,7 +1073,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -1070,7 +1093,7 @@
 			# pika <- extractAndCalcVarForDens(
 				# thisPred=thisPred,
 				# prVar=prVar,
-				# univariatePredTable=univariatePredTable,
+				# predTable=predTable,
 				# pika=pika,
 				# summaryFx=summaryFx,
 				# fail=fail,
@@ -1080,260 +1103,474 @@
 
 	# save(pika, file='./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
 	
-say('###################################')
-say('### distributions of predictors ###')
-say('###################################')
+# say('######################################################')
+# say('### distributions of predictors across all regions ###')
+# say('######################################################')
 
-	### generalization
-	thold <- 0.7 # too much correlation!
+	# ### generalization
+	# thold <- 0.7 # too much correlation!
 
-	### data
-	load('./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
-	file <- './Predictors/Predictor Variables 2021-06-09 Modified Sub-lethal Heat.xlsx'
-	univariatePredTable <- read_excel(file, sheet='Predictor Variables', skip=1)
+	# ### data
+	# load('./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
 
-	### occupancy predictors
-	########################
+	# ### occupancy predictors
+	# ########################
 	
-		pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
+		# pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
 		
-		preds <- univariatePredTable$var[univariatePredTable$useOccAbund]
+		# preds <- predTable$var[predTable$useOccAbund]
 
-		for (occWindow in occWindows_y) {
+		# for (occWindow in occWindows_y) {
 			
-			figs <- list()
-			for (countPred in seq_along(preds)) {
+			# figs <- list()
+			# for (countPred in seq_along(preds)) {
 			
-				pred <- preds[countPred]
+				# pred <- preds[countPred]
 				
-				predIndex <- which(univariatePredTable$var == pred)
+				# predIndex <- which(predTable$var == pred)
 			
-				predNice <- univariatePredTable$varNice[predIndex]
-				predDescriptorUnit <- paste0(univariatePredTable$unitDescriptor[predIndex], ' (', univariatePredTable$unit[predIndex], ')')
+				# predNice <- predTable$varNice[predIndex]
+				# predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
 			
-				predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
+				# predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
 			
-				mus <- data.frame(
-					latestOccStatus = c('0 never', '1 old', '2 occupied'),
-					mu = c(
-						mean(pika[pika$latestOccStatus == '0 never', predWindow]),
-						mean(pika[pika$latestOccStatus == '1 old', predWindow]),
-						mean(pika[pika$latestOccStatus == '2 occupied', predWindow])
-					)
-				)
+				# mus <- data.frame(
+					# latestOccStatus = c('0 never', '1 old', '2 occupied'),
+					# mu = c(
+						# mean(pika[pika$latestOccStatus == '0 never', predWindow]),
+						# mean(pika[pika$latestOccStatus == '1 old', predWindow]),
+						# mean(pika[pika$latestOccStatus == '2 occupied', predWindow])
+					# )
+				# )
 
-				say(predWindow)
+				# say(predWindow)
 
 
-				thisData <- pika[ , c('latestOccStatus', predWindow)]
-				names(thisData)[2] <- 'value'
+				# thisData <- pika[ , c('latestOccStatus', predWindow)]
+				# names(thisData)[2] <- 'value'
 				
-				figs[[countPred]] <- ggplot(data=thisData, aes(x=value, col=latestOccStatus, fill=latestOccStatus)) +
-					geom_density(size=1) +
-					scale_color_manual(values=c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen')) +
-					scale_fill_manual(values=alpha(c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen'), 0.2)) +
-					labs(title=predNice, subtitle=pred, x=predDescriptorUnit, y=NULL) +
-					geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
-					theme(legend.position='none', plot.title=element_text(face='bold'))
+				# figs[[countPred]] <- ggplot(data=thisData, aes(x=value, col=latestOccStatus, fill=latestOccStatus)) +
+					# geom_density(size=1) +
+					# scale_color_manual(values=c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen')) +
+					# scale_fill_manual(values=alpha(c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen'), 0.2)) +
+					# labs(title=predNice, subtitle=pred, x=predDescriptorUnit, y=NULL) +
+					# geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
+					# theme(legend.position='none', plot.title=element_text(face='bold'))
 					
-				figs[[countPred]]
+				# figs[[countPred]]
 					
-			} # next predictor
+			# } # next predictor
 
-			main <- plot_grid(
-				figs[[1]],
-				figs[[2]],
-				figs[[3]],
-				figs[[4]],
-				figs[[5]],
-				figs[[6]],
-				figs[[7]],
-				figs[[8]],
-				figs[[9]],
-				figs[[10]],
-				figs[[11]],
-				figs[[12]],
-				figs[[13]],
-				figs[[14]],
-				figs[[15]],
-				figs[[16]],
-				figs[[17]],
-				align='h', ncol=4, rel_widths=1)
+			# main <- plot_grid(plotlist=figs, align='h', ncol=3, rel_widths=1)
 		
-			main
+			# main
 		
-			ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window.png'), width=8.5, height=11, units='in')
+			# ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window.png'), width=8.5, height=11, units='in')
 
-		} # next occupancy window
+		# } # next occupancy window
 
-	### density predictors
-	######################
+	# ### density predictors
+	# ######################
 	
-		preds <- names(pika)[grepl(names(pika), pattern='densVar_')]
+		# preds <- names(pika)[grepl(names(pika), pattern='densVar_')]
 
-		figs <- list()
-		for (countPred in seq_along(preds)) {
+		# figs <- list()
+		# for (countPred in seq_along(preds)) {
 		
-			predFull <- preds[countPred]
-			timePeriod <- if (grepl(predFull, pattern='1yrPrior')) { 'prior year' } else { 'same year'}
+			# predFull <- preds[countPred]
+			# timePeriod <- if (grepl(predFull, pattern='1yrPrior')) { 'prior year' } else { 'same year'}
 			
-			say(predFull)
+			# say(predFull)
 			
-			pred <- gsub(predFull, pattern='densVar_', replacement='')
-			pred <- gsub(pred, pattern='_1yrPrior', replacement='')
-			pred <- gsub(pred, pattern='_0yrPrior', replacement='')
+			# pred <- gsub(predFull, pattern='densVar_', replacement='')
+			# pred <- gsub(pred, pattern='_1yrPrior', replacement='')
+			# pred <- gsub(pred, pattern='_0yrPrior', replacement='')
 			
-			predIndex <- which(univariatePredTable$var == pred)
+			# predIndex <- which(predTable$var == pred)
 		
-			predNice <- univariatePredTable$varNice[predIndex]
-			predDescriptorUnit <- paste0(univariatePredTable$unitDescriptor[predIndex], ' (', univariatePredTable$unit[predIndex], ')')
+			# predNice <- predTable$varNice[predIndex]
+			# predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
 		
-			thisData <- pika[ , c('latestDensity', predFull)]
-			names(thisData)[2] <- 'value'
-			thisData <- thisData[complete.cases(thisData), ]
+			# thisData <- pika[ , c('latestDensity', predFull)]
+			# names(thisData)[2] <- 'value'
+			# thisData <- thisData[complete.cases(thisData), ]
 
-			subtitle <- paste0(timePeriod, ' (', pred, ')')
+			# subtitle <- paste0(timePeriod, ' (', pred, ')')
 				
-			figs[[countPred]] <- ggplot(data=thisData, aes(x=value, y=latestDensity)) +
-				geom_point(size=2, shape=16, col='gray40') +
-				labs(title=predNice, subtitle=subtitle, x=predDescriptorUnit, y='Abundance') +
-				theme(
-					legend.position='none',
-					plot.title=element_text(face='bold', size=8),
-					plot.subtitle=element_text(size=6),
-					axis.text.x=element_text(size=7),
-					axis.text.y=element_text(size=7)
-				)
+			# figs[[countPred]] <- ggplot(data=thisData, aes(x=value, y=latestDensity)) +
+				# geom_point(size=2, shape=16, col='gray40') +
+				# labs(title=predNice, subtitle=subtitle, x=predDescriptorUnit, y='Abundance') +
+				# theme(
+					# legend.position='none',
+					# plot.title=element_text(face='bold', size=8),
+					# plot.subtitle=element_text(size=6),
+					# axis.text.x=element_text(size=7),
+					# axis.text.y=element_text(size=7)
+				# )
 				
-		} # next predictor
+		# } # next predictor
 
-		main <- plot_grid(
-			figs[[1]],
-			figs[[2]],
-			figs[[3]],
-			figs[[4]],
-			figs[[5]],
-			figs[[6]],
-			figs[[7]],
-			figs[[8]],
-			figs[[9]],
-			figs[[10]],
-			figs[[11]],
-			figs[[12]],
-			figs[[13]],
-			figs[[14]],
-			figs[[15]],
-			figs[[16]],
-			figs[[17]],
-			figs[[18]],
-			figs[[19]],
-			figs[[20]],
-			figs[[21]],
-			figs[[22]],
-			figs[[23]],
-			figs[[24]],
-			figs[[25]],
-			figs[[26]],
-			figs[[27]],
-			align='h', ncol=6, rel_widths=1)
+		# main <- plot_grid(plotlist=figs, align='h', ncol=6, rel_widths=1)
 	
-		ggsave(plot=main, paste0('./Figures & Tables/Distributions of Density Variables.png'), width=11, height=8.5, units='in')
+		# ggsave(plot=main, paste0('./Figures & Tables/Distributions of Density Variables.png'), width=11, height=8.5, units='in')
 
-	### correlations for occupancy variables: heatmap
-	#################################################
+	# ### correlations for occupancy variables: heatmap
+	# #################################################
 	
-		for (occWindow in occWindows_y) {
+		# for (occWindow in occWindows_y) {
 		
-			occVars <- names(pika)[grepl(names(pika), pattern='occVar_')]
-			occVars <- occVars[grepl(occVars, pattern=paste0(occWindow, 'yrWindow'))]
+			# occVars <- names(pika)[grepl(names(pika), pattern='occVar_')]
+			# occVars <- occVars[grepl(occVars, pattern=paste0(occWindow, 'yrWindow'))]
 
-			corr <- cor(pika[ , occVars])
+			# corr <- cor(pika[ , occVars])
 			
-			# change variable names
-			rownames(corr) <- colnames(corr) <- makeNiceVars(colnames(corr), occOrDens='occ')
+			# # change variable names
+			# rownames(corr) <- colnames(corr) <- makeNiceVars(colnames(corr), occOrDens='occupancy')
 
-			title <- paste0('Occupancy variables with a ', occWindow, '-yr window')
-			fig <- ggcorrplot(corr, hc.order=TRUE, outline.color='white', lab=TRUE, title=title, legend.title='Correlation', show.diag=FALSE)
+			# title <- paste0('Occupancy variables with a ', occWindow, '-yr window')
+			# fig <- ggcorrplot(corr, hc.order=TRUE, outline.color='white', lab=TRUE, title=title, legend.title='Correlation', show.diag=FALSE)
 			
-			ggsave(plot=fig, paste0('./Figures & Tables/Correlations between Occupancy Variables Using a ', occWindow, '-yr Window Heat Map.png'), width=10, height=10, units='in')
+			# ggsave(plot=fig, paste0('./Figures & Tables/Correlations between Occupancy Variables Using a ', occWindow, '-yr Window Heat Map.png'), width=10, height=10, units='in')
 		
-		}
+		# }
 	
-	### correlations for occupancy variables: spoke plot
-	####################################################
+	# ### correlations for occupancy variables: spoke plot
+	# ####################################################
 
-	for (occWindow in occWindows_y) {
+	# for (occWindow in occWindows_y) {
 	
-		occVars <- names(pika)[grepl(names(pika), pattern='occVar_')]
-		occVars <- occVars[grepl(occVars, pattern=paste0(occWindow, 'yrWindow'))]
+		# occVars <- names(pika)[grepl(names(pika), pattern='occVar_')]
+		# occVars <- occVars[grepl(occVars, pattern=paste0(occWindow, 'yrWindow'))]
 
-		corr <- cor(pika[ , occVars])
+		# corr <- cor(pika[ , occVars])
 		
-		# change variable names
-		niceVars <- makeNiceVars(colnames(corr), occOrDens='occ', incTime=FALSE)
+		# # change variable names
+		# niceVars <- makeNiceVars(colnames(corr), occOrDens='occupancy', incTime=FALSE)
 
-		title <- paste0('Occupancy variables with a ', occWindow, '-yr window')
-		png(paste0('./Figures & Tables/Correlations between Occupancy Variables Using a ', occWindow, '-yr Window Spoke Plot.png'), width=1000, height=1000)
+		# title <- paste0('Occupancy variables with a ', occWindow, '-yr window')
+		# png(paste0('./Figures & Tables/Correlations between Occupancy Variables Using a ', occWindow, '-yr Window Spoke Plot.png'), width=1000, height=1000)
 
-			par(oma=c(3, 10, 3, 3))
-			spoke(pos=corr > thold, neg=corr < -thold, labels=niceVars, ltyNeg='solid', colNeg='red', main=title, cexLabel=1.6, cex.main=1.9)
-			legend('bottomright', inset=-0.01, legend=c(paste0('Positive >', thold), paste0('Negative <-', thold)), lwd=1, col=c('black', 'red'), bty='n', cex=1.8)
+			# par(oma=c(3, 10, 3, 3))
+			# spoke(pos=corr > thold, neg=corr < -thold, labels=niceVars, ltyNeg='solid', colNeg='red', main=title, cexLabel=1.6, cex.main=1.9)
+			# legend('bottomright', inset=-0.01, legend=c(paste0('Positive >', thold), paste0('Negative <-', thold)), lwd=1, col=c('black', 'red'), bty='n', cex=1.8)
 			
-		dev.off()
+		# dev.off()
 
-	}
+	# }
 
 
-	### correlations for density variables: heatmap
-	###############################################
+	# ### correlations for density variables: heatmap
+	# ###############################################
 	
-		densVars <- names(pika)[grepl(names(pika), pattern='densVar_')]
+		# densVars <- names(pika)[grepl(names(pika), pattern='densVar_')]
 
-		recordedDens <- which(!is.na(pika$latestDensSurveyYear))
-		corr <- cor(pika[recordedDens, densVars])
+		# recordedDens <- which(!is.na(pika$latestDensSurveyYear))
+		# corr <- cor(pika[recordedDens, densVars])
 		
-		# change variable names
-		vars <- colnames(corr)
-		vars <- gsub(vars, pattern='densVar_', replacement='')
+		# # change variable names
+		# vars <- colnames(corr)
+		# vars <- gsub(vars, pattern='densVar_', replacement='')
 		
-		times <- rep(NA, length(vars))
-		times[grepl(vars, pattern=paste0('_1yrPrior'))] <- '(1 yr prior)'
-		times[grepl(vars, pattern=paste0('_0yrPrior'))] <- '(same year)'
+		# times <- rep(NA, length(vars))
+		# times[grepl(vars, pattern=paste0('_1yrPrior'))] <- '(1 yr prior)'
+		# times[grepl(vars, pattern=paste0('_0yrPrior'))] <- '(same year)'
 		
-		vars <- gsub(vars, pattern=paste0('_1yrPrior'), replacement='')
-		vars <- gsub(vars, pattern=paste0('_0yrPrior'), replacement='')
-		preds <- univariatePredTable$varNice[match(vars, univariatePredTable$var)]
+		# vars <- gsub(vars, pattern=paste0('_1yrPrior'), replacement='')
+		# vars <- gsub(vars, pattern=paste0('_0yrPrior'), replacement='')
+		# preds <- predTable$varNice[match(vars, predTable$var)]
 		
-		preds <- paste(preds, times)
-		colnames(corr) <- rownames(corr) <- preds
+		# preds <- paste(preds, times)
+		# colnames(corr) <- rownames(corr) <- preds
 
-# remove NAs
-nas <- which(preds == 'Sub-lethal heat (22°C) (same year)')
-say('There are ', length(nas), ' NA correlations.')
-if (length(nas) > 0) corr <- corr[-nas, -nas]
-
-		title <- paste0('Density variables')
-		fig <- ggcorrplot(corr, hc.order=TRUE, outline.color='white', lab=TRUE, title=title, legend.title='Correlation', show.diag=FALSE, lab_size=2.5)
+		# title <- paste0('Density variables')
+		# fig <- ggcorrplot(corr, hc.order=TRUE, outline.color='white', lab=TRUE, title=title, legend.title='Correlation', show.diag=FALSE, lab_size=2.5)
 			
-		ggsave(plot=fig, paste0('./Figures & Tables/Correlations between Density Variables Heat Map.png'), width=11, height=8.5, units='in')
+		# ggsave(plot=fig, paste0('./Figures & Tables/Correlations between Density Variables Heat Map.png'), width=11, height=8.5, units='in')
 		
-	### correlations for density variables: spoke plot
-	####################################################
+	# ### correlations for density variables: spoke plot
+	# ####################################################
 	
-		densVars <- names(pika)[grepl(names(pika), pattern='densVar_')]
-		recordedDens <- which(!is.na(pika$latestDensSurveyYear))
-		corr <- cor(pika[recordedDens, densVars])
+		# densVars <- names(pika)[grepl(names(pika), pattern='densVar_')]
+		# recordedDens <- which(!is.na(pika$latestDensSurveyYear))
+		# corr <- cor(pika[recordedDens, densVars])
 		
-		# change variable names
-		niceVars <- makeNiceVars(colnames(corr), occOrDens='dens', incTime=TRUE, wrapTime=TRUE)
+		# # change variable names
+		# niceVars <- makeNiceVars(colnames(corr), occOrDens='density', incTime=TRUE, wrapTime=TRUE)
 
-		title <- paste0('Density variables')
-		png(paste0('./Figures & Tables/Correlations between Density Variables Spoke Plot.png'), width=1000, height=1000)
+		# title <- paste0('Density variables')
+		# png(paste0('./Figures & Tables/Correlations between Density Variables Spoke Plot.png'), width=1000, height=1000)
 
-			par(oma=c(3, 10, 3, 3))
-			spoke(pos=corr > thold, neg=corr < -thold, labels=niceVars, ltyNeg='solid', colNeg='red', main=title, cexLabel=1.6, cex.main=1.9)
-			legend('bottomright', inset=-0.01, legend=c(paste0('Positive >', thold), paste0('Negative <-', thold)), lwd=1, col=c('black', 'red'), bty='n', cex=1.8)
+			# par(oma=c(3, 10, 3, 3))
+			# spoke(pos=corr > thold, neg=corr < -thold, labels=niceVars, ltyNeg='solid', colNeg='red', main=title, cexLabel=1.6, cex.main=1.9)
+			# legend('bottomright', inset=-0.01, legend=c(paste0('Positive >', thold), paste0('Negative <-', thold)), lwd=1, col=c('black', 'red'), bty='n', cex=1.8)
 			
-		dev.off()
+		# dev.off()
+
+# say('################################')
+# say('### define regions and folds ###')
+# say('################################')
+
+	# load('./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
+
+	# # define regions
+	# pika$region <- NA
+	# pika$region[pika$longitude < -105.9448 & pika$latitude > 36.29301] <- 'northwest'
+	# pika$region[pika$longitude < -105.9448 & pika$latitude < 36.29301] <- 'southwest'
+	# pika$region[pika$longitude > -105.9448 & pika$latitude > 36.29301] <- 'northeast'
+	# pika$region[pika$longitude > -105.9448 & pika$latitude < 36.29301] <- 'southeast'
 		
+	# # define folds
+	# pika$fold <- NA
+	# for (region in regions) {
+	
+		# lats <- pika$latitude[pika$region == region]
+		# mid <- mean(lats)
+		# pika$fold[pika$region == region & pika$latitude > mid] <- 1
+		# pika$fold[pika$region == region & pika$latitude <= mid] <- 2
+		# if (region == 'northwest') {
+
+			# pika$fold[pika$region == region & ((pika$longitude > -106.1828 & pika$latitude > 36.58048) | pika$latitude > mid)] <- 1
+		
+		# }
+	
+	# }
+
+	# # visual check
+	# sp <- vect(as.matrix(pika[ , ll]), att=pika, crs=getCRS('wgs84'))
+	# plot(sp, col=NA)
+	# points(sp[sp$region == 'northwest' & sp$fold == 1, ], col='red', pch=1)
+	# points(sp[sp$region == 'northwest' & sp$fold == 2, ], col='red', pch=2)
+
+	# points(sp[sp$region == 'southwest' & sp$fold == 1, ], col='green', pch=1)
+	# points(sp[sp$region == 'southwest' & sp$fold == 2, ], col='green', pch=2)
+
+	# points(sp[sp$region == 'northeast' & sp$fold == 1, ], col='blue', pch=1)
+	# points(sp[sp$region == 'northeast' & sp$fold == 2, ], col='blue', pch=2)
+
+	# points(sp[sp$region == 'southeast' & sp$fold == 1, ], col='orange', pch=1)
+	# points(sp[sp$region == 'southeast' & sp$fold == 2, ], col='orange', pch=2)
+
+	# # sample size checks
+	# for (region in regions) {
+
+		# say(region, ' ============================')
+		# for (fold in 1:2) {
+
+			# for (occStatus in occStatuses) {
+
+				# n <- sum(pika$latestOccStatus[pika$region == region & pika$fold == fold]==occStatus)
+				# say('fold ', fold, ': ', occStatus, ' ', n)
+			# }
+			
+		# }
+		
+	# }
+
+	# # presence/absence
+	# pika$presAbs <- 0
+	# pika$presAbs[pika$latestOccStatus == '2 occupied'] <- 1
+
+	# save(pika, file='./Data/03 New Mexico Pika - Assigned Folds.rda')
+
+# say('#############################################')
+# say('### distributions of predictors by region ###')
+# say('#############################################')
+
+	# titleSize <- 8
+	# subtitleSize <- 7
+	# legendTitleSize <- 7
+	# legendTextSize <- 7
+	# axisLabelSize <- 7
+	# axisTextSize <- 6
+	
+	# legendKeySize <- 0.4
+
+	# ### data
+	# load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+
+	# ### occupancy predictors
+	# ########################
+	
+	# pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
+	
+	# preds <- predTable$var[predTable$useOccAbund]
+
+	# for (occWindow in occWindows_y) {
+		
+		# figs <- list()
+		# for (countPred in seq_along(preds)) {
+		
+			# pred <- preds[countPred]
+			
+			# predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
+			# say(predWindow)
+		
+			# predIndex <- which(predTable$var == pred)
+		
+			# predNice <- predTable$varNice[predIndex]
+			# predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
+		
+			# # mus <- data.frame(
+				# # latestOccStatus = c('0 never', '1 old', '2 occupied'),
+				# # mu = c(
+					# # mean(pika[pika$latestOccStatus == '0 never', predWindow]),
+					# # mean(pika[pika$latestOccStatus == '1 old', predWindow]),
+					# # mean(pika[pika$latestOccStatus == '2 occupied', predWindow])
+				# # )
+			# # )
+
+			# thisData <- pika[ , c('latestOccStatus', 'region', predWindow)]
+			# names(thisData)[3] <- 'value'
+
+			# xlim <- range(thisData$value)
+			
+			# # all regions together
+			# title <- paste0(predNice, ': regions')
+			# figs[[length(figs) + 1]] <- ggplot(data=thisData, aes(x=value, col=latestOccStatus, fill=latestOccStatus)) +
+				# geom_density(size=1) +
+				# scale_color_manual(
+					# labels = c('none', 'old', 'occ'),
+					# values=c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen')
+				# ) +
+				# scale_fill_manual(
+					# labels = c('none', 'old', 'occ'),
+					# values=alpha(c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen'), 0.2)
+				# ) +
+				# labs(title=title, subtitle=pred, x=predDescriptorUnit, y=NULL) +
+				# # geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
+				# guides(
+					# color=guide_legend(title='Evid.'),
+					# fill=guide_legend(title='Evid.')
+				# ) +
+				# xlim(xlim[1], xlim[2]) +
+				# theme(
+					# legend.key.size = unit(legendKeySize, 'cm'),
+					# plot.title=element_text(size=titleSize, face='bold'),
+					# plot.subtitle=element_text(size=subtitleSize),
+					# legend.title=element_text(size=legendTitleSize),
+					# legend.text=element_text(size=legendTextSize),
+					# axis.title=element_text(size=axisLabelSize),
+					# axis.text=element_text(size=axisTextSize)
+				# )
+
+			# # "never" by region
+			# title <- paste0(predNice, ': none')
+			# thisThisData <- thisData[thisData$latestOccStatus == '0 never', ]
+			# figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+				# geom_density(size=1) +
+				# scale_color_manual(
+					# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+					# values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+				# ) +
+				# scale_fill_manual(
+					# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+					# values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+				# ) +
+				# labs(title=title, subtitle=pred, x=predDescriptorUnit, y=NULL) +
+				# guides(
+					# color=guide_legend(title='Region'),
+					# fill=guide_legend(title='Region')
+				# ) +
+				# xlim(xlim[1], xlim[2]) +
+				# theme(
+					# legend.key.size = unit(legendKeySize, 'cm'),
+					# plot.title=element_text(size=titleSize, face='bold'),
+					# plot.subtitle=element_text(size=subtitleSize),
+					# legend.title=element_text(size=legendTitleSize),
+					# legend.text=element_text(size=legendTextSize),
+					# axis.title=element_text(size=axisLabelSize),
+					# axis.text=element_text(size=axisTextSize)
+				# )
+
+			# # "old" by region
+			# title <- paste0(predNice, ': old')
+			# thisThisData <- thisData[thisData$latestOccStatus == '1 old', ]
+			# figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+				# geom_density(size=1) +
+				# scale_color_manual(
+					# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+					# values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+				# ) +
+				# scale_fill_manual(
+					# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+					# values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+				# ) +
+				# labs(title=title, subtitle=pred, x=predDescriptorUnit, y=NULL) +
+				# guides(
+					# color=guide_legend(title='Region'),
+					# fill=guide_legend(title='Region')
+				# ) +
+				# xlim(xlim[1], xlim[2]) +
+				# theme(
+					# legend.key.size = unit(legendKeySize, 'cm'),
+					# plot.title=element_text(size=titleSize, face='bold'),
+					# plot.subtitle=element_text(size=subtitleSize),
+					# legend.title=element_text(size=legendTitleSize),
+					# legend.text=element_text(size=legendTextSize),
+					# axis.title=element_text(size=axisLabelSize),
+					# axis.text=element_text(size=axisTextSize)
+				# )
+
+			# # "occupied" by region
+			# title <- paste0(predNice, ': occ')
+			# thisThisData <- thisData[thisData$latestOccStatus == '2 occupied', ]
+			# figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+				# geom_density(size=1) +
+				# scale_color_manual(
+					# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+					# values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+				# ) +
+				# scale_fill_manual(
+					# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+					# values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+				# ) +
+				# labs(title=title, subtitle=pred, x=predDescriptorUnit, y=NULL) +
+				# guides(
+					# color=guide_legend(title='Region'),
+					# fill=guide_legend(title='Region')
+				# ) +
+				# xlim(xlim[1], xlim[2]) +
+				# theme(
+					# legend.key.size = unit(legendKeySize, 'cm'),
+					# plot.title=element_text(size=titleSize, face='bold'),
+					# plot.subtitle=element_text(size=subtitleSize),
+					# legend.title=element_text(size=legendTitleSize),
+					# legend.text=element_text(size=legendTextSize),
+					# axis.title=element_text(size=axisLabelSize),
+					# axis.text=element_text(size=axisTextSize)
+				# )
+
+				
+		# } # next predictor
+
+		# main <- plot_grid(plotlist=figs[1:(7 * 4)], align='h', ncol=4, rel_widths=1)
+		# ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region Set 1.png'), width=8, height=10, units='in')
+
+		# main <- plot_grid(plotlist=figs[((7 * 4) + 1):length(figs)], align='h', ncol=4, rel_widths=1)
+		# ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region Set 2.png'), width=8, height=10, units='in')
+
+	# } # next occupancy window
+
+# say('###########################################################')
+# say('### contingency table analysis of site status by region ###')
+# say('###########################################################')
+
+	# ### data
+	# load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	
+	# cont <- table(pika$latestOccStatus, pika$region)
+	# colnames(cont) <- c('NE', 'NW', 'SE', 'SW')
+	# rownames(cont) <- c('none', 'old', 'occupied')
+	
+	# png('./Figures & Tables/Sites by Region.png', width=900, height=900, res=300)
+	# mosaicplot(t(cont), xlab='Region', ylab='Evidence', color=c('firebrick', 'darkgoldenrod3', 'chartreuse3'), main='')
+	# dev.off()
+	
+	# sink('./Figures & Tables/Sites by Region Risk Ratio Text.txt', split=TRUE)
+		# say('Risk ratio test of site status by region:', post=2)
+		# epitools::riskratio(cont, method = 'wald')
+	# sink()
+
+	# write.csv(cont, './Figures & Tables/Sites by Region.csv')
+
 say('DONE!!!', level=1, deco='%')
