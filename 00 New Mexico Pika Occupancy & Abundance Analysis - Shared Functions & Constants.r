@@ -1,8 +1,8 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('C:/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
-### source('E:/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+### source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
 ###
 ### CONTENTS ###
 ### setup ###
@@ -25,7 +25,6 @@
 #############
 
 	cat(date(), '\n'); flush.console()
-	memory.limit(memory.limit() * 2^29)
 	rm(list=ls())
 	gc()
 	options(stringsAsFactors=FALSE)
@@ -34,7 +33,7 @@
 	# drive <- 'D:'
 	drive <- 'E:'
 	
-	setwd(paste0(drive, '/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)'))
+	setwd(paste0(drive, '/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)'))
 
 	# library(rainbow) # www.github.com/adamlilith/rainbow
 	library(legendary) # www.github.com/adamlilith/legendary
@@ -835,9 +834,9 @@
 		
 	}
 
-############################################################
-### extract coefficients and terms for a set of 4 models ###
-############################################################
+##########################################################
+### extract coefficients and terms for a set of models ###
+##########################################################
 extractTerms <- function(...) {
 	
 	# ...	objects of class "glm"
@@ -845,7 +844,7 @@ extractTerms <- function(...) {
 	models <- list(...)
 	n <- length(models)
 	
-	term1 <- term2 <- term3 <- term4 <- rep(NA, n)
+	term1 <- term2 <- term3 <- term4 <- term5 <- term6 <- term7 <- term8 <- rep(NA, n)
 	for (countModel in 1:n) {
 	
 		coefs <- coefficients(models[[countModel]])
@@ -873,6 +872,26 @@ extractTerms <- function(...) {
 			term4[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
 		}
 	
+		if (length(coefs) > 4) {
+			term <- coefs[5]
+			term5[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
+		}
+	
+		if (length(coefs) > 5) {
+			term <- coefs[6]
+			term6[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
+		}
+	
+		if (length(coefs) > 6) {
+			term <- coefs[7]
+			term7[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
+		}
+	
+		if (length(coefs) > 7) {
+			term <- coefs[8]
+			term8[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
+		}
+	
 	}
 	
 	occOrDens <- if (grepl(term1[1], pattern='occVar_')) {
@@ -886,7 +905,9 @@ extractTerms <- function(...) {
 	term3 <- niceFormulae(term3, occOrDens=occOrDens)
 	term4 <- niceFormulae(term4, occOrDens=occOrDens)
 
-	list(term1=term1, term2=term2, term3=term3, term4=term4)
+	out <- list(term1, term2, term3, term4, term5, term6, term7, term8)
+	names(out) <- paste0('term', 1:8)
+	out
 	
 }
 

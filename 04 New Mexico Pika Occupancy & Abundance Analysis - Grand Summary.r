@@ -1,7 +1,7 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('E:/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/04 New Mexico Pika Occupancy & Abundance Analysis - Grand Summary.r')
+### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/04 New Mexico Pika Occupancy & Abundance Analysis - Grand Summary.r')
 ###
 ### CONTENTS ###
 ### setup ###
@@ -13,7 +13,7 @@
 #############
 
 	drive <- 'E:'
-	source(paste0(drive, '/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
+	source(paste0(drive, '/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
 
 	# generalization
 	minAicWeight <- 0.05 # minimum AIC weight of a model for it to be included in the "best" set

@@ -1,13 +1,15 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('E:/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/03a New Mexico Pika Occupancy & Abundance Analysis - Occupancy with Simple Models.r')
+### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/03a New Mexico Pika Occupancy & Abundance Analysis - Occupancy with Simple Models.r')
 ###
 ### CONTENTS ###
 ### setup ###
 ### ORDINAL simple OCCUPANCY analysis: all-data models ###
+### report relative odds of class change across regions across all ORDINAL OCCUPANCY models ###
 ### compile table of predictor weights for ORDINAL simple OCCUPANCY analysis: all-data models ###
 ### BINARY simple OCCUPANCY analysis: all-data models ###
+### report relative odds of class change across regions across all BINARY OCCUPANCY models ###
 ### compile table of predictor weights for BINARY simple OCCUPANCY analysis: all-data models ###
 ### ORDINAL simple OCCUPANCY analysis: cross-validated models ###
 ### BINARY simple OCCUPANCY analysis: cross-validated models ###
@@ -22,7 +24,7 @@
 	# drive <- 'D:'
 	drive <- 'E:'
 
-	source(paste0(drive, '/Ecology/Drive/Research Active/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
+	source(paste0(drive, '/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
 
 # say('##########################################################')
 # say('### ORDINAL simple OCCUPANCY analysis: all-data models ###')
@@ -80,6 +82,17 @@
 
 			# pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
 
+			# coef3 <- coefficients(model3)
+			# coef4 <- coefficients(model4)
+
+			# nw3 <- coef3['regionnorthwest']
+			# se3 <- coef3['regionsoutheast']
+			# sw3 <- coef3['regionsouthwest']
+
+			# nw4 <- coef4['regionnorthwest']
+			# se4 <- coef4['regionsoutheast']
+			# sw4 <- coef4['regionsouthwest']
+
 			# results <- data.frame(
 				# model = '(Intercept)',
 				# term1 = NA,
@@ -90,7 +103,10 @@
 				# homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4),
 				# region = region,
 				# aicc = aicc,
-				# pseudoR2 = pseudoR2
+				# pseudoR2 = pseudoR2,
+				# nw = c(NA, NA, nw3, nw4),
+				# se = c(NA, NA, se3, se4),
+				# sw = c(NA, NA, sw3, sw4)
 			# )
 			
 
@@ -142,6 +158,17 @@
 			
 			# pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
 
+			# coef3 <- coefficients(model3)
+			# coef4 <- coefficients(model4)
+
+			# nw3 <- coef3['regionnorthwest']
+			# se3 <- coef3['regionsoutheast']
+			# sw3 <- coef3['regionsouthwest']
+	
+			# nw4 <- coef4['regionnorthwest']
+			# se4 <- coef4['regionsoutheast']
+			# sw4 <- coef4['regionsouthwest']
+	
 			# results <- rbind(
 				# results,
 				# data.frame(
@@ -154,7 +181,10 @@
 					# homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4),
 					# region = region,
 					# aicc = aicc,
-					# pseudoR2 = pseudoR2
+					# pseudoR2 = pseudoR2,
+					# nw = c(NA, NA, nw3, nw4),
+					# se = c(NA, NA, se3, se4),
+					# sw = c(NA, NA, sw3, sw4)
 				# )
 			# )
 
@@ -189,6 +219,24 @@
 				# write.csv(thisResults, file, row.names=FALSE)
 				
 			# } # next window
+
+# say('###############################################################################################')
+# say('### report relative odds of class change across regions across all ORDINAL OCCUPANCY models ###')
+# say('###############################################################################################')
+
+	# file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - 7 & 10-yr Windows.csv')
+	# results <- read.csv(file)
+	# results <- results[results$region, ]
+	# deltaAicc <- results$aicc - min(results$aicc)
+	# w <- exp(-0.5 * deltaAicc)
+	# w <- w / sum(w)
+	# nw <- sum(results$nw * w, na.rm=TRUE)
+	# se <- sum(results$se * w, na.rm=TRUE)
+	# sw <- sum(results$sw * w, na.rm=TRUE)
+		
+	# say('Ordinal odds of NW region relative to NE region: ', nw)
+	# say('Ordinal odds of SE region relative to NE region: ', se)
+	# say('Ordinal odds of SW region relative to NE region: ', sw)
 
 # say('#################################################################################################')
 # say('### compile table of predictor weights for ORDINAL simple OCCUPANCY analysis: all-data models ###')
@@ -291,6 +339,17 @@
 		
 		# pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
 
+		# coef3 <- coefficients(model3)
+		# coef4 <- coefficients(model4)
+
+		# nw3 <- coef3['regionnorthwest']
+		# se3 <- coef3['regionsoutheast']
+		# sw3 <- coef3['regionsouthwest']
+
+		# nw4 <- coef4['regionnorthwest']
+		# se4 <- coef4['regionsoutheast']
+		# sw4 <- coef4['regionsouthwest']
+
 		# results <- data.frame(
 			# model = '(Intercept)',
 			# term1 = NA,
@@ -301,7 +360,10 @@
 			# homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4),
 			# region = region,
 			# aicc = aicc,
-			# pseudoR2 = pseudoR2
+			# pseudoR2 = pseudoR2,
+			# nw = c(NA, NA, nw3, nw4),
+			# se = c(NA, NA, se3, se4),
+			# sw = c(NA, NA, sw3, sw4)
 		# )
 
 	# ### by climate variable
@@ -352,6 +414,17 @@
 			
 			# pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
 
+			# coef3 <- coefficients(model3)
+			# coef4 <- coefficients(model4)
+
+			# nw3 <- coef3['regionnorthwest']
+			# se3 <- coef3['regionsoutheast']
+			# sw3 <- coef3['regionsouthwest']
+
+			# nw4 <- coef4['regionnorthwest']
+			# se4 <- coef4['regionsoutheast']
+			# sw4 <- coef4['regionsouthwest']
+
 			# results <- rbind(
 				# results,
 				# data.frame(
@@ -364,7 +437,10 @@
 					# homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4),
 					# region = region,
 					# aicc = aicc,
-					# pseudoR2 = pseudoR2
+					# pseudoR2 = pseudoR2,
+					# nw = c(NA, NA, nw3, nw4),
+					# se = c(NA, NA, se3, se4),
+					# sw = c(NA, NA, sw3, sw4)
 				# )
 			# )
 			
@@ -397,6 +473,25 @@
 			# write.csv(thisResults, file, row.names=FALSE)
 			
 		# } # next window
+
+# say('##############################################################################################')
+# say('### report relative odds of class change across regions across all BINARY OCCUPANCY models ###')
+# say('##############################################################################################')
+
+	# file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - 7 & 10-yr Windows.csv')
+	# results <- read.csv(file)
+	# results <- results[results$region, ]
+	# deltaAicc <- results$aicc - min(results$aicc)
+	# w <- exp(-0.5 * deltaAicc)
+	# w <- w / sum(w)
+	# nw <- sum(results$nw * w, na.rm=TRUE)
+	# se <- sum(results$se * w, na.rm=TRUE)
+	# sw <- sum(results$sw * w, na.rm=TRUE)
+		
+	# say('Ordinal odds of NW region relative to NE region: ', nw)
+	# say('Ordinal odds of SE region relative to NE region: ', se)
+	# say('Ordinal odds of SW region relative to NE region: ', sw)
+	
 
 # say('################################################################################################')
 # say('### compile table of predictor weights for BINARY simple OCCUPANCY analysis: all-data models ###')
