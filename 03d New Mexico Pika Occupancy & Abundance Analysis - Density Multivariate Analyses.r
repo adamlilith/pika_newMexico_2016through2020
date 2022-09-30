@@ -26,7 +26,7 @@ say('######################################################')
 	lambdaMinRatio <- 0.001
 	maxiterOut <- 10000
 
-	load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
 	pika$region <- as.factor(pika$region)
 	pika <- pika[!is.na(pika$latestDensity), ]
 	pika$numHomeRangesScaled <- scale(pika$numHomeRanges)

@@ -28,7 +28,7 @@ say('################################################################')
 	lambdaMinRatio <- 0.001
 	maxiterOut <- 10000
 
-	load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
 	pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'), ordered=TRUE)
 	pika$region <- as.factor(pika$region)
 	
@@ -195,7 +195,7 @@ say('###############################################################')
 say('### BINARY multivariate OCCUPANCY analysis: all-data models ###')
 say('###############################################################')
 
-	load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
 	pika$presAbs <- NA
 	pika$presAbs <- ifelse(pika$latestOccStatus %in% c('0 never', '1 old'), 0, 1)
 	pika$presAbs <- as.numeric(pika$presAbs)

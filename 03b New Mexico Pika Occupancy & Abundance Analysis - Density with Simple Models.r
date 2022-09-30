@@ -9,6 +9,10 @@
 ### univariate DENSITY analysis: cross-validated models ###
 ### univariate DENSITY analysis: cross-validated models summary ###
 
+### post hoc analysis of DENSITY using all data and distance to nearest patches ###
+
+
+
 #############
 ### setup ###
 #############
@@ -19,7 +23,7 @@
 # say('### univariate DENSITY models: all-data models ###')
 # say('##################################################')
 
-	# load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	# load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
 	
 	# pika <- pika[!is.na(pika$latestDensity), ]
 	# pika$region <- as.factor(pika$region)
@@ -163,7 +167,7 @@
 # say('### univariate DENSITY analysis: cross-validated models ###')
 # say('###########################################################')
 
-	# load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	# load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
 	
 	# pika <- pika[!is.na(pika$latestDensity), ]
 	# pika$region <- as.factor(pika$region)
@@ -329,5 +333,93 @@
 	# pdf('./Figures & Tables/Density - Simple Models/Density - Simple GLMs Cross-validation Results.pdf', width=8, height=10.5)
 		# print(p)
 	# dev.off()
+
+
+say('###################################################################################')
+say('### post hoc analysis of DENSITY using all data and distance to nearest patches ###')
+say('###################################################################################')
+
+	### prepare climate data
+	########################
+	
+		load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
+		pika <- pika[!is.na(pika$latestDensity), ]
+		pika$region <- as.factor(pika$region)
+		vars <- getVars('density')
+		pika[ , vars] <- scale(pika[ , vars])
+		
+	### generate and evaluate models
+	################################
+		
+		# Assuming no models are intercept-only models!
+
+		# intercept-only null model for pseudo-R2
+		modelNull <- glm(latestDensity ~ 1, data=pika, family=Gamma(link='log'))
+		logLikeNull <- logLik(modelNull)
+
+		results <- data.frame()
+
+		climModels <- read.csv(paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv'))
+		
+		climModels <- climModels[order(climModels$deltaAicc), ]
+		climModels <- climModels[climModels$deltaAicc <= maxDeltaAic_density, , drop=FALSE]
+		
+		for (countClimModel in 1:nrow(climModels)) {
+		
+			form <- climModels$model[countClimModel]
+			thisForm <- paste('latestDensity ~', form)
+			
+			region <- climModels$region[countClimModel]
+			if (region) thisForm <- paste(thisForm, '+ region')
+			
+			thisForm_isolation <- paste(thisForm, '+ meanDistToClosestPatchesScaled')
+			
+			# evaluate n closest patches
+			for (thisNumClosestPatches in c(3, 4)) {
+			
+				thisPika <- pika
+				thisPika$meanDistToClosestPatches_m <-
+					rowMeans(thisPika[ , paste0('distClosestPatch_patch', 1:thisNumClosestPatches, '_m')])
+				thisPika$meanDistToClosestPatchesScaled <- scale(thisPika$meanDistToClosestPatches_m)
+			
+				model_noIsolation <- glm(thisForm, data=thisPika, family=Gamma(link='log'))
+				model_isolation <- glm(thisForm_isolation, data=thisPika, family=Gamma(link='log'))
+
+				aicc_noIsolation <- AICc(model_noIsolation)
+				aicc_isolation <- AICc(model_isolation)
+				
+				logLikeModel_noIsolation <- logLik(model_noIsolation)
+				pseudoR2_noIsolation <- nagelR2(logLikeNull, logLikeModel_noIsolation, nrow(thisPika))
+
+				logLikeModel_isolation <- logLik(model_isolation)
+				pseudoR2_isolation <- nagelR2(logLikeNull, logLikeModel_isolation, nrow(thisPika))
+
+				isolationCoeff <- coeffs(model_isolation)['meanDistToClosestPatchesScaled']
+
+				results <- rbind(
+					results,
+					data.frame(
+						thisNumClosestPatches = thisNumClosestPatches,
+						climateModel = form,
+						region = region,
+						isolationCoeff = isolationCoeff,
+						pseudoR2_noIsolation = pseudoR2_noIsolation,
+						pseudoR2_isolation = pseudoR2_isolation,
+						aicc_noIsolation = aicc_noIsolation,
+						aicc_isolation = aicc_isolation
+					)
+				
+				)
+			
+			} # next number of closest patches
+		
+		} # next climate model
+		
+		results$deltaAic_isolationNoIsolation <- results$aicc_noIsolation - results$aicc_isolation
+		results$deltaPseudoR2_isolationNoIsolation <- results$pseudoR2_isolation - results$pseudoR2_noIsolation
+		
+		rownames(results) <- NULL
+		write.csv(results, paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs - Isolation.csv'), row.names=FALSE)
+
 	
 say('DONE!!!', level=1, deco='%')

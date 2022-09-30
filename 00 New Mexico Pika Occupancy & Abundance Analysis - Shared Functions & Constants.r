@@ -52,6 +52,7 @@
 	library(ordinalNet)
 	library(readxl)
 	library(raster)
+	library(sf)
 	library(terra)
 	library(tidyverse)
 	
@@ -78,6 +79,10 @@
 	occCol <- 'chartreuse'
 	oldCol <- 'darkgoldenrod3'
 	neverCol <- 'firebrick3'
+	
+	# for post hoc analyses including isolation, what cutoff of delta AICc to use for selecting top "climate-only" models?
+	maxDeltaAic_occupancy <- 10
+	maxDeltaAic_density <- 4
 
 ##########################################
 ### convert variable name to nice name ###
@@ -844,7 +849,7 @@ extractTerms <- function(...) {
 	models <- list(...)
 	n <- length(models)
 	
-	term1 <- term2 <- term3 <- term4 <- term5 <- term6 <- term7 <- term8 <- rep(NA, n)
+	term1 <- term2 <- term3 <- term4 <- term5 <- term6 <- term7 <- term8 <- term9 <- rep(NA, n)
 	for (countModel in 1:n) {
 	
 		coefs <- coefficients(models[[countModel]])
@@ -892,6 +897,11 @@ extractTerms <- function(...) {
 			term8[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
 		}
 	
+		if (length(coefs) > 8) {
+			term <- coefs[9]
+			term9[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
+		}
+	
 	}
 	
 	occOrDens <- if (grepl(term1[1], pattern='occVar_')) {
@@ -905,8 +915,8 @@ extractTerms <- function(...) {
 	term3 <- niceFormulae(term3, occOrDens=occOrDens)
 	term4 <- niceFormulae(term4, occOrDens=occOrDens)
 
-	out <- list(term1, term2, term3, term4, term5, term6, term7, term8)
-	names(out) <- paste0('term', 1:8)
+	out <- list(term1, term2, term3, term4, term5, term6, term7, term8, term9)
+	names(out) <- paste0('term', 1:9)
 	out
 	
 }

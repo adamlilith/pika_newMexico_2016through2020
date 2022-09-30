@@ -19,13 +19,6 @@
 
 	source(paste0(drive, '/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
 
-	# for ad hoc density analysis, use all simple climate-only models that have an AICc < this value
-	minDeltaAic <- 4
-
-# say('###############################################')
-# say('### calculate distance to nearest patch(es) ###')
-# say('###############################################')
-
 say('#################################')
 say('### post hoc density analysis ###')
 say('#################################')
@@ -34,7 +27,7 @@ say('#################################')
 	################
 
 		### data
-		load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+		load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
 		pika <- pika[!is.na(pika$latestDensity), ]
 
 		### collate "latest" version of each predictor
@@ -57,11 +50,15 @@ say('#################################')
 
 		if (length(nas) > 0) pika <- pika[-nas, ]
 
+		# distances to nearest patches
+		pika$meanDistToClosest3Patches_m <- rowMeans(pika[ , paste0('distClosestPatch_patch', 1:3, '_m')])
+		pika$meanDistToClosest4Patches_m <- rowMeans(pika[ , paste0('distClosestPatch_patch', 1:4, '_m')])
+		
 	### models
 	##########
 	
 		allClimModels <- read.csv('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv')
-		topClimModels <- allClimModels[allClimModels$deltaAicc < minDeltaAic, ]
+		topClimModels <- allClimModels[allClimModels$deltaAicc < maxDeltaAic_density, ]
 
 		report <- data.frame()
 		
@@ -70,9 +67,11 @@ say('#################################')
 		llNull <- logLik(nullModel)
 		llNullRegion <- logLik(nullModelRegion)
 
-		ecoTerms <- c('latestGrazing', 'perimBurnedMostRecent_perc', 'latestGrassForb', 'latestDensSurveyYear')
-		ecoTermsGrid <- expand.grid(a = c(TRUE, FALSE), b = c(TRUE, FALSE), c = c(TRUE, FALSE), d = c(TRUE, FALSE))
+		ecoTerms <- c('latestGrazing', 'perimBurnedMostRecent_perc', 'latestGrassForb', 'latestDensSurveyYear', 'meanDistToClosest3Patches_m', 'meanDistToClosest4Patches_m')
+		ecoTermsGrid <- expand.grid(a = c(TRUE, FALSE), b = c(TRUE, FALSE), c = c(TRUE, FALSE), d = c(TRUE, FALSE), e = c(TRUE, FALSE), f= c(TRUE, FALSE))
 		names(ecoTermsGrid) <- ecoTerms
+		
+		ecoTermsGrid <- ecoTermsGrid[!(ecoTermsGrid$meanDistToClosest3Patches_m & ecoTermsGrid$meanDistToClosest4Patches_m), ]
 
 		for (countClimModel in 1:nrow(topClimModels)) {
 
@@ -117,6 +116,7 @@ say('#################################')
 				term6 <- if (is.null(terms$term6)) { c(NA, NA) } else { terms$term6 }
 				term7 <- if (is.null(terms$term7)) { c(NA, NA) } else { terms$term7 }
 				term8 <- if (is.null(terms$term8)) { c(NA, NA) } else { terms$term8 }
+				term9 <- if (is.null(terms$term9)) { c(NA, NA) } else { terms$term9 }
 				
 				aicc <- AICc(model)
 				
@@ -136,6 +136,7 @@ say('#################################')
 						term6 = term6,
 						term7 = term7,
 						term8 = term8,
+						term9 = term9,
 						region = hasRegion,
 						aicc = aicc,
 						pseudoR2 = pseudoR2
@@ -159,6 +160,7 @@ say('#################################')
 				term6 = NA,
 				term7 = NA,
 				term8 = NA,
+				term9 = NA,
 				region = FALSE,
 				aicc = AICc(nullModel),
 				pseudoR2 = 0
@@ -178,6 +180,7 @@ say('#################################')
 				term6 = NA,
 				term7 = NA,
 				term8 = NA,
+				term9 = NA,
 				region = TRUE,
 				aicc = AICc(nullModelRegion),
 				pseudoR2 = nagelR2(llNull, llNullRegion, n=nrow(thisPika))
@@ -197,5 +200,4 @@ say('#################################')
 		file <- paste0('./Figures & Tables/Density - Post Hoc Models/Post Hoc Density Models.csv')
 		write.csv(report, file, row.names=FALSE)
 		
-
 say('DONE!!!', level=1, deco='%')
