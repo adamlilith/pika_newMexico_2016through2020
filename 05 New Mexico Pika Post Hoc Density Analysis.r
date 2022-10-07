@@ -51,8 +51,8 @@ say('#################################')
 		if (length(nas) > 0) pika <- pika[-nas, ]
 
 		# distances to nearest patches
-		pika$meanDistToClosest3Patches_m <- rowMeans(pika[ , paste0('distClosestPatch_patch', 1:3, '_m')])
-		pika$meanDistToClosest4Patches_m <- rowMeans(pika[ , paste0('distClosestPatch_patch', 1:4, '_m')])
+		pika$logMeanDistToClosest3Patches_m <- log10(rowMeans(pika[ , paste0('distClosestPatch_patch', 1:3, '_m')]))
+		pika$logMeanDistToClosest4Patches_m <- log10(rowMeans(pika[ , paste0('distClosestPatch_patch', 1:4, '_m')]))
 		
 	### models
 	##########
@@ -67,11 +67,11 @@ say('#################################')
 		llNull <- logLik(nullModel)
 		llNullRegion <- logLik(nullModelRegion)
 
-		ecoTerms <- c('latestGrazing', 'perimBurnedMostRecent_perc', 'latestGrassForb', 'latestDensSurveyYear', 'meanDistToClosest3Patches_m', 'meanDistToClosest4Patches_m')
+		ecoTerms <- c('latestGrazing', 'perimBurnedMostRecent_perc', 'latestGrassForb', 'latestDensSurveyYear', 'logMeanDistToClosest3Patches_m', 'logMeanDistToClosest4Patches_m')
 		ecoTermsGrid <- expand.grid(a = c(TRUE, FALSE), b = c(TRUE, FALSE), c = c(TRUE, FALSE), d = c(TRUE, FALSE), e = c(TRUE, FALSE), f= c(TRUE, FALSE))
 		names(ecoTermsGrid) <- ecoTerms
 		
-		ecoTermsGrid <- ecoTermsGrid[!(ecoTermsGrid$meanDistToClosest3Patches_m & ecoTermsGrid$meanDistToClosest4Patches_m), ]
+		ecoTermsGrid <- ecoTermsGrid[!(ecoTermsGrid$logMeanDistToClosest3Patches_m & ecoTermsGrid$logMeanDistToClosest4Patches_m), ]
 
 		for (countClimModel in 1:nrow(topClimModels)) {
 

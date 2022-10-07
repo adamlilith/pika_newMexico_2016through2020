@@ -343,111 +343,110 @@
 	
 	# } # next occupancy window
 	
-# say('#############################################################################################')
-# say('### post hoc analysis of ORDINAL occupancy using all data and distance to nearest patches ###')
-# say('#############################################################################################')
+say('#############################################################################################')
+say('### post hoc analysis of ORDINAL occupancy using all data and distance to nearest patches ###')
+say('#############################################################################################')
 
-	# ### prepare climate data
-	# ########################
+	### prepare climate data
+	########################
 	
-		# load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
-		# pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'), ordered=TRUE)
-		# pika$region <- as.factor(pika$region)
+		load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
+		pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'), ordered=TRUE)
+		pika$region <- as.factor(pika$region)
 		
-		# pika$numHomeRangesScaled <- scale(pika$numHomeRanges)
+		pika$numHomeRangesScaled <- scale(pika$numHomeRanges)
 		
-		# vars <- getVars('occupancy')
-		# pika[ , vars] <- scale(pika[ , vars])
+		vars <- getVars('occupancy')
+		pika[ , vars] <- scale(pika[ , vars])
 
-	# ### generate and evaluate models
-	# ################################
+	### generate and evaluate models
+	################################
 		
-		# # Assuming no models are intercept-only models!
+		# Code assumes no "best" models are intercept-only models!
 
+		# intercept-only null model for pseudo-R2
+		modelNull <- polr(latestOccStatus ~ 1, data=pika, Hess=TRUE)
+		logLikeNull <- logLik(modelNull)
+		likeNull <- exp(logLikeNull)
 
-		# # intercept-only null model for pseudo-R2
-		# modelNull <- polr(latestOccStatus ~ 1, data=pika, Hess=TRUE)
-		# logLikeNull <- logLik(modelNull)
-		# likeNull <- exp(logLikeNull)
-
-		# for (occWindow in c(occWindows_y, NA)) {
+		for (occWindow in c(occWindows_y, NA)) {
 		
-			# results <- data.frame()
+			results <- data.frame()
 
-			# nice <- if (is.na(occWindow)) {
-				# paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
-			# } else {
-				# paste0(occWindow, '-yr Window')
-			# }
+			nice <- if (is.na(occWindow)) {
+				paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
+			} else {
+				paste0(occWindow, '-yr Window')
+			}
 			
-			# climModels <- read.csv(paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, '.csv'))
+			climModels <- read.csv(paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, '.csv'))
 			
-			# climModels <- climModels[order(climModels$deltaAicc), ]
-			# climModels <- climModels[climModels$deltaAicc <= maxDeltaAic_occupancy, , drop=FALSE]
+			climModels <- climModels[order(climModels$deltaAicc), ]
+			climModels <- climModels[climModels$deltaAicc <= maxDeltaAic_occupancy, , drop=FALSE]
 			
-			# for (countClimModel in 1:nrow(climModels)) {
+			for (countClimModel in 1:nrow(climModels)) {
 			
-				# form <- climModels$model[countClimModel]
-				# thisForm <- paste('latestOccStatus ~', form)
+				form <- climModels$model[countClimModel]
+				thisForm <- paste('latestOccStatus ~', form)
 				
-				# numHomeRanges <- climModels$numHomeRanges[countClimModel]
-				# region <- climModels$region[countClimModel]
+				numHomeRanges <- climModels$numHomeRanges[countClimModel]
+				region <- climModels$region[countClimModel]
 				
-				# if (numHomeRanges) thisForm <- paste(thisForm, '+ numHomeRangesScaled')
-				# if (region) thisForm <- paste(thisForm, '+ region')
+				if (numHomeRanges) thisForm <- paste(thisForm, '+ numHomeRangesScaled')
+				if (region) thisForm <- paste(thisForm, '+ region')
 				
-				# thisForm_isolation <- paste(thisForm, '+ meanDistToClosestPatchesScaled')
+				thisForm_isolation <- paste(thisForm, '+ logMeanDistToClosestPatchesScaled')
 				
-				# # evaluate n closest patches
-				# for (thisNumClosestPatches in c(3, 4)) {
+				# evaluate n closest patches
+				for (thisNumClosestPatches in c(3, 4)) {
 				
-					# thisPika <- pika
-					# thisPika$meanDistToClosestPatches_m <-
-						# rowMeans(thisPika[ , paste0('distClosestPatch_patch', 1:thisNumClosestPatches, '_m')])
-					# thisPika$meanDistToClosestPatchesScaled <- scale(thisPika$meanDistToClosestPatches_m)
+					thisPika <- pika
+					thisPika$logMeanDistToClosestPatches_m <-
+						rowMeans(thisPika[ , paste0('distClosestPatch_patch', 1:thisNumClosestPatches, '_m')])
+					thisPika$logMeanDistToClosestPatchesScaled <- scale(log(thisPika$logMeanDistToClosestPatches_m))
 				
-					# model_noIsolation <- polr(thisForm, data=thisPika, Hess=TRUE)
-					# model_isolation <- polr(thisForm_isolation, data=thisPika, Hess=TRUE)
+					model_noIsolation <- polr(thisForm, data=thisPika, Hess=TRUE)
+					model_isolation <- polr(thisForm_isolation, data=thisPika, Hess=TRUE)
 
-					# aicc_noIsolation <- AICc(model_noIsolation)
-					# aicc_isolation <- AICc(model_isolation)
+					aicc_noIsolation <- AICc(model_noIsolation)
+					aicc_isolation <- AICc(model_isolation)
 					
-					# logLikeModel_noIsolation <- logLik(model_noIsolation)
-					# pseudoR2_noIsolation <- nagelR2(logLikeNull, logLikeModel_noIsolation, nrow(thisPika))
+					logLikeModel_noIsolation <- logLik(model_noIsolation)
+					pseudoR2_noIsolation <- nagelR2(logLikeNull, logLikeModel_noIsolation, nrow(thisPika))
 
-					# logLikeModel_isolation <- logLik(model_isolation)
-					# pseudoR2_isolation <- nagelR2(logLikeNull, logLikeModel_isolation, nrow(thisPika))
+					logLikeModel_isolation <- logLik(model_isolation)
+					pseudoR2_isolation <- nagelR2(logLikeNull, logLikeModel_isolation, nrow(thisPika))
 
-					# isolationCoeff <- coeffs(model_isolation)['meanDistToClosestPatchesScaled']
+					isolationCoeff <- coeffs(model_isolation)['logMeanDistToClosestPatchesScaled']
 
-					# results <- rbind(
-						# results,
-						# data.frame(
-							# occWindow = occWindow,
-							# thisNumClosestPatches = thisNumClosestPatches,
-							# climateModel = form,
-							# numHomeRanges = numHomeRanges,
-							# region = region,
-							# isolationCoeff = isolationCoeff,
-							# pseudoR2_noIsolation = pseudoR2_noIsolation,
-							# pseudoR2_isolation = pseudoR2_isolation,
-							# aicc_noIsolation = aicc_noIsolation,
-							# aicc_isolation = aicc_isolation
-						# )
+					results <- rbind(
+						results,
+						data.frame(
+							occWindow = occWindow,
+							thisNumClosestPatches = thisNumClosestPatches,
+							climateModel = form,
+							numHomeRanges = numHomeRanges,
+							region = region,
+							isolationCoeff = isolationCoeff,
+							pseudoR2_noIsolation = pseudoR2_noIsolation,
+							pseudoR2_isolation = pseudoR2_isolation,
+							aicc_noIsolation = aicc_noIsolation,
+							aicc_isolation = aicc_isolation
+						)
 					
-					# )
+					)
 				
-				# } # next number of closest patches
+				} # next number of closest patches
 			
-			# } # next climate model
+			} # next climate model
 			
-			# results$deltaAic_isolationNoIsolation <- results$aicc_noIsolation - results$aicc_isolation
-			# results$deltaPseudoR2_isolationNoIsolation <- results$pseudoR2_isolation - results$pseudoR2_noIsolation
-			
-			# rownames(results) <- NULL
-			# write.csv(results, paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, ' - Isolation.csv'), row.names=FALSE)
+			results$deltaAic_isolationNoIsolation <- results$aicc_noIsolation - results$aicc_isolation
+			results$deltaPseudoR2_isolationNoIsolation <- results$pseudoR2_isolation - results$pseudoR2_noIsolation
 
-		# } # next window
+			rownames(results) <- NULL
+			write.csv(results, paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, ' - Isolation.csv'), row.names=FALSE)
+
+		} # next window
 		
 # say('#########################################################')
 # say('### BINARY simple OCCUPANCY analysis: all-data models ###')
@@ -756,111 +755,111 @@
 	
 	# } # next occupancy window
 
-# say('############################################################################################')
-# say('### post hoc analysis of BINARY occupancy using all data and distance to nearest patches ###')
-# say('############################################################################################')
+say('############################################################################################')
+say('### post hoc analysis of BINARY occupancy using all data and distance to nearest patches ###')
+say('############################################################################################')
 
-	# ### prepare climate data
-	# ########################
+	### prepare climate data
+	########################
 	
-		# load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
-		# pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'), ordered=TRUE)
-		# pika$region <- as.factor(pika$region)
+		load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
+		pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'), ordered=TRUE)
+		pika$region <- as.factor(pika$region)
 		
-		# pika$numHomeRangesScaled <- scale(pika$numHomeRanges)
+		pika$numHomeRangesScaled <- scale(pika$numHomeRanges)
 		
-		# vars <- getVars('occupancy')
-		# pika[ , vars] <- scale(pika[ , vars])
+		vars <- getVars('occupancy')
+		pika[ , vars] <- scale(pika[ , vars])
 
-	# ### generate and evaluate models
-	# ################################
+	### generate and evaluate models
+	################################
 		
-		# # Assuming no models are intercept-only models!
+		# Assuming no models are intercept-only models!
 
 
-		# # intercept-only null model for pseudo-R2
-		# modelNull <- glm(presAbs ~ 1, data=pika, family=binomial)
-		# logLikeNull <- logLik(modelNull)
-		# likeNull <- exp(logLikeNull)
+		# intercept-only null model for pseudo-R2
+		modelNull <- glm(presAbs ~ 1, data=pika, family=binomial)
+		logLikeNull <- logLik(modelNull)
+		likeNull <- exp(logLikeNull)
 
-		# for (occWindow in c(occWindows_y, NA)) {
+		for (occWindow in c(occWindows_y, NA)) {
 		
-			# results <- data.frame()
+			results <- data.frame()
 
-			# nice <- if (is.na(occWindow)) {
-				# paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
-			# } else {
-				# paste0(occWindow, '-yr Window')
-			# }
+			nice <- if (is.na(occWindow)) {
+				paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
+			} else {
+				paste0(occWindow, '-yr Window')
+			}
 			
-			# climModels <- read.csv(paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, '.csv'))
+			climModels <- read.csv(paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, '.csv'))
 			
-			# climModels <- climModels[order(climModels$deltaAicc), ]
-			# climModels <- climModels[climModels$deltaAicc <= maxDeltaAic_occupancy, , drop=FALSE]
+			climModels <- climModels[order(climModels$deltaAicc), ]
+			climModels <- climModels[climModels$deltaAicc <= maxDeltaAic_occupancy, , drop=FALSE]
 			
-			# for (countClimModel in 1:nrow(climModels)) {
+			for (countClimModel in 1:nrow(climModels)) {
 			
-				# form <- climModels$model[countClimModel]
-				# thisForm <- paste('presAbs ~', form)
+				form <- climModels$model[countClimModel]
+				thisForm <- paste('presAbs ~', form)
 				
-				# numHomeRanges <- climModels$numHomeRanges[countClimModel]
-				# region <- climModels$region[countClimModel]
+				numHomeRanges <- climModels$numHomeRanges[countClimModel]
+				region <- climModels$region[countClimModel]
 				
-				# if (numHomeRanges) thisForm <- paste(thisForm, '+ numHomeRangesScaled')
-				# if (region) thisForm <- paste(thisForm, '+ region')
+				if (numHomeRanges) thisForm <- paste(thisForm, '+ numHomeRangesScaled')
+				if (region) thisForm <- paste(thisForm, '+ region')
 				
-				# thisForm_isolation <- paste(thisForm, '+ meanDistToClosestPatchesScaled')
+				thisForm_isolation <- paste(thisForm, '+ logMeanDistToClosestPatchesScaled')
 				
-				# # evaluate n closest patches
-				# for (thisNumClosestPatches in c(3, 4)) {
+				# evaluate n closest patches
+				for (thisNumClosestPatches in c(3, 4)) {
 				
-					# thisPika <- pika
-					# thisPika$meanDistToClosestPatches_m <-
-						# rowMeans(thisPika[ , paste0('distClosestPatch_patch', 1:thisNumClosestPatches, '_m')])
-					# thisPika$meanDistToClosestPatchesScaled <- scale(thisPika$meanDistToClosestPatches_m)
+					thisPika <- pika
+					thisPika$logMeanDistToClosestPatches_m <-
+						rowMeans(thisPika[ , paste0('distClosestPatch_patch', 1:thisNumClosestPatches, '_m')])
+					thisPika$logMeanDistToClosestPatchesScaled <- scale(log10(thisPika$logMeanDistToClosestPatches_m))
 				
-					# model_noIsolation <- glm(thisForm, data=thisPika, family=binomial)
-					# model_isolation <- glm(thisForm_isolation, data=thisPika, family=binomial)
+					model_noIsolation <- glm(thisForm, data=thisPika, family=binomial)
+					model_isolation <- glm(thisForm_isolation, data=thisPika, family=binomial)
 
-					# aicc_noIsolation <- AICc(model_noIsolation)
-					# aicc_isolation <- AICc(model_isolation)
+					aicc_noIsolation <- AICc(model_noIsolation)
+					aicc_isolation <- AICc(model_isolation)
 					
-					# logLikeModel_noIsolation <- logLik(model_noIsolation)
-					# pseudoR2_noIsolation <- nagelR2(logLikeNull, logLikeModel_noIsolation, nrow(thisPika))
+					logLikeModel_noIsolation <- logLik(model_noIsolation)
+					pseudoR2_noIsolation <- nagelR2(logLikeNull, logLikeModel_noIsolation, nrow(thisPika))
 
-					# logLikeModel_isolation <- logLik(model_isolation)
-					# pseudoR2_isolation <- nagelR2(logLikeNull, logLikeModel_isolation, nrow(thisPika))
+					logLikeModel_isolation <- logLik(model_isolation)
+					pseudoR2_isolation <- nagelR2(logLikeNull, logLikeModel_isolation, nrow(thisPika))
 
-					# isolationCoeff <- coeffs(model_isolation)['meanDistToClosestPatchesScaled']
+					isolationCoeff <- coeffs(model_isolation)['logMeanDistToClosestPatchesScaled']
 
-					# results <- rbind(
-						# results,
-						# data.frame(
-							# occWindow = occWindow,
-							# thisNumClosestPatches = thisNumClosestPatches,
-							# climateModel = form,
-							# numHomeRanges = numHomeRanges,
-							# region = region,
-							# isolationCoeff = isolationCoeff,
-							# pseudoR2_noIsolation = pseudoR2_noIsolation,
-							# pseudoR2_isolation = pseudoR2_isolation,
-							# aicc_noIsolation = aicc_noIsolation,
-							# aicc_isolation = aicc_isolation
-						# )
+					results <- rbind(
+						results,
+						data.frame(
+							occWindow = occWindow,
+							thisNumClosestPatches = thisNumClosestPatches,
+							climateModel = form,
+							numHomeRanges = numHomeRanges,
+							region = region,
+							isolationCoeff = isolationCoeff,
+							pseudoR2_noIsolation = pseudoR2_noIsolation,
+							pseudoR2_isolation = pseudoR2_isolation,
+							aicc_noIsolation = aicc_noIsolation,
+							aicc_isolation = aicc_isolation
+						)
 					
-					# )
+					)
 				
-				# } # next number of closest patches
+				} # next number of closest patches
 			
-			# } # next climate model
+			} # next climate model
 			
-			# results$deltaAic_isolationNoIsolation <- results$aicc_noIsolation - results$aicc_isolation
-			# results$deltaPseudoR2_isolationNoIsolation <- results$pseudoR2_isolation - results$pseudoR2_noIsolation
+			results$deltaAic_isolationNoIsolation <- results$aicc_noIsolation - results$aicc_isolation
+			results$deltaPseudoR2_isolationNoIsolation <- results$pseudoR2_isolation - results$pseudoR2_noIsolation
 			
-			# rownames(results) <- NULL
-			# write.csv(results, paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, ' - Isolation.csv'), row.names=FALSE)
+			rownames(results) <- NULL
+			write.csv(results, paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, ' - Isolation.csv'), row.names=FALSE)
 
-		# } # next window
+		} # next window
 
 # say('#################################################################')
 # say('### ORDINAL simple OCCUPANCY analysis: cross-validated models ###')
