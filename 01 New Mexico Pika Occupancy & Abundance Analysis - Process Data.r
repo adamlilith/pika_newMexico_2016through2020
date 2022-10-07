@@ -9,6 +9,7 @@
 ### extract environmental data and calculate predictors ###
 ### distributions of predictors across all regions ###
 ### define regions and folds ###
+### extract distance to nearest patches ###
 ### distributions of predictors by region ###
 ### contingency table analysis of site status by region ###
 
@@ -1372,43 +1373,43 @@
 
 	# save(pika, file='./Data/03 New Mexico Pika - Assigned Folds.rda')
 
-say('###########################################')
-say('### extract distance to nearest patches ###')
-say('###########################################')
+# say('###########################################')
+# say('### extract distance to nearest patches ###')
+# say('###########################################')
 
-	### number of closest patches to which to measure distance
-	numClosePatches <- 4
+	# ### number of closest patches to which to measure distance
+	# numClosePatches <- 4
 
-	sf_use_s2(FALSE) # to obviate error "Edge x has duplicate vertex with edge y"
+	# sf_use_s2(FALSE) # to obviate error "Edge x has duplicate vertex with edge y"
 
-	load('./Data/03 New Mexico Pika - Assigned Folds.rda')
-	pikaSp <- SpatialPointsDataFrame(pika[ , ll], data=pika, proj4string=getCRS('wgs84', TRUE))
-	pikaSf <- st_as_sf(pikaSp)
-	pikaSf <- st_transform(pikaSf, crs=getCRS('albersNA'))
+	# load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	# pikaSp <- SpatialPointsDataFrame(pika[ , ll], data=pika, proj4string=getCRS('wgs84', TRUE))
+	# pikaSf <- st_as_sf(pikaSp)
+	# pikaSf <- st_transform(pikaSf, crs=getCRS('albersNA'))
 	
-	patchesSp <- shapefile('./Data/Patch Polygons/NM_Pika_Lcations_Polygon.shp')
-	patchesSf <- st_to_sf(patchesSp)
-	patchesSf <- st_transform(patchesSf, crs=getCRS('albersNA'))
+	# patchesSp <- shapefile('./Data/Patch Polygons/NM_Pika_Lcations_Polygon.shp')
+	# patchesSf <- st_to_sf(patchesSp)
+	# patchesSf <- st_transform(patchesSf, crs=getCRS('albersNA'))
 
-	distsClosestPatches_m <- matrix(NA, ncol=numClosePatches, nrow=nrow(pikaSf))
-	for (countPikaSite in 1:nrow(pikaSf)) {
+	# distsClosestPatches_m <- matrix(NA, ncol=numClosePatches, nrow=nrow(pikaSf))
+	# for (countPikaSite in 1:nrow(pikaSf)) {
 	
-		closestPointsOnPolyToPatch <- sf::st_nearest_points(pikaSf[countPikaSite, ], patchesSf)
-		closestPointsOnPolyToPatch <- sf::st_cast(closestPointsOnPolyToPatch, 'POINT')
+		# closestPointsOnPolyToPatch <- sf::st_nearest_points(pikaSf[countPikaSite, ], patchesSf)
+		# closestPointsOnPolyToPatch <- sf::st_cast(closestPointsOnPolyToPatch, 'POINT')
 		
-		dists_m <- st_distance(pikaSf[countPikaSite, ], closestPointsOnPolyToPatch)
-		dists_m <- as.numeric(dists_m)
-		dists_m <- dists_m[dists_m > 0]
-		dists_m <- sort(dists_m)
+		# dists_m <- st_distance(pikaSf[countPikaSite, ], closestPointsOnPolyToPatch)
+		# dists_m <- as.numeric(dists_m)
+		# dists_m <- dists_m[dists_m > 0]
+		# dists_m <- sort(dists_m)
 		
-		distsClosestPatches_m[countPikaSite, ] <- dists_m[1:numClosePatches]
+		# distsClosestPatches_m[countPikaSite, ] <- dists_m[1:numClosePatches]
 	
-	}
+	# }
 	
-	colnames(distsClosestPatches_m) <- paste0('distClosestPatch_patch', 1:numClosePatches, '_m')
-	pika <- cbind(pika, distsClosestPatches_m)
+	# colnames(distsClosestPatches_m) <- paste0('distClosestPatch_patch', 1:numClosePatches, '_m')
+	# pika <- cbind(pika, distsClosestPatches_m)
 	
-	save(pika, file='./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
+	# save(pika, file='./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
 
 # say('#############################################')
 # say('### distributions of predictors by region ###')
