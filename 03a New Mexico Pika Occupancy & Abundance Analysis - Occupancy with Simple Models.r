@@ -12,7 +12,6 @@
 ### BINARY simple OCCUPANCY analysis ###
 ### report relative odds of class change across regions across all BINARY OCCUPANCY models ###
 ### compile table of predictor weights for BINARY simple OCCUPANCY analysis ###
-### post hoc analysis of BINARY occupancy using all data and distance to nearest patches ###
 
 #############
 ### setup ###
