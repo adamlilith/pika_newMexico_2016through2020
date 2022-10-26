@@ -72,9 +72,7 @@
 
 	dirCreate('./Figures & Tables')
 	dirCreate('./Figures & Tables/Occupancy - Simple Models')
-	dirCreate('./Figures & Tables/Occupancy - Multivariate')
 	dirCreate('./Figures & Tables/Density - Simple Models')
-	dirCreate('./Figures & Tables/Density - Multivariate')
 
 	occCol <- 'chartreuse'
 	oldCol <- 'darkgoldenrod3'
@@ -82,7 +80,7 @@
 	
 	# for post hoc analyses including isolation, what cutoff of delta AICc to use for selecting top "climate-only" models?
 	maxDeltaAic_occupancy <- 10
-	maxDeltaAic_density <- 4
+	maxDeltaAic_density <- 3
 
 ##########################################
 ### convert variable name to nice name ###
@@ -94,6 +92,8 @@
 		# occOrDens 'occupancy' or 'density'
 		# incTime	include time frame in parentheses?
 		# wrapTime  insert "\n" before time?
+	
+		origVars <- vars
 	
 		# time frame
 		if (occOrDens == 'occupancy') {
@@ -122,8 +122,11 @@
 		vars <- predTable$varNice[match(vars, predTable$var)]
 		
 		wrap <- ifelse(wrapTime, '\n', ' ')
-		if (incTime & occOrDens == 'occupancy') vars <- paste0(vars, wrap, '(', timeFrame, '-yr window)')
-		if (incTime & occOrDens == 'density') vars <- paste0(vars, wrap, '(', timeFrame, ' yr prior)')
+		if (incTime & occOrDens == 'occupancy') vars <- paste0(vars, wrap, '(', timeFrame, '-yr)')
+		if (incTime & occOrDens == 'density') vars <- paste0(vars, wrap, '(', timeFrame, ' yr)')
+		
+		if (any(origVars == 'meanDistToClosest4Patches')) vars[origVars == 'meanDistToClosest4Patches'] <- 'isolation'
+		
 		vars
 	
 	}
@@ -567,7 +570,12 @@
 		} else if (occOrDens == 'density') {
 			paste0('densVar_', univars)
 		}
-
+		
+		# univars <- if (occOrDens == 'occupancy') {
+			# c(univars, 'numHomeRangesScaled', 'meanDistToClosest4Patches')
+		# } else if (occOrDens == 'density') {
+			# c(univars, 'meanDistToClosest4Patches')
+		# }
 		univars
 		
 	}
@@ -639,6 +647,17 @@
 		trivars <- paste0(term1, ' ', rep(trivars$fxBetweenTerms1and2, each=2), ' ', term2, ' + ', term3)
 
 		models <- c(univars, bivars, trivars)
+		
+		# models <- c(
+			# models,
+			# paste0(models, ' + numHomeRangesScaled')
+		# )
+		
+		# models <- c(
+			# models,
+			# paste0(models, ' + meanDistToClosest4Patches')
+		# )
+		
 		models
 		
 	}
@@ -855,6 +874,7 @@ extractTerms <- function(...) {
 		coefs <- coefficients(models[[countModel]])
 		if (any(names(coefs) == '(Intercept)')) coefs <- coefs[names(coefs) != '(Intercept)']
 		if (any(names(coefs) == 'numHomeRangesScaled')) coefs <- coefs[names(coefs) != 'numHomeRangesScaled']
+		if (any(names(coefs) == 'meanDistToClosest4Patches')) coefs <- coefs[names(coefs) != 'meanDistToClosest4Patches']
 		if (any(names(coefs) == 'regionnorthwest')) coefs <- coefs[names(coefs) != 'regionnorthwest']
 		if (any(names(coefs) == 'regionsoutheast')) coefs <- coefs[names(coefs) != 'regionsoutheast']
 		if (any(names(coefs) == 'regionsouthwest')) coefs <- coefs[names(coefs) != 'regionsouthwest']

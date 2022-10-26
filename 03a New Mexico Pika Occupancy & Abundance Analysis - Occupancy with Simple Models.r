@@ -5,24 +5,20 @@
 ###
 ### CONTENTS ###
 ### setup ###
-### ORDINAL simple OCCUPANCY analysis: all-data models ###
+### ORDINAL simple OCCUPANCY analysis ###
 ### report relative odds of class change across regions across all ORDINAL OCCUPANCY models ###
 ### compile table of predictor weights for ORDINAL simple OCCUPANCY analysis: all-data models ###
-### post hoc analysis of ORDINAL occupancy using all data and distance to nearest patches ###
 
-### BINARY simple OCCUPANCY analysis: all-data models ###
+### BINARY simple OCCUPANCY analysis ###
 ### report relative odds of class change across regions across all BINARY OCCUPANCY models ###
-### compile table of predictor weights for BINARY simple OCCUPANCY analysis: all-data models ###
+### compile table of predictor weights for BINARY simple OCCUPANCY analysis ###
 ### post hoc analysis of BINARY occupancy using all data and distance to nearest patches ###
-
-### ORDINAL simple OCCUPANCY analysis: cross-validated models ###
-### BINARY simple OCCUPANCY analysis: cross-validated models ###
-### ORDINAL simple OCCUPANCY analysis: cross-validated models summary ###
-### BINARY simple OCCUPANCY analysis: cross-validated models summary ###
 
 #############
 ### setup ###
 #############
+
+	rm(list=ls())
 
 	# drive <- 'C:'
 	# drive <- 'D:'
@@ -30,1290 +26,844 @@
 
 	source(paste0(drive, '/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
 
-# say('##########################################################')
-# say('### ORDINAL simple OCCUPANCY analysis: all-data models ###')
-# say('##########################################################')
+say('#########################################')
+say('### ORDINAL simple OCCUPANCY analysis ###')
+say('#########################################')
 
-	# load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
-	# pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'), ordered=TRUE)
-	# pika$region <- as.factor(pika$region)
+	load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
+	pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'), ordered=TRUE)
+	pika$region <- as.factor(pika$region)
 	
-	# pika$numHomeRangesScaled <- scale(pika$numHomeRanges)
+	pika$meanDistToClosest4Patches <- log10(pika$meanDistToClosest4Patches)
+	pika$numHomeRangesScaled <- scale(log10(pika$numHomeRanges + 1))
 	
-	# vars <- getVars('occupancy')
-	# pika[ , vars] <- scale(pika[ , vars])
+	vars <- getVars('occupancy')
+	vars <- c(vars, 'meanDistToClosest4Patches')
+	pika[ , vars] <- scale(pika[ , vars])
 
-	# # models
-	# formulae <- getFormulaeOcc()
+	# models
+	formulae <- getFormulaeOcc()
 
-	# # coefficients and model AICc's
-	# vars <- getVars('occupancy')
-	# accumCoeffs <- list()
-	# for (i in seq_along(vars)) accumCoeffs[[i]] <- numeric()
-	# names(accumCoeffs) <- vars
-	# aiccs <- accumCoeffs
+	# coefficients and model AICc's
+	vars <- getVars('occupancy')
+	vars <- c(vars, 'meanDistToClosest4Patches')
+	accumCoeffs <- list()
+	for (i in seq_along(vars)) accumCoeffs[[i]] <- numeric()
+	names(accumCoeffs) <- vars
+	aiccs <- accumCoeffs
 
-	# ### using all sites (no cross-validation)
-	# #########################################
+	### using all sites (no cross-validation)
+	#########################################
 	
-		# ### null models
-		# ###############
+		### null models
+		###############
 
-			# model1 <- polr(latestOccStatus ~ 1, data=pika, Hess=TRUE)
-			# model2 <- polr(latestOccStatus ~ numHomeRangesScaled, data=pika, Hess=TRUE)
-			# model3 <- polr(latestOccStatus ~ region, data=pika, Hess=TRUE)
-			# model4 <- polr(latestOccStatus ~ numHomeRangesScaled + region, data=pika, Hess=TRUE)
+			model1 <- polr(latestOccStatus ~ 1, data=pika, Hess=TRUE)
+			model2 <- polr(latestOccStatus ~ numHomeRangesScaled, data=pika, Hess=TRUE)
+			model3 <- polr(latestOccStatus ~ region, data=pika, Hess=TRUE)
+			model4 <- polr(latestOccStatus ~ numHomeRangesScaled + region, data=pika, Hess=TRUE)
 
-			# aicc1 <- AICc(model1)
-			# aicc2 <- AICc(model2)
-			# aicc3 <- AICc(model3)
-			# aicc4 <- AICc(model4)
+			model5 <- polr(latestOccStatus ~ meanDistToClosest4Patches, data=pika, Hess=TRUE)
+			model6 <- polr(latestOccStatus ~ numHomeRangesScaled + meanDistToClosest4Patches, data=pika, Hess=TRUE)
+			model7 <- polr(latestOccStatus ~ region + meanDistToClosest4Patches, data=pika, Hess=TRUE)
+			model8 <- polr(latestOccStatus ~ numHomeRangesScaled + region + meanDistToClosest4Patches, data=pika, Hess=TRUE)
 
-			# coeffs <- c(NA, NA, NA, NA)
-			# numHomeRanges <- c(FALSE, TRUE, FALSE, TRUE)
-			# region <- c(FALSE, FALSE, TRUE, TRUE)
+			aicc1 <- AICc(model1)
+			aicc2 <- AICc(model2)
+			aicc3 <- AICc(model3)
+			aicc4 <- AICc(model4)
+			aicc5 <- AICc(model5)
+			aicc6 <- AICc(model6)
+			aicc7 <- AICc(model7)
+			aicc8 <- AICc(model8)
+
+			coeffs <- c(NA, NA, NA, NA, NA, NA, NA, NA)
+			numHomeRanges <- c(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE)
+			region <- c(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, TRUE, TRUE)
+			isolation <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE)
 			
-			# aicc <- c(aicc1, aicc2, aicc3, aicc4)
+			aicc <- c(aicc1, aicc2, aicc3, aicc4, aicc5, aicc6, aicc7, aicc8)
 
-			# like1 <- logLik(model1)
-			# like2 <- logLik(model2)
-			# like3 <- logLik(model3)
-			# like4 <- logLik(model4)
+			like1 <- logLik(model1)
+			like2 <- logLik(model2)
+			like3 <- logLik(model3)
+			like4 <- logLik(model4)
+			like5 <- logLik(model5)
+			like6 <- logLik(model6)
+			like7 <- logLik(model7)
+			like8 <- logLik(model8)
 			
-			# likeNull <- like1
+			likeNull <- like1
 			
-			# n <- nrow(pika)
-			# pseudoR2_1 <- nagelR2(likeNull, like1, n)
-			# pseudoR2_2 <- nagelR2(likeNull, like2, n)
-			# pseudoR2_3 <- nagelR2(likeNull, like3, n)
-			# pseudoR2_4 <- nagelR2(likeNull, like4, n)
+			n <- nrow(pika)
+			pseudoR2_1 <- nagelR2(likeNull, like1, n)
+			pseudoR2_2 <- nagelR2(likeNull, like2, n)
+			pseudoR2_3 <- nagelR2(likeNull, like3, n)
+			pseudoR2_4 <- nagelR2(likeNull, like4, n)
+			pseudoR2_5 <- nagelR2(likeNull, like5, n)
+			pseudoR2_6 <- nagelR2(likeNull, like6, n)
+			pseudoR2_7 <- nagelR2(likeNull, like7, n)
+			pseudoR2_8 <- nagelR2(likeNull, like8, n)
 			
-			# numHomRangesCoef2 <- coefficients(model2)['numHomeRangesScaled']
-			# numHomRangesCoef4 <- coefficients(model4)['numHomeRangesScaled']
-
-			# pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
-
-			# coef3 <- coefficients(model3)
-			# coef4 <- coefficients(model4)
-
-			# nw3 <- coef3['regionnorthwest']
-			# se3 <- coef3['regionsoutheast']
-			# sw3 <- coef3['regionsouthwest']
-
-			# nw4 <- coef4['regionnorthwest']
-			# se4 <- coef4['regionsoutheast']
-			# sw4 <- coef4['regionsouthwest']
-
-			# results <- data.frame(
-				# model = '(Intercept)',
-				# term1 = NA,
-				# term2 = NA,
-				# term3 = NA,
-				# term4 = NA,
-				# numHomeRanges = numHomeRanges,
-				# homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4),
-				# region = region,
-				# aicc = aicc,
-				# pseudoR2 = pseudoR2,
-				# nw = c(NA, NA, nw3, nw4),
-				# se = c(NA, NA, se3, se4),
-				# sw = c(NA, NA, sw3, sw4)
-			# )
+			numHomRangesCoef2 <- coefficients(model2)['numHomeRangesScaled']
+			numHomRangesCoef4 <- coefficients(model4)['numHomeRangesScaled']
+			numHomRangesCoef6 <- coefficients(model6)['numHomeRangesScaled']
+			numHomRangesCoef8 <- coefficients(model8)['numHomeRangesScaled']
 			
+			isolationCoef5 <- coefficients(model5)['meanDistToClosest4Patches']
+			isolationCoef6 <- coefficients(model6)['meanDistToClosest4Patches']
+			isolationCoef7 <- coefficients(model7)['meanDistToClosest4Patches']
+			isolationCoef8 <- coefficients(model8)['meanDistToClosest4Patches']
 
-		# ### by climate variable
-		# #######################
+			pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4, pseudoR2_5, pseudoR2_6, pseudoR2_7, pseudoR2_8)
+
+			coef1 <- coefficients(model1)
+			coef2 <- coefficients(model2)
+			coef3 <- coefficients(model3)
+			coef4 <- coefficients(model4)
+			coef5 <- coefficients(model5)
+			coef6 <- coefficients(model6)
+			coef7 <- coefficients(model7)
+			coef8 <- coefficients(model8)
+
+			nw3 <- coef3['regionnorthwest']
+			se3 <- coef3['regionsoutheast']
+			sw3 <- coef3['regionsouthwest']
+
+			nw4 <- coef4['regionnorthwest']
+			se4 <- coef4['regionsoutheast']
+			sw4 <- coef4['regionsouthwest']
+
+			nw7 <- coef7['regionnorthwest']
+			se7 <- coef7['regionsoutheast']
+			sw7 <- coef7['regionsouthwest']
+
+			nw8 <- coef8['regionnorthwest']
+			se8 <- coef8['regionsoutheast']
+			sw8 <- coef8['regionsouthwest']
+
+			results <- data.frame(
+				model = '(Intercept)',
+				term1 = NA,
+				term2 = NA,
+				term3 = NA,
+				term4 = NA,
+				numHomeRanges = numHomeRanges,
+				homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4, NA, numHomRangesCoef6, NA, numHomRangesCoef8),
+				isolationCoeff = c(NA, NA, NA, NA, isolationCoef5, isolationCoef6, isolationCoef7, isolationCoef8),
+				region = region,
+				aicc = aicc,
+				pseudoR2 = pseudoR2,
+				nw = c(NA, NA, nw3, nw4, NA, NA, nw7, nw8),
+				se = c(NA, NA, se3, se4, NA, NA, se7, se8),
+				sw = c(NA, NA, sw3, sw4, NA, NA, sw7, sw8)
+			)
+			
+			# remember coefficients to do AICc-based coefficient weighting
+			for (k in 5:8) {
+			
+				coefk <- get(paste0('coef', k))
+				aicck <- get(paste0('aicc', k))
+
+				for (i in seq_along(accumCoeffs)) {
+					for (j in seq_along(coefk)) {
+						if (names(coefk)[j] == names(accumCoeffs)[i]) {
+							accumCoeffs[[i]] <- c(accumCoeffs[[i]], coefk[j])
+							aiccs[[i]] <- c(aiccs[[i]], aicck)
+						}
+					}
+				
+				}
+				
+			}
+
+		### by climate variable
+		#######################
 		
-		# for (formula in formulae) {
+		for (formula in formulae) {
 			
-			# say(formula)
+			say(formula)
 			
-			# form1 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula))
-			# form2 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + numHomeRangesScaled'))
-			# form3 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + region'))
-			# form4 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + numHomeRangesScaled + region'))
+			form1 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula))
+			form2 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + numHomeRangesScaled'))
+			form3 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + region'))
+			form4 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + numHomeRangesScaled + region'))
 			
-			# model1 <- polr(form1, data=pika, Hess=TRUE)
-			# model2 <- polr(form2, data=pika, Hess=TRUE)
-			# model3 <- polr(form3, data=pika, Hess=TRUE)
-			# model4 <- polr(form4, data=pika, Hess=TRUE)
+			form5 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + meanDistToClosest4Patches'))
+			form6 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + numHomeRangesScaled + meanDistToClosest4Patches'))
+			form7 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + region + meanDistToClosest4Patches'))
+			form8 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + numHomeRangesScaled + region + meanDistToClosest4Patches'))
 			
-			# aicc1 <- AICc(model1)
-			# aicc2 <- AICc(model2)
-			# aicc3 <- AICc(model3)
-			# aicc4 <- AICc(model4)
+			model1 <- polr(form1, data=pika, Hess=TRUE)
+			model2 <- polr(form2, data=pika, Hess=TRUE)
+			model3 <- polr(form3, data=pika, Hess=TRUE)
+			model4 <- polr(form4, data=pika, Hess=TRUE)
+			model5 <- polr(form5, data=pika, Hess=TRUE)
+			model6 <- polr(form6, data=pika, Hess=TRUE)
+			model7 <- polr(form7, data=pika, Hess=TRUE)
+			model8 <- polr(form8, data=pika, Hess=TRUE)
+			
+			aicc1 <- AICc(model1)
+			aicc2 <- AICc(model2)
+			aicc3 <- AICc(model3)
+			aicc4 <- AICc(model4)
+			aicc5 <- AICc(model5)
+			aicc6 <- AICc(model6)
+			aicc7 <- AICc(model7)
+			aicc8 <- AICc(model8)
 	
-			# terms <- extractTerms(model1, model2, model3, model4)
-			# term1 <- terms$term1
-			# term2 <- terms$term2
-			# term3 <- terms$term3
-			# term4 <- terms$term4
+			terms <- extractTerms(model1, model2, model3, model4, model5, model6, model7, model8)
+			term1 <- terms$term1
+			term2 <- terms$term2
+			term3 <- terms$term3
+			term4 <- terms$term4
+			term5 <- terms$term5
+			term6 <- terms$term6
+			term7 <- terms$term7
+			term8 <- terms$term8
 			
-			# numHomeRanges <- c(FALSE, TRUE, FALSE, TRUE)
-			# region <- c(FALSE, FALSE, TRUE, TRUE)
+			numHomeRanges <- c(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE)
+			region <- c(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, TRUE, TRUE)
+			isolation <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE)
 			
-			# aicc <- c(aicc1, aicc2, aicc3, aicc4)
+			aicc <- c(aicc1, aicc2, aicc3, aicc4, aicc5, aicc6, aicc7, aicc8)
 			
-			# like1 <- logLik(model1)
-			# like2 <- logLik(model2)
-			# like3 <- logLik(model3)
-			# like4 <- logLik(model4)
+			like1 <- logLik(model1)
+			like2 <- logLik(model2)
+			like3 <- logLik(model3)
+			like4 <- logLik(model4)
+			like5 <- logLik(model5)
+			like6 <- logLik(model6)
+			like7 <- logLik(model7)
+			like8 <- logLik(model8)
 			
-			# pseudoR2_1 <- nagelR2(likeNull, like1, n)
-			# pseudoR2_2 <- nagelR2(likeNull, like2, n)
-			# pseudoR2_3 <- nagelR2(likeNull, like3, n)
-			# pseudoR2_4 <- nagelR2(likeNull, like4, n)
+			pseudoR2_1 <- nagelR2(likeNull, like1, n)
+			pseudoR2_2 <- nagelR2(likeNull, like2, n)
+			pseudoR2_3 <- nagelR2(likeNull, like3, n)
+			pseudoR2_4 <- nagelR2(likeNull, like4, n)
+			pseudoR2_5 <- nagelR2(likeNull, like5, n)
+			pseudoR2_6 <- nagelR2(likeNull, like6, n)
+			pseudoR2_7 <- nagelR2(likeNull, like7, n)
+			pseudoR2_8 <- nagelR2(likeNull, like8, n)
 			
-			# numHomRangesCoef2 <- coefficients(model2)['numHomeRangesScaled']
-			# numHomRangesCoef4 <- coefficients(model4)['numHomeRangesScaled']
-			
-			# pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
+			numHomRangesCoef2 <- coefficients(model2)['numHomeRangesScaled']
+			numHomRangesCoef4 <- coefficients(model4)['numHomeRangesScaled']
 
-			# coef3 <- coefficients(model3)
-			# coef4 <- coefficients(model4)
+			numHomRangesCoef6 <- coefficients(model6)['numHomeRangesScaled']
+			numHomRangesCoef8 <- coefficients(model8)['numHomeRangesScaled']
 
-			# nw3 <- coef3['regionnorthwest']
-			# se3 <- coef3['regionsoutheast']
-			# sw3 <- coef3['regionsouthwest']
+			isolationCoef5 <- coefficients(model5)['meanDistToClosest4Patches']
+			isolationCoef6 <- coefficients(model6)['meanDistToClosest4Patches']
+			isolationCoef7 <- coefficients(model7)['meanDistToClosest4Patches']
+			isolationCoef8 <- coefficients(model8)['meanDistToClosest4Patches']
+			
+			pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4, pseudoR2_5, pseudoR2_6, pseudoR2_7, pseudoR2_8)
+
+			coef1 <- coefficients(model1)
+			coef2 <- coefficients(model2)
+			coef3 <- coefficients(model3)
+			coef4 <- coefficients(model4)
+			coef5 <- coefficients(model5)
+			coef6 <- coefficients(model6)
+			coef7 <- coefficients(model7)
+			coef7 <- coefficients(model8)
+
+			nw3 <- coef3['regionnorthwest']
+			se3 <- coef3['regionsoutheast']
+			sw3 <- coef3['regionsouthwest']
 	
-			# nw4 <- coef4['regionnorthwest']
-			# se4 <- coef4['regionsoutheast']
-			# sw4 <- coef4['regionsouthwest']
+			nw4 <- coef4['regionnorthwest']
+			se4 <- coef4['regionsoutheast']
+			sw4 <- coef4['regionsouthwest']
 
-			# # remember coefficients for cross-model summary
-			# for (i in seq_along(accumCoeffs)) {
-				# for (j in seq_along(coef3)) {
-					# if (names(coef3)[j] == names(accumCoeffs)[i]) {
-						# accumCoeffs[[i]] <- c(accumCoeffs[[i]], coef3[j])
-						# aiccs[[i]] <- c(aiccs[[i]], aicc3)
-					# }
-				# }
+			nw7 <- coef7['regionnorthwest']
+			se7 <- coef7['regionsoutheast']
+			sw7 <- coef7['regionsouthwest']
+
+			nw8 <- coef8['regionnorthwest']
+			se8 <- coef8['regionsoutheast']
+			sw8 <- coef8['regionsouthwest']
+
+			# remember
+			results <- rbind(
+				results,
+				data.frame(
+					model = formula,
+					term1 = term1,
+					term2 = term2,
+					term3 = term3,
+					term4 = term4,
+					numHomeRanges = numHomeRanges,
+					homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4, NA, numHomRangesCoef6, NA, numHomRangesCoef8),
+					isolationCoeff = c(NA, NA, NA, NA, isolationCoef5, isolationCoef6, isolationCoef7, isolationCoef8),
+					region = region,
+					aicc = aicc,
+					pseudoR2 = pseudoR2,
+					nw = c(NA, NA, nw3, nw4, NA, NA, nw7, nw8),
+					se = c(NA, NA, se3, se4, NA, NA, se7, se8),
+					sw = c(NA, NA, sw3, sw4, NA, NA, sw7, sw8)
+				)
+			)
 			
-			# }
-
-			# for (i in seq_along(accumCoeffs)) {
-				# for (j in seq_along(coef4)) {
-					# if (names(coef4)[j] == names(accumCoeffs)[i]) {
-						# accumCoeffs[[i]] <- c(accumCoeffs[[i]], coef4[j])
-						# aiccs[[i]] <- c(aiccs[[i]], aicc4)
-					# }
-				# }
+			# remember coefficients to do AICc-based coefficient weighting
+			for (k in 1:8) {
 			
-			# }
+				coefk <- get(paste0('coef', k))
+				aicck <- get(paste0('aicc', k))
 
-			# results <- rbind(
-				# results,
-				# data.frame(
-					# model = formula,
-					# term1 = term1,
-					# term2 = term2,
-					# term3 = term3,
-					# term4 = term4,
-					# numHomeRanges = numHomeRanges,
-					# homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4),
-					# region = region,
-					# aicc = aicc,
-					# pseudoR2 = pseudoR2,
-					# nw = c(NA, NA, nw3, nw4),
-					# se = c(NA, NA, se3, se4),
-					# sw = c(NA, NA, sw3, sw4)
-				# )
-			# )
+				for (i in seq_along(accumCoeffs)) {
+					for (j in seq_along(coefk)) {
+						if (names(coefk)[j] == names(accumCoeffs)[i]) {
+							accumCoeffs[[i]] <- c(accumCoeffs[[i]], coefk[j])
+							aiccs[[i]] <- c(aiccs[[i]], aicck)
+						}
+					}
+				
+				}
+				
+			}
 
-		# } # next variable
+		} # next variable
 
-		# ### reports
-		# ###########
+		### reports
+		###########
 		
-			# for (occWindow in c(occWindows_y, NA)) {
+			for (occWindow in c(occWindows_y, NA)) {
 			
-				# if (is.na(occWindow)) {
-					# thisResults <- results
-					# nice <- paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
-				# } else {
+				if (is.na(occWindow)) {
+					thisResults <- results
+					nice <- paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
+				} else {
 
-					# thisResults <- rbind(
-						# results[grepl(results$model, pattern=paste0(occWindow, 'yrWindow')), ],
-						# results[results$model == '(Intercept)', ]
-					# )
+					thisResults <- rbind(
+						results[grepl(results$model, pattern=paste0(occWindow, 'yrWindow')), ],
+						results[results$model == '(Intercept)', ]
+					)
 						
-					# nice <- paste0(occWindow, '-yr Window')
-				# }
+					nice <- paste0(occWindow, '-yr Window')
+				}
 				
-				# thisResults$deltaAicc <- thisResults$aicc - min(thisResults$aicc)
-				# w <- exp(-0.5 * thisResults$deltaAicc)
-				# thisResults$weight <- w / sum(w)
+				thisResults$deltaAicc <- thisResults$aicc - min(thisResults$aicc)
+				w <- exp(-0.5 * thisResults$deltaAicc)
+				thisResults$weight <- w / sum(w)
 
-				# thisResults <- thisResults[order(thisResults$weight, decreasing=TRUE), ]
-				# rownames(thisResults) <- NULL
+				thisResults <- thisResults[order(thisResults$weight, decreasing=TRUE), ]
+				rownames(thisResults) <- NULL
 
-				# file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, '.csv')
-				# write.csv(thisResults, file, row.names=FALSE)
+				file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, '.csv')
+				write.csv(thisResults, file, row.names=FALSE)
 				
-			# } # next window
+			} # next window
 
-	# ### summarize coefficients
-	# ### AICc-weighted
+	### summarize coefficients
+	### AICc-weighted
 
-	# minAicc <- min(results$aicc)
-	# deltaAicc <- results$aicc - minAicc
-	# w <- exp(-0.5 * deltaAicc)
-	# wSum <- sum(w)
+	minAicc <- min(results$aicc)
+	deltaAicc <- results$aicc - minAicc
+	w <- exp(-0.5 * deltaAicc)
+	wSum <- sum(w)
 
-	# for (i in seq_along(accumCoeffs)) {
-		# aiccs[[i]] <- aiccs[[i]] - minAicc
-		# aiccs[[i]] <- exp(-0.5 * aiccs[[i]])
-		# aiccs[[i]] <- aiccs[[i]] / wSum
-		# accumCoeffs[[i]] <- accumCoeffs[[i]] * aiccs[[i]] / sum(aiccs[[i]])
-	# }
+	for (i in seq_along(accumCoeffs)) {
+		aiccs[[i]] <- aiccs[[i]] - minAicc
+		aiccs[[i]] <- exp(-0.5 * aiccs[[i]])
+		aiccs[[i]] <- aiccs[[i]] / wSum
+		accumCoeffs[[i]] <- accumCoeffs[[i]] * aiccs[[i]] / sum(aiccs[[i]])
+	}
 	
-	# accumCoeffs <- lapply(accumCoeffs, sum)
+	accumCoeffs <- lapply(accumCoeffs, sum)
 
-	# sink('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - 7- & 10-yr Window Coefficient Summary.txt')
+	sink('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - 7- & 10-yr Window Coefficient Summary.txt')
 		
-		# say('AICc-weighted coefficient values for ORDINAL OCCUPANCY models', post=2)
-		# print(accumCoeffs)
+		say('AICc-weighted coefficient values for ORDINAL OCCUPANCY models', post=2)
+		print(accumCoeffs)
 		
-	# sink()
+	sink()
 
-# say('###############################################################################################')
-# say('### report relative odds of class change across regions across all ORDINAL OCCUPANCY models ###')
-# say('###############################################################################################')
+say('###############################################################################################')
+say('### report relative odds of class change across regions across all ORDINAL OCCUPANCY models ###')
+say('###############################################################################################')
 
-	# file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - 7 & 10-yr Windows.csv')
-	# results <- read.csv(file)
-	# results <- results[results$region, ]
-	# deltaAicc <- results$aicc - min(results$aicc)
-	# w <- exp(-0.5 * deltaAicc)
-	# w <- w / sum(w)
-	# nw <- sum(results$nw * w, na.rm=TRUE)
-	# se <- sum(results$se * w, na.rm=TRUE)
-	# sw <- sum(results$sw * w, na.rm=TRUE)
+	file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - 7 & 10-yr Windows.csv')
+	results <- read.csv(file)
+	results <- results[results$region, ]
+	deltaAicc <- results$aicc - min(results$aicc)
+	w <- exp(-0.5 * deltaAicc)
+	w <- w / sum(w)
+	nw <- sum(results$nw * w, na.rm=TRUE)
+	se <- sum(results$se * w, na.rm=TRUE)
+	sw <- sum(results$sw * w, na.rm=TRUE)
 		
-	# say('Ordinal odds of NW region relative to NE region: ', nw)
-	# say('Ordinal odds of SE region relative to NE region: ', se)
-	# say('Ordinal odds of SW region relative to NE region: ', sw)
+	say('Ordinal odds of NW region relative to NE region: ', nw)
+	say('Ordinal odds of SE region relative to NE region: ', se)
+	say('Ordinal odds of SW region relative to NE region: ', sw)
 
-# say('#################################################################################################')
-# say('### compile table of predictor weights for ORDINAL simple OCCUPANCY analysis: all-data models ###')
-# say('#################################################################################################')
+say('#################################################################################################')
+say('### compile table of predictor weights for ORDINAL simple OCCUPANCY analysis: all-data models ###')
+say('#################################################################################################')
 
-	# # rank variables by mean AICc weight
+	# rank variables by mean AICc weight
 
-	# for (occWindow in c(occWindows_y, NA)) {
+	for (occWindow in c(occWindows_y, NA)) {
 	
-		# nice <- if (is.na(occWindow)) {
-			# paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
-		# } else {
-			# paste0(occWindow, '-yr Window')
-		# }
+		nice <- if (is.na(occWindow)) {
+			paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
+		} else {
+			paste0(occWindow, '-yr Window')
+		}
 	
-		# # get variables
-		# vars <- getVars('occupancy')
-		# if (!is.na(occWindow)) vars <- vars[grepl(vars, pattern=paste0(occWindow, 'yrWindow'))]
-
-		# # get models
-		# file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, '.csv')
-		# models <- read.csv(file)
-		
-		# imp <- data.frame()
-		# for (var in vars) {
-		
-			# index <- which(grepl(models$model, pattern=var))
-			# n <- length(index)
-			# sumWeight <- sum(models$weight[index])
-			# meanWeight <- sumWeight / n
-			
-			# imp <- rbind(
-				# imp,
-				# data.frame(
-					# variable = var,
-					# niceVar = makeNiceVars(var, 'occupancy'),
-					# numModels = n,
-					# sumWeight = sumWeight,
-					# meanWeight = meanWeight
-				# )
-			# )
-			
-		# }
-		
-		# imp <- imp[order(imp$meanWeight, decreasing=TRUE), ]
-
-		# write.csv(imp, paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, ' - Var Import.csv'), row.names=FALSE)
-	
-	# } # next occupancy window
-	
-say('#############################################################################################')
-say('### post hoc analysis of ORDINAL occupancy using all data and distance to nearest patches ###')
-say('#############################################################################################')
-
-	### prepare climate data
-	########################
-	
-		load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
-		pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'), ordered=TRUE)
-		pika$region <- as.factor(pika$region)
-		
-		pika$numHomeRangesScaled <- scale(pika$numHomeRanges)
-		
+		# get variables
 		vars <- getVars('occupancy')
-		pika[ , vars] <- scale(pika[ , vars])
+		if (!is.na(occWindow)) vars <- vars[grepl(vars, pattern=paste0(occWindow, 'yrWindow'))]
+		vars <- c(vars, 'meanDistToClosest4Patches')
 
-	### generate and evaluate models
-	################################
+		# get models
+		file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, '.csv')
+		models <- read.csv(file)
 		
-		# Code assumes no "best" models are intercept-only models!
-
-		# intercept-only null model for pseudo-R2
-		modelNull <- polr(latestOccStatus ~ 1, data=pika, Hess=TRUE)
-		logLikeNull <- logLik(modelNull)
-		likeNull <- exp(logLikeNull)
-
-		for (occWindow in c(occWindows_y, NA)) {
+		imp <- data.frame()
+		for (var in vars) {
 		
-			results <- data.frame()
-
-			nice <- if (is.na(occWindow)) {
-				paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
+			index <- if (var != 'meanDistToClosest4Patches') {
+				which(grepl(models$model, pattern=var))
 			} else {
-				paste0(occWindow, '-yr Window')
+				which(!is.na(models$isolationCoeff))
 			}
 			
-			climModels <- read.csv(paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, '.csv'))
+			n <- length(index)
+			sumWeight <- sum(models$weight[index])
+			meanWeight <- sumWeight / n
+
+			imp <- rbind(
+				imp,
+				data.frame(
+					variable = var,
+					niceVar = makeNiceVars(var, 'occupancy'),
+					numModels = n,
+					sumWeight = sumWeight,
+					meanWeight = meanWeight
+				)
+			)
 			
-			climModels <- climModels[order(climModels$deltaAicc), ]
-			climModels <- climModels[climModels$deltaAicc <= maxDeltaAic_occupancy, , drop=FALSE]
-			
-			for (countClimModel in 1:nrow(climModels)) {
-			
-				form <- climModels$model[countClimModel]
-				thisForm <- paste('latestOccStatus ~', form)
-				
-				numHomeRanges <- climModels$numHomeRanges[countClimModel]
-				region <- climModels$region[countClimModel]
-				
-				if (numHomeRanges) thisForm <- paste(thisForm, '+ numHomeRangesScaled')
-				if (region) thisForm <- paste(thisForm, '+ region')
-				
-				thisForm_isolation <- paste(thisForm, '+ logMeanDistToClosestPatchesScaled')
-				
-				# evaluate n closest patches
-				for (thisNumClosestPatches in c(3, 4)) {
-				
-					thisPika <- pika
-					thisPika$logMeanDistToClosestPatches_m <-
-						rowMeans(thisPika[ , paste0('distClosestPatch_patch', 1:thisNumClosestPatches, '_m')])
-					thisPika$logMeanDistToClosestPatchesScaled <- scale(log(thisPika$logMeanDistToClosestPatches_m))
-				
-					model_noIsolation <- polr(thisForm, data=thisPika, Hess=TRUE)
-					model_isolation <- polr(thisForm_isolation, data=thisPika, Hess=TRUE)
-
-					aicc_noIsolation <- AICc(model_noIsolation)
-					aicc_isolation <- AICc(model_isolation)
-					
-					logLikeModel_noIsolation <- logLik(model_noIsolation)
-					pseudoR2_noIsolation <- nagelR2(logLikeNull, logLikeModel_noIsolation, nrow(thisPika))
-
-					logLikeModel_isolation <- logLik(model_isolation)
-					pseudoR2_isolation <- nagelR2(logLikeNull, logLikeModel_isolation, nrow(thisPika))
-
-					isolationCoeff <- coeffs(model_isolation)['logMeanDistToClosestPatchesScaled']
-
-					results <- rbind(
-						results,
-						data.frame(
-							occWindow = occWindow,
-							thisNumClosestPatches = thisNumClosestPatches,
-							climateModel = form,
-							numHomeRanges = numHomeRanges,
-							region = region,
-							isolationCoeff = isolationCoeff,
-							pseudoR2_noIsolation = pseudoR2_noIsolation,
-							pseudoR2_isolation = pseudoR2_isolation,
-							aicc_noIsolation = aicc_noIsolation,
-							aicc_isolation = aicc_isolation
-						)
-					
-					)
-				
-				} # next number of closest patches
-			
-			} # next climate model
-			
-			results$deltaAic_isolationNoIsolation <- results$aicc_noIsolation - results$aicc_isolation
-			results$deltaPseudoR2_isolationNoIsolation <- results$pseudoR2_isolation - results$pseudoR2_noIsolation
-
-			rownames(results) <- NULL
-			write.csv(results, paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, ' - Isolation.csv'), row.names=FALSE)
-
-		} # next window
+		}
 		
-# say('#########################################################')
-# say('### BINARY simple OCCUPANCY analysis: all-data models ###')
-# say('#########################################################')
+		imp <- imp[order(imp$meanWeight, decreasing=TRUE), ]
 
-	# load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
-	# pika$region <- as.factor(pika$region)
+		imp$niceVar[imp$variable == 'meanDistToClosest4Patches'] <- 'isolation'
+
+		write.csv(imp, paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - ', nice, ' - Var Import.csv'), row.names=FALSE)
 	
-	# pika$numHomeRangesScaled <- scale(pika$numHomeRanges)
+	} # next occupancy window
 
-	# vars <- getVars('occupancy')
-	# pika[ , vars] <- scale(pika[ , vars])
+say('########################################')
+say('### BINARY simple OCCUPANCY analysis ###')
+say('########################################')
 
-	# # models
-	# formulae <- getFormulaeOcc()
-
-	# # coefficients and model AICc's
-	# vars <- getVars('occupancy')
-	# accumCoeffs <- list()
-	# for (i in seq_along(vars)) accumCoeffs[[i]] <- numeric()
-	# names(accumCoeffs) <- vars
-	# aiccs <- accumCoeffs
-
-	# ### null models
-	# ###############
-
-		# model1 <- glm(presAbs ~ 1, data=pika, family=binomial)
-		# model2 <- glm(presAbs ~ numHomeRangesScaled, data=pika, family=binomial)
-		# model3 <- glm(presAbs ~ region, data=pika, family=binomial)
-		# model4 <- glm(presAbs ~ numHomeRangesScaled + region, data=pika, family=binomial)
-
-		# aicc1 <- AICc(model1)
-		# aicc2 <- AICc(model2)
-		# aicc3 <- AICc(model3)
-		# aicc4 <- AICc(model4)
-
-		# numHomeRanges <- c(FALSE, TRUE, FALSE, TRUE)
-		# region <- c(FALSE, FALSE, TRUE, TRUE)
-		
-		# aicc <- c(aicc1, aicc2, aicc3, aicc4)
-		
-		# like1 <- logLik(model1)
-		# like2 <- logLik(model2)
-		# like3 <- logLik(model3)
-		# like4 <- logLik(model4)
-		
-		# likeNull <- like1
-		
-		# numHomRangesCoef2 <- coefficients(model2)['numHomeRangesScaled']
-		# numHomRangesCoef4 <- coefficients(model4)['numHomeRangesScaled']
-
-		# n <- nrow(pika)
-		# pseudoR2_1 <- nagelR2(likeNull, like1, n)
-		# pseudoR2_2 <- nagelR2(likeNull, like2, n)
-		# pseudoR2_3 <- nagelR2(likeNull, like3, n)
-		# pseudoR2_4 <- nagelR2(likeNull, like4, n)
-		
-		# pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
-
-		# coef3 <- coefficients(model3)
-		# coef4 <- coefficients(model4)
-
-		# nw3 <- coef3['regionnorthwest']
-		# se3 <- coef3['regionsoutheast']
-		# sw3 <- coef3['regionsouthwest']
-
-		# nw4 <- coef4['regionnorthwest']
-		# se4 <- coef4['regionsoutheast']
-		# sw4 <- coef4['regionsouthwest']
-
-		# results <- data.frame(
-			# model = '(Intercept)',
-			# term1 = NA,
-			# term2 = NA,
-			# term3 = NA,
-			# term4 = NA,
-			# numHomeRanges = numHomeRanges,
-			# homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4),
-			# region = region,
-			# aicc = aicc,
-			# pseudoR2 = pseudoR2,
-			# nw = c(NA, NA, nw3, nw4),
-			# se = c(NA, NA, se3, se4),
-			# sw = c(NA, NA, sw3, sw4)
-		# )
-
-	# ### by climate variable
-	# #######################
-
-		# for (formula in formulae) {
-			
-			# say(formula)
-			
-			# form1 <- as.formula(paste0('presAbs ~ 1 + ', formula))
-			# form2 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + numHomeRangesScaled'))
-			# form3 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + region'))
-			# form4 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + numHomeRangesScaled + region'))
-
-			# model1 <- glm(form1, data=pika, family=binomial)
-			# model2 <- glm(form2, data=pika, family=binomial)
-			# model3 <- glm(form3, data=pika, family=binomial)
-			# model4 <- glm(form4, data=pika, family=binomial)
-			
-			# aicc1 <- AICc(model1)
-			# aicc2 <- AICc(model2)
-			# aicc3 <- AICc(model3)
-			# aicc4 <- AICc(model4)
-			
-			# terms <- extractTerms(model1, model2, model3, model4)
-			# term1 <- terms$term1
-			# term2 <- terms$term2
-			# term3 <- terms$term3
-			# term4 <- terms$term4
-			
-			# numHomeRanges <- c(FALSE, TRUE, FALSE, TRUE)
-			# region <- c(FALSE, FALSE, TRUE, TRUE)
-			
-			# aicc <- c(aicc1, aicc2, aicc3, aicc4)
-			
-			# like1 <- logLik(model1)
-			# like2 <- logLik(model2)
-			# like3 <- logLik(model3)
-			# like4 <- logLik(model4)
-			
-			# numHomRangesCoef2 <- coefficients(model2)['numHomeRangesScaled']
-			# numHomRangesCoef4 <- coefficients(model4)['numHomeRangesScaled']
-
-			# pseudoR2_1 <- nagelR2(likeNull, like1, n)
-			# pseudoR2_2 <- nagelR2(likeNull, like2, n)
-			# pseudoR2_3 <- nagelR2(likeNull, like3, n)
-			# pseudoR2_4 <- nagelR2(likeNull, like4, n)
-			
-			# pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
-
-			# coef3 <- coefficients(model3)
-			# coef4 <- coefficients(model4)
-
-			# nw3 <- coef3['regionnorthwest']
-			# se3 <- coef3['regionsoutheast']
-			# sw3 <- coef3['regionsouthwest']
-
-			# nw4 <- coef4['regionnorthwest']
-			# se4 <- coef4['regionsoutheast']
-			# sw4 <- coef4['regionsouthwest']
-
-			# # remember coefficients for cross-model summary
-			# for (i in seq_along(accumCoeffs)) {
-				# for (j in seq_along(coef3)) {
-					# if (names(coef3)[j] == names(accumCoeffs)[i]) {
-						# accumCoeffs[[i]] <- c(accumCoeffs[[i]], coef3[j])
-						# aiccs[[i]] <- c(aiccs[[i]], aicc3)
-					# }
-				# }
-			
-			# }
-
-			# for (i in seq_along(accumCoeffs)) {
-				# for (j in seq_along(coef4)) {
-					# if (names(coef4)[j] == names(accumCoeffs)[i]) {
-						# accumCoeffs[[i]] <- c(accumCoeffs[[i]], coef4[j])
-						# aiccs[[i]] <- c(aiccs[[i]], aicc4)
-					# }
-				# }
-			
-			# }
-
-			# results <- rbind(
-				# results,
-				# data.frame(
-					# model = formula,
-					# term1 = term1,
-					# term2 = term2,
-					# term3 = term3,
-					# term4 = term4,
-					# numHomeRanges = numHomeRanges,
-					# homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4),
-					# region = region,
-					# aicc = aicc,
-					# pseudoR2 = pseudoR2,
-					# nw = c(NA, NA, nw3, nw4),
-					# se = c(NA, NA, se3, se4),
-					# sw = c(NA, NA, sw3, sw4)
-				# )
-			# )
-			
-		# } # next variable
-
-	# ### reports
-	# ###########
+	load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
+	pika$region <- as.factor(pika$region)
 	
-		# for (occWindow in c(occWindows_y, NA)) {
+	pika$meanDistToClosest4Patches <- log10(pika$meanDistToClosest4Patches)
+	pika$numHomeRangesScaled <- scale(log10(pika$numHomeRanges + 1))
+	
+	vars <- getVars('occupancy')
+	vars <- c(vars, 'meanDistToClosest4Patches')
+	pika[ , vars] <- scale(pika[ , vars])
+
+	# models
+	formulae <- getFormulaeOcc()
+
+	# coefficients and model AICc's
+	accumCoeffs <- list()
+	for (i in seq_along(vars)) accumCoeffs[[i]] <- numeric()
+	names(accumCoeffs) <- vars
+	aiccs <- accumCoeffs
+
+	### null models
+	###############
+
+		model1 <- glm(presAbs ~ 1, data=pika, family=binomial)
+		model2 <- glm(presAbs ~ numHomeRangesScaled, data=pika, family=binomial)
+		model3 <- glm(presAbs ~ region, data=pika, family=binomial)
+		model4 <- glm(presAbs ~ numHomeRangesScaled + region, data=pika, family=binomial)
+
+		model5 <- glm(presAbs ~ meanDistToClosest4Patches, data=pika, family=binomial)
+		model6 <- glm(presAbs ~ numHomeRangesScaled + meanDistToClosest4Patches, data=pika, family=binomial)
+		model7 <- glm(presAbs ~ region + meanDistToClosest4Patches, data=pika, family=binomial)
+		model8 <- glm(presAbs ~ numHomeRangesScaled + region + meanDistToClosest4Patches, data=pika, family=binomial)
+
+		aicc1 <- AICc(model1)
+		aicc2 <- AICc(model2)
+		aicc3 <- AICc(model3)
+		aicc4 <- AICc(model4)
+		aicc5 <- AICc(model5)
+		aicc6 <- AICc(model6)
+		aicc7 <- AICc(model7)
+		aicc8 <- AICc(model8)
+
+		numHomeRanges <- c(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE)
+		region <- c(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, TRUE, TRUE)
+		isolation <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE)
 		
-			# if (is.na(occWindow)) {
-				# thisResults <- results
-				# nice <- paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
-			# } else {
-				# thisResults <- rbind(
-					# results[grepl(results$model, pattern=paste0(occWindow, 'yrWindow')), ],
-					# results[results$model == '(Intercept)', ]
-				# )
-				# nice <- paste0(occWindow, '-yr Window')
-			# }
+		aicc <- c(aicc1, aicc2, aicc3, aicc4, aicc5, aicc6, aicc7, aicc8)
+		
+		like1 <- logLik(model1)
+		like2 <- logLik(model2)
+		like3 <- logLik(model3)
+		like4 <- logLik(model4)
+		like5 <- logLik(model5)
+		like6 <- logLik(model6)
+		like7 <- logLik(model7)
+		like8 <- logLik(model8)
+		
+		likeNull <- like1
+		
+		numHomRangesCoef2 <- coefficients(model2)['numHomeRangesScaled']
+		numHomRangesCoef4 <- coefficients(model4)['numHomeRangesScaled']
+
+		numHomRangesCoef6 <- coefficients(model6)['numHomeRangesScaled']
+		numHomRangesCoef8 <- coefficients(model8)['numHomeRangesScaled']
+
+		isolationCoef5 <- coefficients(model5)['meanDistToClosest4Patches']
+		isolationCoef6 <- coefficients(model6)['meanDistToClosest4Patches']
+		isolationCoef7 <- coefficients(model7)['meanDistToClosest4Patches']
+		isolationCoef8 <- coefficients(model8)['meanDistToClosest4Patches']
+
+		n <- nrow(pika)
+		pseudoR2_1 <- nagelR2(likeNull, like1, n)
+		pseudoR2_2 <- nagelR2(likeNull, like2, n)
+		pseudoR2_3 <- nagelR2(likeNull, like3, n)
+		pseudoR2_4 <- nagelR2(likeNull, like4, n)
+		pseudoR2_5 <- nagelR2(likeNull, like5, n)
+		pseudoR2_6 <- nagelR2(likeNull, like6, n)
+		pseudoR2_7 <- nagelR2(likeNull, like7, n)
+		pseudoR2_8 <- nagelR2(likeNull, like8, n)
+		
+		pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4, pseudoR2_5, pseudoR2_6, pseudoR2_7, pseudoR2_8)
+
+		coef1 <- coefficients(model1)
+		coef2 <- coefficients(model2)
+		coef3 <- coefficients(model3)
+		coef4 <- coefficients(model4)
+		coef5 <- coefficients(model5)
+		coef6 <- coefficients(model6)
+		coef7 <- coefficients(model7)
+		coef8 <- coefficients(model8)
+
+		nw3 <- coef3['regionnorthwest']
+		se3 <- coef3['regionsoutheast']
+		sw3 <- coef3['regionsouthwest']
+
+		nw4 <- coef4['regionnorthwest']
+		se4 <- coef4['regionsoutheast']
+		sw4 <- coef4['regionsouthwest']
+
+		nw7 <- coef7['regionnorthwest']
+		se7 <- coef7['regionsoutheast']
+		sw7 <- coef7['regionsouthwest']
+
+		nw8 <- coef8['regionnorthwest']
+		se8 <- coef8['regionsoutheast']
+		sw8 <- coef8['regionsouthwest']
+
+		results <- data.frame(
+			model = '(Intercept)',
+			term1 = NA,
+			term2 = NA,
+			term3 = NA,
+			term4 = NA,
+			numHomeRanges = numHomeRanges,
+			homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4, NA, numHomRangesCoef6, NA, numHomRangesCoef8),
+			isolationCoeff = c(NA, NA, NA, NA, isolationCoef5, isolationCoef6, isolationCoef7, isolationCoef8),
+			region = region,
+			aicc = aicc,
+			pseudoR2 = pseudoR2,
+			nw = c(NA, NA, nw3, nw4, NA, NA, nw7, nw8),
+			se = c(NA, NA, se3, se4, NA, NA, se7, se8),
+			sw = c(NA, NA, sw3, sw4, NA, NA, sw7, sw8)
+		)
+
+		# remember coefficients to do AICc-based coefficient weighting
+		for (k in 5:8) {
+		
+			coefk <- get(paste0('coef', k))
+			aicck <- get(paste0('aicc', k))
+
+			for (i in seq_along(accumCoeffs)) {
+				for (j in seq_along(coefk)) {
+					if (names(coefk)[j] == names(accumCoeffs)[i]) {
+						accumCoeffs[[i]] <- c(accumCoeffs[[i]], coefk[j])
+						aiccs[[i]] <- c(aiccs[[i]], aicck)
+					}
+				}
 			
-			# thisResults$deltaAicc <- thisResults$aicc - min(thisResults$aicc)
-			# w <- exp(-0.5 * thisResults$deltaAicc)
-			# thisResults$weight <- w / sum(w)
-
-			# thisResults <- thisResults[order(thisResults$weight, decreasing=TRUE), ]
-			# rownames(thisResults) <- NULL
-
-			# file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, '.csv')
-			# write.csv(thisResults, file, row.names=FALSE)
-			
-		# } # next window
-
-	# ### summarize coefficients
-	# ### AICc-weighted
-
-	# minAicc <- min(results$aicc)
-	# deltaAicc <- results$aicc - minAicc
-	# w <- exp(-0.5 * deltaAicc)
-	# wSum <- sum(w)
-
-	# for (i in seq_along(accumCoeffs)) {
-		# aiccs[[i]] <- aiccs[[i]] - minAicc
-		# aiccs[[i]] <- exp(-0.5 * aiccs[[i]])
-		# aiccs[[i]] <- aiccs[[i]] / wSum
-		# accumCoeffs[[i]] <- accumCoeffs[[i]] * aiccs[[i]] / sum(aiccs[[i]])
-	# }
-	
-	# accumCoeffs <- lapply(accumCoeffs, sum)
-
-	# sink('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - 7- & 10-yr Window Coefficient Summary.txt')
-		
-		# say('AICc-weighted coefficient values for BINARY OCCUPANCY models', post=2)
-		# print(accumCoeffs)
-		
-	# sink()
-
-
-# say('##############################################################################################')
-# say('### report relative odds of class change across regions across all BINARY OCCUPANCY models ###')
-# say('##############################################################################################')
-
-	# file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - 7 & 10-yr Windows.csv')
-	# results <- read.csv(file)
-	# results <- results[results$region, ]
-	# deltaAicc <- results$aicc - min(results$aicc)
-	# w <- exp(-0.5 * deltaAicc)
-	# w <- w / sum(w)
-	# nw <- sum(results$nw * w, na.rm=TRUE)
-	# se <- sum(results$se * w, na.rm=TRUE)
-	# sw <- sum(results$sw * w, na.rm=TRUE)
-		
-	# say('Ordinal odds of NW region relative to NE region: ', nw)
-	# say('Ordinal odds of SE region relative to NE region: ', se)
-	# say('Ordinal odds of SW region relative to NE region: ', sw)
-	
-
-# say('################################################################################################')
-# say('### compile table of predictor weights for BINARY simple OCCUPANCY analysis: all-data models ###')
-# say('################################################################################################')
-
-	# # rank variables by mean AICc weight
-
-	# for (occWindow in c(occWindows_y, NA)) {
-	
-		# nice <- if (is.na(occWindow)) {
-			# paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
-		# } else {
-			# paste0(occWindow, '-yr Window')
-		# }
-	
-		# # get variables
-		# vars <- getVars('occupancy')
-		# if (!is.na(occWindow)) vars <- vars[grepl(vars, pattern=paste0(occWindow, 'yrWindow'))]
-
-		# # get models
-		# file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, '.csv')
-		# models <- read.csv(file)
-		
-		# imp <- data.frame()
-		# for (var in vars) {
-		
-			# index <- which(grepl(models$model, pattern=var))
-			# n <- length(index)
-			# sumWeight <- sum(models$weight[index])
-			# meanWeight <- sumWeight / n
-			
-			# imp <- rbind(
-				# imp,
-				# data.frame(
-					# variable = var,
-					# niceVar = makeNiceVars(var, 'occupancy'),
-					# numModels = n,
-					# sumWeight = sumWeight,
-					# meanWeight = meanWeight
-				# )
-			# )
-			
-		# }
-		
-		# imp <- imp[order(imp$meanWeight, decreasing=TRUE), ]
-
-		# write.csv(imp, paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, ' - Var Import.csv'), row.names=FALSE)
-	
-	# } # next occupancy window
-
-say('############################################################################################')
-say('### post hoc analysis of BINARY occupancy using all data and distance to nearest patches ###')
-say('############################################################################################')
-
-	### prepare climate data
-	########################
-	
-		load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
-		pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'), ordered=TRUE)
-		pika$region <- as.factor(pika$region)
-		
-		pika$numHomeRangesScaled <- scale(pika$numHomeRanges)
-		
-		vars <- getVars('occupancy')
-		pika[ , vars] <- scale(pika[ , vars])
-
-	### generate and evaluate models
-	################################
-		
-		# Assuming no models are intercept-only models!
-
-
-		# intercept-only null model for pseudo-R2
-		modelNull <- glm(presAbs ~ 1, data=pika, family=binomial)
-		logLikeNull <- logLik(modelNull)
-		likeNull <- exp(logLikeNull)
-
-		for (occWindow in c(occWindows_y, NA)) {
-		
-			results <- data.frame()
-
-			nice <- if (is.na(occWindow)) {
-				paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
-			} else {
-				paste0(occWindow, '-yr Window')
 			}
 			
-			climModels <- read.csv(paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, '.csv'))
-			
-			climModels <- climModels[order(climModels$deltaAicc), ]
-			climModels <- climModels[climModels$deltaAicc <= maxDeltaAic_occupancy, , drop=FALSE]
-			
-			for (countClimModel in 1:nrow(climModels)) {
-			
-				form <- climModels$model[countClimModel]
-				thisForm <- paste('presAbs ~', form)
-				
-				numHomeRanges <- climModels$numHomeRanges[countClimModel]
-				region <- climModels$region[countClimModel]
-				
-				if (numHomeRanges) thisForm <- paste(thisForm, '+ numHomeRangesScaled')
-				if (region) thisForm <- paste(thisForm, '+ region')
-				
-				thisForm_isolation <- paste(thisForm, '+ logMeanDistToClosestPatchesScaled')
-				
-				# evaluate n closest patches
-				for (thisNumClosestPatches in c(3, 4)) {
-				
-					thisPika <- pika
-					thisPika$logMeanDistToClosestPatches_m <-
-						rowMeans(thisPika[ , paste0('distClosestPatch_patch', 1:thisNumClosestPatches, '_m')])
-					thisPika$logMeanDistToClosestPatchesScaled <- scale(log10(thisPika$logMeanDistToClosestPatches_m))
-				
-					model_noIsolation <- glm(thisForm, data=thisPika, family=binomial)
-					model_isolation <- glm(thisForm_isolation, data=thisPika, family=binomial)
+		}
 
-					aicc_noIsolation <- AICc(model_noIsolation)
-					aicc_isolation <- AICc(model_isolation)
-					
-					logLikeModel_noIsolation <- logLik(model_noIsolation)
-					pseudoR2_noIsolation <- nagelR2(logLikeNull, logLikeModel_noIsolation, nrow(thisPika))
+	### by climate variable
+	#######################
 
-					logLikeModel_isolation <- logLik(model_isolation)
-					pseudoR2_isolation <- nagelR2(logLikeNull, logLikeModel_isolation, nrow(thisPika))
+		for (formula in formulae) {
+			
+			say(formula)
+			
+			form1 <- as.formula(paste0('presAbs ~ 1 + ', formula))
+			form2 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + numHomeRangesScaled'))
+			form3 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + region'))
+			form4 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + numHomeRangesScaled + region'))
 
-					isolationCoeff <- coeffs(model_isolation)['logMeanDistToClosestPatchesScaled']
+			form5 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + meanDistToClosest4Patches'))
+			form6 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + numHomeRangesScaled + meanDistToClosest4Patches'))
+			form7 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + region + meanDistToClosest4Patches'))
+			form8 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + numHomeRangesScaled + region + meanDistToClosest4Patches'))
 
-					results <- rbind(
-						results,
-						data.frame(
-							occWindow = occWindow,
-							thisNumClosestPatches = thisNumClosestPatches,
-							climateModel = form,
-							numHomeRanges = numHomeRanges,
-							region = region,
-							isolationCoeff = isolationCoeff,
-							pseudoR2_noIsolation = pseudoR2_noIsolation,
-							pseudoR2_isolation = pseudoR2_isolation,
-							aicc_noIsolation = aicc_noIsolation,
-							aicc_isolation = aicc_isolation
-						)
-					
-					)
+			model1 <- glm(form1, data=pika, family=binomial)
+			model2 <- glm(form2, data=pika, family=binomial)
+			model3 <- glm(form3, data=pika, family=binomial)
+			model4 <- glm(form4, data=pika, family=binomial)
+			model5 <- glm(form5, data=pika, family=binomial)
+			model6 <- glm(form6, data=pika, family=binomial)
+			model7 <- glm(form7, data=pika, family=binomial)
+			model8 <- glm(form8, data=pika, family=binomial)
+			
+			aicc1 <- AICc(model1)
+			aicc2 <- AICc(model2)
+			aicc3 <- AICc(model3)
+			aicc4 <- AICc(model4)
+			aicc5 <- AICc(model5)
+			aicc6 <- AICc(model6)
+			aicc7 <- AICc(model7)
+			aicc8 <- AICc(model8)
+			
+			terms <- extractTerms(model1, model2, model3, model4, model5, model6, model7, model8)
+			term1 <- terms$term1
+			term2 <- terms$term2
+			term3 <- terms$term3
+			term4 <- terms$term4
+			
+			numHomeRanges <- c(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE)
+			region <- c(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, TRUE, TRUE)
+			isolation <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE)
+			
+			aicc <- c(aicc1, aicc2, aicc3, aicc4, aicc5, aicc6, aicc7, aicc8)
+			
+			like1 <- logLik(model1)
+			like2 <- logLik(model2)
+			like3 <- logLik(model3)
+			like4 <- logLik(model4)
+			like5 <- logLik(model5)
+			like6 <- logLik(model6)
+			like7 <- logLik(model7)
+			like8 <- logLik(model8)
+			
+			numHomRangesCoef2 <- coefficients(model2)['numHomeRangesScaled']
+			numHomRangesCoef4 <- coefficients(model4)['numHomeRangesScaled']
+			numHomRangesCoef6 <- coefficients(model6)['numHomeRangesScaled']
+			numHomRangesCoef8 <- coefficients(model8)['numHomeRangesScaled']
+			
+			isolationCoef5 <- coefficients(model5)['meanDistToClosest4Patches']
+			isolationCoef6 <- coefficients(model6)['meanDistToClosest4Patches']
+			isolationCoef7 <- coefficients(model7)['meanDistToClosest4Patches']
+			isolationCoef8 <- coefficients(model8)['meanDistToClosest4Patches']
+			
+			pseudoR2_1 <- nagelR2(likeNull, like1, n)
+			pseudoR2_2 <- nagelR2(likeNull, like2, n)
+			pseudoR2_3 <- nagelR2(likeNull, like3, n)
+			pseudoR2_4 <- nagelR2(likeNull, like4, n)
+			pseudoR2_5 <- nagelR2(likeNull, like5, n)
+			pseudoR2_6 <- nagelR2(likeNull, like6, n)
+			pseudoR2_7 <- nagelR2(likeNull, like7, n)
+			pseudoR2_8 <- nagelR2(likeNull, like8, n)
+			
+			pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4, pseudoR2_5, pseudoR2_6, pseudoR2_7, pseudoR2_8)
+
+			coef1 <- coefficients(model1)
+			coef2 <- coefficients(model2)
+			coef3 <- coefficients(model3)
+			coef4 <- coefficients(model4)
+			coef5 <- coefficients(model5)
+			coef6 <- coefficients(model6)
+			coef7 <- coefficients(model7)
+			coef8 <- coefficients(model8)
+
+			nw3 <- coef3['regionnorthwest']
+			se3 <- coef3['regionsoutheast']
+			sw3 <- coef3['regionsouthwest']
+
+			nw4 <- coef4['regionnorthwest']
+			se4 <- coef4['regionsoutheast']
+			sw4 <- coef4['regionsouthwest']
+
+			nw7 <- coef7['regionnorthwest']
+			se7 <- coef7['regionsoutheast']
+			sw7 <- coef7['regionsouthwest']
+
+			nw8 <- coef8['regionnorthwest']
+			se8 <- coef8['regionsoutheast']
+			sw8 <- coef8['regionsouthwest']
+
+			results <- rbind(
+				results,
+				data.frame(
+					model = formula,
+					term1 = term1,
+					term2 = term2,
+					term3 = term3,
+					term4 = term4,
+					numHomeRanges = numHomeRanges,
+					homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4, NA, numHomRangesCoef6, NA, numHomRangesCoef8),
+					isolationCoeff = c(NA, NA, NA, NA, isolationCoef5, isolationCoef6, isolationCoef7, isolationCoef8),
+					region = region,
+					aicc = aicc,
+					pseudoR2 = pseudoR2,
+					nw = c(NA, NA, nw3, nw4, NA, NA, nw7, nw8),
+					se = c(NA, NA, se3, se4, NA, NA, se7, se8),
+					sw = c(NA, NA, sw3, sw4, NA, NA, sw7, sw8)
+				)
+			)
 				
-				} # next number of closest patches
+			# remember coefficients to do AICc-based coefficient weighting
+			for (k in 1:8) {
 			
-			} # next climate model
-			
-			results$deltaAic_isolationNoIsolation <- results$aicc_noIsolation - results$aicc_isolation
-			results$deltaPseudoR2_isolationNoIsolation <- results$pseudoR2_isolation - results$pseudoR2_noIsolation
-			
-			rownames(results) <- NULL
-			write.csv(results, paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, ' - Isolation.csv'), row.names=FALSE)
+				coefk <- get(paste0('coef', k))
+				aicck <- get(paste0('aicc', k))
 
+				for (i in seq_along(accumCoeffs)) {
+					for (j in seq_along(coefk)) {
+						if (names(coefk)[j] == names(accumCoeffs)[i]) {
+							accumCoeffs[[i]] <- c(accumCoeffs[[i]], coefk[j])
+							aiccs[[i]] <- c(aiccs[[i]], aicck)
+						}
+					}
+				
+				}
+				
+			}
+
+		} # next formula
+
+	### reports
+	###########
+	
+		for (occWindow in c(occWindows_y, NA)) {
+		
+			if (is.na(occWindow)) {
+				thisResults <- results
+				nice <- paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
+			} else {
+				thisResults <- rbind(
+					results[grepl(results$model, pattern=paste0(occWindow, 'yrWindow')), ],
+					results[results$model == '(Intercept)', ]
+				)
+				nice <- paste0(occWindow, '-yr Window')
+			}
+			
+			thisResults$deltaAicc <- thisResults$aicc - min(thisResults$aicc)
+			w <- exp(-0.5 * thisResults$deltaAicc)
+			thisResults$weight <- w / sum(w)
+
+			thisResults <- thisResults[order(thisResults$weight, decreasing=TRUE), ]
+			rownames(thisResults) <- NULL
+
+			file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, '.csv')
+			write.csv(thisResults, file, row.names=FALSE)
+			
 		} # next window
 
-# say('#################################################################')
-# say('### ORDINAL simple OCCUPANCY analysis: cross-validated models ###')
-# say('#################################################################')
+	### summarize coefficients
+	### AICc-weighted
 
-	# load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
-	# pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'), ordered=TRUE)
-	# pika$region <- as.factor(pika$region)
-	# pika$numHomeRangesScaled <- scale(pika$numHomeRanges)
+	minAicc <- min(results$aicc)
+	deltaAicc <- results$aicc - minAicc
+	w <- exp(-0.5 * deltaAicc)
+	wSum <- sum(w)
 
-	# vars <- getVars('occupancy')
-	# pika[ , vars] <- scale(pika[ , vars])
-
-	# # models
-	# formulae <- getFormulaeOcc()
-
-	# folds <- expand.grid(nwFold=1:2, swFold=1:2, neFold=1:2, seFold=1:2)
-
-	# results <- data.frame()
-
-	# ### intercept-only models
-	# #########################
+	for (i in seq_along(accumCoeffs)) {
+		aiccs[[i]] <- aiccs[[i]] - minAicc
+		aiccs[[i]] <- exp(-0.5 * aiccs[[i]])
+		aiccs[[i]] <- aiccs[[i]] / wSum
+		accumCoeffs[[i]] <- accumCoeffs[[i]] * aiccs[[i]] / sum(aiccs[[i]])
+	}
 	
-		# for (k in 1:nrow(folds)) {
+	accumCoeffs <- lapply(accumCoeffs, sum)
 
-			# trainIndex <- which(
-				# (pika$region == 'northwest' & pika$fold == folds$nwFold[k]) |
-				# (pika$region == 'southwest' & pika$fold == folds$swFold[k]) |
-				# (pika$region == 'northeast' & pika$fold == folds$neFold[k]) |
-				# (pika$region == 'southeast' & pika$fold == folds$seFold[k])
-			# )
-			
-			# testIndex <- which(
-				# (pika$region == 'northwest' & pika$fold != folds$nwFold[k]) |
-				# (pika$region == 'southwest' & pika$fold != folds$swFold[k]) |
-				# (pika$region == 'northeast' & pika$fold != folds$neFold[k]) |
-				# (pika$region == 'southeast' & pika$fold != folds$seFold[k])
-			# )
-			
-			# trainData <- pika[trainIndex, ]
-			# testData <- pika[testIndex, ]
-
-			# # train models
-
-			# model1 <- polr(latestOccStatus ~ 1, data=trainData, Hess=TRUE)
-			# model2 <- polr(latestOccStatus ~ 1 + numHomeRangesScaled, data=trainData, Hess=TRUE)
-			# model3 <- polr(latestOccStatus ~ 1 + region, data=trainData, Hess=TRUE)
-			# model4 <- polr(latestOccStatus ~ 1 + numHomeRangesScaled + region, data=trainData, Hess=TRUE)
-			
-			# # test models
-
-			# pred1 <- predict(model1, testData, type='probs')
-			# pred2 <- predict(model2, testData, type='probs')
-			# pred3 <- predict(model3, testData, type='probs')
-			# pred4 <- predict(model4, testData, type='probs')
-			
-			# pred1_never <- pred1[testData$latestOccStatus == '0 never', 1]
-			# pred1_old <- pred1[testData$latestOccStatus == '1 old', 2]
-			# pred1_occ <- pred1[testData$latestOccStatus == '2 occupied', 3]
-			# auc1 <- aucMultiWeighted(pred1_never, pred1_old, pred1_occ)
-			
-			# pred2_never <- pred2[testData$latestOccStatus == '0 never', 1]
-			# pred2_old <- pred2[testData$latestOccStatus == '1 old', 2]
-			# pred2_occ <- pred2[testData$latestOccStatus == '2 occupied', 3]
-			# auc2 <- aucMultiWeighted(pred2_never, pred2_old, pred2_occ)
-			
-			# pred3_never <- pred3[testData$latestOccStatus == '0 never', 1]
-			# pred3_old <- pred3[testData$latestOccStatus == '1 old', 2]
-			# pred3_occ <- pred3[testData$latestOccStatus == '2 occupied', 3]
-			# auc3 <- aucMultiWeighted(pred3_never, pred3_old, pred3_occ)
-			
-			# pred4_never <- pred4[testData$latestOccStatus == '0 never', 1]
-			# pred4_old <- pred4[testData$latestOccStatus == '1 old', 2]
-			# pred4_occ <- pred4[testData$latestOccStatus == '2 occupied', 3]
-			# auc4 <- aucMultiWeighted(pred4_never, pred4_old, pred4_occ)
-			
-			# aucs <- c(auc1[['multivariate']], auc2[['multivariate']], auc3[['multivariate']], auc4[['multivariate']])
-						
-			# results <- rbind(
-				# results,
-				# data.frame(
-					# model = '(Intercept)',
-					# timeFrame = NA,
-					# fold = k,
-					# numHomeRanges = c(FALSE, TRUE, FALSE, TRUE),
-					# region = c(FALSE, FALSE, TRUE, TRUE),
-					# auc = aucs
-				# )
-			# )
-			
-		# } # next fold
-	
-	# ### by climate variable
-	# #######################
-	
-	# for (formula in formulae) {
+	sink('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - 7- & 10-yr Window Coefficient Summary.txt')
 		
-		# say(formula)
+		say('AICc-weighted coefficient values for BINARY OCCUPANCY models', post=2)
+		print(accumCoeffs)
 		
-		# for (k in 1:nrow(folds)) {
+	sink()
 
-			# trainIndex <- which(
-				# (pika$region == 'northwest' & pika$fold == folds$nwFold[k]) |
-				# (pika$region == 'southwest' & pika$fold == folds$swFold[k]) |
-				# (pika$region == 'northeast' & pika$fold == folds$neFold[k]) |
-				# (pika$region == 'southeast' & pika$fold == folds$seFold[k])
-			# )
-			
-			# testIndex <- which(
-				# (pika$region == 'northwest' & pika$fold != folds$nwFold[k]) |
-				# (pika$region == 'southwest' & pika$fold != folds$swFold[k]) |
-				# (pika$region == 'northeast' & pika$fold != folds$neFold[k]) |
-				# (pika$region == 'southeast' & pika$fold != folds$seFold[k])
-			# )
-			
-			# trainData <- pika[trainIndex, ]
-			# testData <- pika[testIndex, ]
 
-			# form1 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula))
-			# form2 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + numHomeRangesScaled'))
-			# form3 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + region'))
-			# form4 <- as.formula(paste0('latestOccStatus ~ 1 + ', formula, ' + numHomeRangesScaled + region'))
+say('##############################################################################################')
+say('### report relative odds of class change across regions across all BINARY OCCUPANCY models ###')
+say('##############################################################################################')
 
-			# # train models
-			# model1 <- polr(form1, data=trainData, Hess=TRUE)
-			# model2 <- polr(form2, data=trainData, Hess=TRUE)
-			# model3 <- polr(form3, data=trainData, Hess=TRUE)
-			# model4 <- polr(form4, data=trainData, Hess=TRUE)
-			
-			# # test models
-			# pred1 <- predict(model1, testData, type='probs')
-			# pred2 <- predict(model2, testData, type='probs')
-			# pred3 <- predict(model3, testData, type='probs')
-			# pred4 <- predict(model4, testData, type='probs')
-			
-			# pred1_never <- pred1[testData$latestOccStatus == '0 never', 1]
-			# pred1_old <- pred1[testData$latestOccStatus == '1 old', 2]
-			# pred1_occ <- pred1[testData$latestOccStatus == '2 occupied', 3]
-			# auc1 <- aucMultiWeighted(pred1_never, pred1_old, pred1_occ)
-			
-			# pred2_never <- pred2[testData$latestOccStatus == '0 never', 1]
-			# pred2_old <- pred2[testData$latestOccStatus == '1 old', 2]
-			# pred2_occ <- pred2[testData$latestOccStatus == '2 occupied', 3]
-			# auc2 <- aucMultiWeighted(pred2_never, pred2_old, pred2_occ)
-			
-			# pred3_never <- pred3[testData$latestOccStatus == '0 never', 1]
-			# pred3_old <- pred3[testData$latestOccStatus == '1 old', 2]
-			# pred3_occ <- pred3[testData$latestOccStatus == '2 occupied', 3]
-			# auc3 <- aucMultiWeighted(pred3_never, pred3_old, pred3_occ)
-			
-			# pred4_never <- pred4[testData$latestOccStatus == '0 never', 1]
-			# pred4_old <- pred4[testData$latestOccStatus == '1 old', 2]
-			# pred4_occ <- pred4[testData$latestOccStatus == '2 occupied', 3]
-			# auc4 <- aucMultiWeighted(pred4_never, pred4_old, pred4_occ)
-			
-			# aucs <- c(auc1[['multivariate']], auc2[['multivariate']], auc3[['multivariate']], auc4[['multivariate']])
-			
-			# timeFrame <- substr(formula, nchar(formula) - 9, nchar(formula) - 8)
-			# if (substr(timeFrame, 1, 1) == '_') timeFrame <- substr(timeFrame, 2, 2)
-			# timeFrame <- as.integer(timeFrame)
-			
-			# results <- rbind(
-				# results,
-				# data.frame(
-					# model = formula,
-					# timeFrame = timeFrame,
-					# fold = k,
-					# numHomeRanges = c(FALSE, TRUE, FALSE, TRUE),
-					# region = c(FALSE, FALSE, TRUE, TRUE),
-					# auc = c(auc1[['multivariate']], auc2[['multivariate']], auc3[['multivariate']], auc4[['multivariate']])
-				# )
-			# )
-			
-		# } # next fold
-			
-	# } # next variable
-	
-	# results <- results[order(results$auc, decreasing=TRUE), ]
-	
-	# write.csv(results, file='./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Cross-validation Results.csv', row.names=FALSE)
-
-# say('################################################################')
-# say('### BINARY simple OCCUPANCY analysis: cross-validated models ###')
-# say('################################################################')
-
-	# load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
-	# pika$region <- as.factor(pika$region)
-	
-	# pika$numHomeRangesScaled <- scale(pika$numHomeRanges)
-
-	# vars <- getVars('occupancy')
-	# pika[ , vars] <- scale(pika[ , vars])
-
-	# # models
-	# formulae <- getFormulaeOcc()
-
-	# folds <- expand.grid(nwFold=1:2, swFold=1:2, neFold=1:2, seFold=1:2)
-
-	# results <- data.frame()
-	
-	# ### intercept-only models
-	# #########################
-	
-		# for (k in 1:nrow(folds)) {
-
-			# trainIndex <- which(
-				# (pika$region == 'northwest' & pika$fold == folds$nwFold[k]) |
-				# (pika$region == 'southwest' & pika$fold == folds$swFold[k]) |
-				# (pika$region == 'northeast' & pika$fold == folds$neFold[k]) |
-				# (pika$region == 'southeast' & pika$fold == folds$seFold[k])
-			# )
-			
-			# testIndex <- which(
-				# (pika$region == 'northwest' & pika$fold != folds$nwFold[k]) |
-				# (pika$region == 'southwest' & pika$fold != folds$swFold[k]) |
-				# (pika$region == 'northeast' & pika$fold != folds$neFold[k]) |
-				# (pika$region == 'southeast' & pika$fold != folds$seFold[k])
-			# )
-			
-			# trainData <- pika[trainIndex, ]
-			# testData <- pika[testIndex, ]
-
-			# # train models
-
-			# model1 <- glm(presAbs ~ 1, data=trainData, family=binomial)
-			# model2 <- glm(presAbs ~ 1 + numHomeRangesScaled, data=trainData, family=binomial)
-			# model3 <- glm(presAbs ~ 1 + region, data=trainData, family=binomial)
-			# model4 <- glm(presAbs ~ 1 + numHomeRangesScaled + region, data=trainData, family=binomial)
-			
-			# # test models
-
-			# pred1 <- predict(model1, testData, type='response')
-			# pred2 <- predict(model2, testData, type='response')
-			# pred3 <- predict(model3, testData, type='response')
-			# pred4 <- predict(model4, testData, type='response')
-			
-			# predPres1 <- pred1[testData$presAbs == 1]
-			# predPres2 <- pred2[testData$presAbs == 1]
-			# predPres3 <- pred3[testData$presAbs == 1]
-			# predPres4 <- pred4[testData$presAbs == 1]
-			
-			# predAbs1 <- pred1[testData$presAbs == 0]
-			# predAbs2 <- pred2[testData$presAbs == 0]
-			# predAbs3 <- pred3[testData$presAbs == 0]
-			# predAbs4 <- pred4[testData$presAbs == 0]
-			
-			# auc1 <- aucWeighted(predPres1, predAbs1)
-			# auc2 <- aucWeighted(predPres2, predAbs2)
-			# auc3 <- aucWeighted(predPres3, predAbs3)
-			# auc4 <- aucWeighted(predPres4, predAbs4)
-	
-			# aucs <- c(auc1, auc2, auc3, auc4)
-						
-			# results <- rbind(
-				# results,
-				# data.frame(
-					# model = '(Intercept)',
-					# timeFrame = NA,
-					# fold = k,
-					# numHomeRanges = c(FALSE, TRUE, FALSE, TRUE),
-					# region = c(FALSE, FALSE, TRUE, TRUE),
-					# auc = aucs
-				# )
-			# )
-			
-		# } # next fold
-
-	# ### by climate variable
-	# #######################
-
-	# for (formula in formulae) {
+	file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - 7 & 10-yr Windows.csv')
+	results <- read.csv(file)
+	results <- results[results$region, ]
+	deltaAicc <- results$aicc - min(results$aicc)
+	w <- exp(-0.5 * deltaAicc)
+	w <- w / sum(w)
+	nw <- sum(results$nw * w, na.rm=TRUE)
+	se <- sum(results$se * w, na.rm=TRUE)
+	sw <- sum(results$sw * w, na.rm=TRUE)
 		
-		# say(formula)
+	say('Ordinal odds of NW region relative to NE region: ', nw)
+	say('Ordinal odds of SE region relative to NE region: ', se)
+	say('Ordinal odds of SW region relative to NE region: ', sw)
 
-		# for (k in 1:nrow(folds)) {
+say('###############################################################################')
+say('### compile table of predictor weights for BINARY simple OCCUPANCY analysis ###')
+say('###############################################################################')
 
-			# trainIndex <- which(
-				# (pika$region == 'northwest' & pika$fold == folds$nwFold[k]) |
-				# (pika$region == 'southwest' & pika$fold == folds$swFold[k]) |
-				# (pika$region == 'northeast' & pika$fold == folds$neFold[k]) |
-				# (pika$region == 'southeast' & pika$fold == folds$seFold[k])
-			# )
+	# rank variables by mean AICc weight
+	for (occWindow in c(occWindows_y, NA)) {
+	
+		nice <- if (is.na(occWindow)) {
+			paste0(paste(occWindows_y, collapse=' & '), '-yr Windows')
+		} else {
+			paste0(occWindow, '-yr Window')
+		}
+	
+		# get variables
+		vars <- getVars('occupancy')
+		if (!is.na(occWindow)) vars <- vars[grepl(vars, pattern=paste0(occWindow, 'yrWindow'))]
+		vars <- c(vars, 'meanDistToClosest4Patches')
+
+		# get models
+		file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, '.csv')
+		models <- read.csv(file)
+		
+		imp <- data.frame()
+		for (var in vars) {
+		
+			index <- if (var != 'meanDistToClosest4Patches') {
+				which(grepl(models$model, pattern=var))
+			} else {
+				which(!is.na(models$isolationCoef))
+			}
+			n <- length(index)
+			sumWeight <- sum(models$weight[index])
+			meanWeight <- sumWeight / n
 			
-			# testIndex <- which(
-				# (pika$region == 'northwest' & pika$fold != folds$nwFold[k]) |
-				# (pika$region == 'southwest' & pika$fold != folds$swFold[k]) |
-				# (pika$region == 'northeast' & pika$fold != folds$neFold[k]) |
-				# (pika$region == 'southeast' & pika$fold != folds$seFold[k])
-			# )
+			imp <- rbind(
+				imp,
+				data.frame(
+					variable = var,
+					niceVar = makeNiceVars(var, 'occupancy'),
+					numModels = n,
+					sumWeight = sumWeight,
+					meanWeight = meanWeight
+				)
+			)
 			
-			# trainData <- pika[trainIndex, ]
-			# testData <- pika[testIndex, ]
+		}
+		
+		imp <- imp[order(imp$meanWeight, decreasing=TRUE), ]
+		imp$niceVar[imp$variable == 'meanDistToClosest4Patches'] <- 'isolation'
 
-			# # train models
-			# form1 <- as.formula(paste0('presAbs ~ 1 + ', formula))
-			# form2 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + numHomeRangesScaled'))
-			# form3 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + region'))
-			# form4 <- as.formula(paste0('presAbs ~ 1 + ', formula, ' + numHomeRangesScaled + region'))
-
-			# model1 <- glm(form1, data=trainData, family=binomial)
-			# model2 <- glm(form2, data=trainData, family=binomial)
-			# model3 <- glm(form3, data=trainData, family=binomial)
-			# model4 <- glm(form4, data=trainData, family=binomial)
-			
-			# # test models
-			# pred1 <- predict(model1, testData, type='response')
-			# pred2 <- predict(model2, testData, type='response')
-			# pred3 <- predict(model3, testData, type='response')
-			# pred4 <- predict(model4, testData, type='response')
-			
-			# predPres1 <- pred1[testData$presAbs == 1]
-			# predPres2 <- pred2[testData$presAbs == 1]
-			# predPres3 <- pred3[testData$presAbs == 1]
-			# predPres4 <- pred4[testData$presAbs == 1]
-			
-			# predAbs1 <- pred1[testData$presAbs == 0]
-			# predAbs2 <- pred2[testData$presAbs == 0]
-			# predAbs3 <- pred3[testData$presAbs == 0]
-			# predAbs4 <- pred4[testData$presAbs == 0]
-			
-			# auc1 <- aucWeighted(predPres1, predAbs1)
-			# auc2 <- aucWeighted(predPres2, predAbs2)
-			# auc3 <- aucWeighted(predPres3, predAbs3)
-			# auc4 <- aucWeighted(predPres4, predAbs4)
-			
-			# aucs <- c(auc1, auc2, auc3, auc4)
-			
-			# timeFrame <- substr(formula, nchar(formula) - 9, nchar(formula) - 8)
-			# if (substr(timeFrame, 1, 1) == '_') timeFrame <- substr(timeFrame, 2, 2)
-			# timeFrame <- as.integer(timeFrame)
-			
-			# results <- rbind(
-				# results,
-				# data.frame(
-					# model = formula,
-					# timeFrame = timeFrame,
-					# fold = k,
-					# numHomeRanges = c(FALSE, TRUE, FALSE, TRUE),
-					# region = c(FALSE, FALSE, TRUE, TRUE),
-					# auc = aucs
-				# )
-			# )
-			
-		# } # next fold
-			
-	# } # next variable
+		write.csv(imp, paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data - ', nice, ' - Var Import.csv'), row.names=FALSE)
 	
-	# results <- results[order(results$auc, decreasing=TRUE), ]
-	
-	# write.csv(results, file='./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Cross-validation Results.csv', row.names=FALSE)
-
-# say('#########################################################################')
-# say('### ORDINAL simple OCCUPANCY analysis: cross-validated models summary ###')
-# say('#########################################################################')
-	
-	# results <- read.csv('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Cross-validation Results.csv')
-
-	# # intercept-only models
-	# nulls <- results[results$model == '(Intercept)', ]
-	# nulls <- aggregate(nulls, by=list(nulls$numHomeRanges, nulls$region), FUN=mean)
-	# nulls$model <- nulls$timeFrame <- nulls$fold <- nulls$numHomeRanges <- nulls$region <- NULL
-	# names(nulls)[1:2] <- c('numHomeRanges', 'region')
-	# n <- nrow(nulls)
-
-	# first <- data.frame(
-		# model = rep('(Intercept)', n),
-		# timeFrame = rep(NA, n)
-	# )
-	
-	# last <- data.frame(modelNice = rep('(Intercept)', n))
-
-	# nulls <- cbind(first, nulls, last)
-
-	# # climate models
-	# clims <- results[results$model != '(Intercept)', ]
-	# clims <- aggregate(clims, by=list(clims$model, clims$timeFrame, clims$numHomeRanges, clims$region), FUN=mean)
-	# clims$model <- clims$fold <- clims$timeFrame <- clims$numHomeRanges <- clims$region <- NULL
-	# names(clims)[1:4] <- c('model', 'timeFrame', 'numHomeRanges', 'region')
-	# clims$modelNice <- niceFormulae(clims$model, occOrDens='occupancy')
-	
-	# results <- rbind(nulls, clims)
-	# results <- results[order(results$auc, decreasing=TRUE), ]
-	# results$modelNice <- factor(results$modelNice, levels=unique(results$modelNice))
-	# # results$modelNice <- factor(results$modelNice)
-
-	# ylim <- c(min(0.5, min(results$auc)), 1)
-
-	# p <- ggplot(data=results, aes(x=modelNice, y=auc, col=region, pch=numHomeRanges)) +
-		# geom_point(size=2) +
-		# labs(shape='Number of Home\nRanges as Covariate', color='Region Covariate') +
-		# xlab(NULL) + ylab('Multivariate AUC') +
-		# # ylim(ylim[1], ylim[2]) +
-		# theme(
-			# axis.text.y=element_text(size=6),
-			# legend.position=c(0.85, 0.9)
-		# ) +
-		# coord_flip()
-	
-	# pdf('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Cross-validation Results.pdf', width=8, height=10.5)
-		# print(p)
-	# dev.off()
-
-# say('########################################################################')
-# say('### BINARY simple OCCUPANCY analysis: cross-validated models summary ###')
-# say('########################################################################')
-	
-	# results <- read.csv('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Cross-validation Results.csv')
-	
-	# # intercept-only models
-	# nulls <- results[results$model == '(Intercept)', ]
-	# nulls <- aggregate(nulls, by=list(nulls$numHomeRanges, nulls$region), FUN=mean)
-	# nulls$model <- nulls$timeFrame <- nulls$fold <- nulls$numHomeRanges <- nulls$region <- NULL
-	# names(nulls)[1:2] <- c('numHomeRanges', 'region')
-	# n <- nrow(nulls)
-
-	# first <- data.frame(
-		# model = rep('(Intercept)', n),
-		# timeFrame = rep(NA, n)
-	# )
-	
-	# last <- data.frame(modelNice = rep('(Intercept)', n))
-
-	# nulls <- cbind(first, nulls, last)
-
-	# # climate models
-	# clims <- results[results$model != '(Intercept)', ]
-	# clims <- aggregate(clims, by=list(clims$model, clims$timeFrame, clims$numHomeRanges, clims$region), FUN=mean)
-	# clims$model <- clims$fold <- clims$timeFrame <- clims$numHomeRanges <- clims$region <- NULL
-	# names(clims)[1:4] <- c('model', 'timeFrame', 'numHomeRanges', 'region')
-	# clims$modelNice <- niceFormulae(clims$model, occOrDens='occupancy')
-	
-	# results <- rbind(nulls, clims)
-	# results <- results[order(results$auc, decreasing=TRUE), ]
-	# results$modelNice <- factor(results$modelNice, levels=unique(results$modelNice))
-
-	# ylim <- c(min(0.5, min(results$auc)), 1)
-
-	# p <- ggplot(data=results, aes(x=modelNice, y=auc, col=region, pch=numHomeRanges)) +
-		# geom_point(size=2) +
-		# labs(shape='Number of Home\nRanges as Covariate', color='Region Covariate') +
-		# xlab(NULL) + ylab('AUC') +
-		# # ylim(ylim[1], ylim[2]) +
-		# theme(
-			# axis.text.y=element_text(size=8),
-			# legend.title=element_text(size=6),
-			# legend.text=element_text(size=6),
-			# legend.position=c(-1.1, 0.9),
-			# plot.margin = unit(c(0.5, 0.5, 0.5, 2), 'cm')
-		# ) +
-		# coord_flip()
-	
-	# pdf('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Cross-validation Results.pdf', width=8, height=10.5)
-		# print(p)
-	# dev.off()
-	
+	} # next occupancy window
 
 say('DONE!!!', level=1, deco='%')

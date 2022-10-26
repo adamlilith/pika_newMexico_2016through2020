@@ -272,7 +272,7 @@
 		# nas <- which(is.na(pika$latestDensSurveyYear))
 		# say('There are ', length(nas), ' remaining sites surveyed for DENSITY that still do not have a year of survey assigned to them.')
 
-		# ## assign latest occupancy status
+		# ## assign latest density status
 		# pika$latestDensity <- NA
 		# for (i in 1:nrow(pika)) {
 			# if (!is.na(pika$latestDensSurveyYear[i])) {
@@ -1388,7 +1388,7 @@
 	# pikaSf <- st_transform(pikaSf, crs=getCRS('albersNA'))
 	
 	# patchesSp <- shapefile('./Data/Patch Polygons/NM_Pika_Lcations_Polygon.shp')
-	# patchesSf <- st_to_sf(patchesSp)
+	# patchesSf <- st_as_sf(patchesSp)
 	# patchesSf <- st_transform(patchesSf, crs=getCRS('albersNA'))
 
 	# distsClosestPatches_m <- matrix(NA, ncol=numClosePatches, nrow=nrow(pikaSf))
@@ -1408,6 +1408,8 @@
 	
 	# colnames(distsClosestPatches_m) <- paste0('distClosestPatch_patch', 1:numClosePatches, '_m')
 	# pika <- cbind(pika, distsClosestPatches_m)
+	
+	# pika$meanDistToClosest4Patches <- rowMeans(pika[ , paste0('distClosestPatch_patch', 1:numClosePatches, '_m')])
 	
 	# save(pika, file='./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
 

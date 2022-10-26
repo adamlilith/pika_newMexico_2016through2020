@@ -1,8 +1,8 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/06 Site Statistics.r')
-### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/06 Site Statistics.r')
+### source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/04 Site Statistics.r')
+### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/04 Site Statistics.r')
 ###
 ### CONTENTS ###
 ### setup ###

@@ -5,421 +5,443 @@
 ###
 ### CONTENTS ###
 ### setup ###
-### univariate DENSITY models: all-data models ###
-### univariate DENSITY analysis: cross-validated models ###
-### univariate DENSITY analysis: cross-validated models summary ###
-
-### post hoc analysis of DENSITY using all data and distance to nearest patches ###
-
-
+### climate/isolation DENSITY models ###
+### compile table of predictor importance for climate/isolation DENSITY models ###
+### climate/isolation/ecology DENSITY models ###
 
 #############
 ### setup ###
 #############
 
+	rm(list=ls())
+
+	# drive <- 'C:'
+	# drive <- 'D:'
+	drive <- 'E:'
+
 	source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
 
-# say('##################################################')
-# say('### univariate DENSITY models: all-data models ###')
-# say('##################################################')
+say('########################################')
+say('### climate/isolation DENSITY models ###')
+say('########################################')
 
-	# load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
+	load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
 	
-	# pika <- pika[!is.na(pika$latestDensity), ]
-	# pika$region <- as.factor(pika$region)
-	# vars <- getVars('density')
-	# pika[ , vars] <- scale(pika[ , vars])
+	pika$meanDistToClosest4Patches <- log10(pika$meanDistToClosest4Patches)
+	
+	pika <- pika[!is.na(pika$latestDensity), ]
+	pika$region <- as.factor(pika$region)
+	vars <- getVars('density')
+	vars <- c(vars, 'meanDistToClosest4Patches')
+	pika[ , vars] <- scale(pika[ , vars])
 
-	# ### intercept-only models
-	# #########################
+	### intercept-only models
+	#########################
 
-		# model1 <- glm(latestDensity ~ 1, data=pika, family=Gamma(link='log'))
-		# model2 <- glm(latestDensity ~ 1 + region, data=pika, family=Gamma(link='log'))
+		model1 <- glm(latestDensity ~ 1, data=pika, family=Gamma(link='log'))
+		model2 <- glm(latestDensity ~ 1 + region, data=pika, family=Gamma(link='log'))
 		
-		# region <- c(FALSE, TRUE)
+		model3 <- glm(latestDensity ~ meanDistToClosest4Patches, data=pika, family=Gamma(link='log'))
+		model4 <- glm(latestDensity ~ 1 + region + meanDistToClosest4Patches, data=pika, family=Gamma(link='log'))
 		
-		# aicc1 <- AICc(model1)
-		# aicc2 <- AICc(model2)
-		# aicc <- c(aicc1, aicc2)
+		region <- c(FALSE, TRUE, FALSE, TRUE)
 		
-		# ll1 <- logLik(model1)
-		# ll2 <- logLik(model2)
-		# llNull <- ll1
+		aicc1 <- AICc(model1)
+		aicc2 <- AICc(model2)
+		aicc3 <- AICc(model3)
+		aicc4 <- AICc(model4)
+		aicc <- c(aicc1, aicc2, aicc3, aicc4)
 		
-		# pseudoR2_1 <- nagelR2(llNull, ll1, n=nrow(pika))
-		# pseudoR2_2 <- nagelR2(llNull, ll2, n=nrow(pika))
-		# pseudoR2 <- c(pseudoR2_1, pseudoR2_2)
+		ll1 <- logLik(model1)
+		ll2 <- logLik(model2)
+		ll3 <- logLik(model3)
+		ll4 <- logLik(model4)
+		llNull <- ll1
 		
-		# results <- data.frame(
-			# model = '(Intercept)',
-			# term1 = NA,
-			# term2 = NA,
-			# term3 = NA,
-			# term4 = NA,
-			# region = region,
-			# aicc = aicc,
-			# pseudoR2 = pseudoR2
-		# )
-
-	# ### climate models
-	# ##################
-	
-		# formulae <- getFormulaeDens()
-
-		# for (formula in formulae) {
-	
-			# say(formula)
-
-			# form1 <- as.formula(paste0('latestDensity ~ 1 + ', formula))
-			# form2 <- as.formula(paste0('latestDensity ~ 1 + ', formula, ' + region'))
-	
-			# model1 <- glm(form1, data=pika, family=Gamma(link='log'))
-			# model2 <- glm(form2, data=pika, family=Gamma(link='log'))
-			
-			# terms <- extractTerms(model1, model2)
-			# term1 <- terms$term1
-			# term2 <- terms$term2
-			# term3 <- terms$term3
-			# term4 <- terms$term4
-			
-			# region <- c(FALSE, TRUE)
-			
-			# aicc1 <- AICc(model1)
-			# aicc2 <- AICc(model2)
-			# aicc <- c(aicc1, aicc2)
-			
-			# ll1 <- logLik(model1)
-			# ll2 <- logLik(model2)
-			
-			# pseudoR2_1 <- nagelR2(llNull, ll1, n=nrow(pika))
-			# pseudoR2_2 <- nagelR2(llNull, ll2, n=nrow(pika))
-			# pseudoR2 <- c(pseudoR2_1, pseudoR2_2)
-			
-			# results <- rbind(
-				# results,
-				# data.frame(
-					# model = formula,
-					# term1 = term1,
-					# term2 = term2,
-					# term3 = term3,
-					# term4 = term4,
-					# region = region,
-					# aicc = aicc,
-					# pseudoR2 = pseudoR2
-				# )
-			# )
-			
-		# } # next formula
-
-		# ### reports
-		# ###########
+		pseudoR2_1 <- nagelR2(llNull, ll1, n=nrow(pika))
+		pseudoR2_2 <- nagelR2(llNull, ll2, n=nrow(pika))
+		pseudoR2_3 <- nagelR2(llNull, ll3, n=nrow(pika))
+		pseudoR2_4 <- nagelR2(llNull, ll4, n=nrow(pika))
+		pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
 		
-			# results$deltaAicc <- results$aicc - min(results$aicc)
-			# w <- exp(-0.5 * results$deltaAicc)
-			# results$weight <- w / sum(w)
-
-			# results <- results[order(results$weight, decreasing=TRUE), ]
-			# rownames(results) <- NULL
-
-			# file <- paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv')
-			# write.csv(results, file, row.names=FALSE)
-	
-# say('############################################################################################')
-# say('### compile table of predictor importance for univariate DENSITY models: all-data models ###')
-# say('############################################################################################')
-	
-
-	# # rank variables by mean AICc weight
-
-	# # get models
-	# file <- paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv')
-	# models <- read.csv(file)
-	
-	# # get variables
-	# vars <- getVars('density')
-
-	# imp <- data.frame()
-	# for (var in vars) {
-	
-		# index <- which(grepl(models$model, pattern=var))
-		# n <- length(index)
-		# sumWeight <- sum(models$weight[index])
-		# meanWeight <- sumWeight / n
+		coef3 <- coefficients(model3)
+		coef4 <- coefficients(model4)
 		
-		# imp <- rbind(
-			# imp,
-			# data.frame(
-				# variable = var,
-				# niceVar = makeNiceVars(var, 'density'),
-				# numModels = n,
-				# sumWeight = sumWeight,
-				# meanWeight = meanWeight
-			# )
-		# )
+		isolationCoef3 <- coef3[['meanDistToClosest4Patches']]
+		isolationCoef4 <- coef4[['meanDistToClosest4Patches']]
 		
-	# }
+		isolationCoef <- c(NA, NA, isolationCoef3, isolationCoef4)
+		
+		results <- data.frame(
+			model = '(Intercept)',
+			term1 = NA,
+			term2 = NA,
+			term3 = NA,
+			isolationCoef = isolationCoef,
+			region = region,
+			aicc = aicc,
+			pseudoR2 = pseudoR2
+		)
+
+	### climate models
+	##################
 	
-	# imp <- imp[order(imp$meanWeight, decreasing=TRUE), ]
+		formulae <- getFormulaeDens()
 
-	# write.csv(imp, paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs - Var Import.csv'), row.names=FALSE)
+		for (formula in formulae) {
 	
-# say('###########################################################')
-# say('### univariate DENSITY analysis: cross-validated models ###')
-# say('###########################################################')
+			say(formula)
 
-	# load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
+			form1 <- as.formula(paste0('latestDensity ~ 1 + ', formula))
+			form2 <- as.formula(paste0('latestDensity ~ 1 + ', formula, ' + region'))
+			form3 <- as.formula(paste0('latestDensity ~ 1 + ', formula, ' + region + meanDistToClosest4Patches'))
+			form4 <- as.formula(paste0('latestDensity ~ 1 + ', formula, ' + region + meanDistToClosest4Patches'))
 	
-	# pika <- pika[!is.na(pika$latestDensity), ]
-	# pika$region <- as.factor(pika$region)
-	# vars <- getVars('density')
-	# pika[ , vars] <- scale(pika[ , vars])
-
-	# folds <- expand.grid(nwFold=1:2, swFold=1:2, neFold=1:2, seFold=1:2)
-	# kFoldResults <- data.frame()
-
-	# ### intercept-only models
-	# #########################
-
-		# for (k in 1:nrow(folds)) {
-
-			# trainIndex <- which(
-				# (pika$region == 'northwest' & pika$fold == folds$nwFold[k]) |
-				# (pika$region == 'southwest' & pika$fold == folds$swFold[k]) |
-				# (pika$region == 'northeast' & pika$fold == folds$neFold[k]) |
-				# (pika$region == 'southeast' & pika$fold == folds$seFold[k])
-			# )
+			model1 <- glm(form1, data=pika, family=Gamma(link='log'))
+			model2 <- glm(form2, data=pika, family=Gamma(link='log'))
+			model3 <- glm(form3, data=pika, family=Gamma(link='log'))
+			model4 <- glm(form4, data=pika, family=Gamma(link='log'))
 			
-			# testIndex <- which(
-				# (pika$region == 'northwest' & pika$fold != folds$nwFold[k]) |
-				# (pika$region == 'southwest' & pika$fold != folds$swFold[k]) |
-				# (pika$region == 'northeast' & pika$fold != folds$neFold[k]) |
-				# (pika$region == 'southeast' & pika$fold != folds$seFold[k])
-			# )
+			terms <- extractTerms(model1, model2, model3, model4)
+			term1 <- terms$term1
+			term2 <- terms$term2
+			term3 <- terms$term3
 			
-			# trainData <- pika[trainIndex, ]
-			# testData <- pika[testIndex, ]
+			region <- c(FALSE, TRUE, FALSE, TRUE)
+			
+			aicc1 <- AICc(model1)
+			aicc2 <- AICc(model2)
+			aicc3 <- AICc(model3)
+			aicc4 <- AICc(model4)
+			aicc <- c(aicc1, aicc2, aicc3, aicc4)
+			
+			ll1 <- logLik(model1)
+			ll2 <- logLik(model2)
+			ll3 <- logLik(model3)
+			ll4 <- logLik(model4)
+			
+			pseudoR2_1 <- nagelR2(llNull, ll1, n=nrow(pika))
+			pseudoR2_2 <- nagelR2(llNull, ll2, n=nrow(pika))
+			pseudoR2_3 <- nagelR2(llNull, ll3, n=nrow(pika))
+			pseudoR2_4 <- nagelR2(llNull, ll4, n=nrow(pika))
+			pseudoR2 <- c(pseudoR2_1, pseudoR2_2, pseudoR2_3, pseudoR2_4)
+			
+			coef3 <- coefficients(model3)
+			coef4 <- coefficients(model4)
+			
+			isolationCoef3 <- coef3[['meanDistToClosest4Patches']]
+			isolationCoef4 <- coef4[['meanDistToClosest4Patches']]
+			
+			isolationCoef <- c(NA, NA, isolationCoef3, isolationCoef4)
+			
+			results <- rbind(
+				results,
+				data.frame(
+					model = formula,
+					term1 = term1,
+					term2 = term2,
+					term3 = term3,
+					isolationCoef = isolationCoef,
+					region = region,
+					aicc = aicc,
+					pseudoR2 = pseudoR2
+				)
+			)
+			
+		} # next formula
 
-			# # train models
+		### reports
+		###########
+		
+			results$deltaAicc <- results$aicc - min(results$aicc)
+			w <- exp(-0.5 * results$deltaAicc)
+			results$weight <- w / sum(w)
 
-			# model1 <- glm(latestDensity ~ 1, data=trainData, family=Gamma(link='log'))
-			# model2 <- glm(latestDensity ~ 1 + region, data=trainData, family=Gamma(link='log'))
-			
-			# # test models
+			results <- results[order(results$weight, decreasing=TRUE), ]
+			rownames(results) <- NULL
 
-			# pred1 <- predict(model1, testData, type='response')
-			# pred2 <- predict(model2, testData, type='response')
-			
-			# rmse1 <- sqrt(mean((testData$latestDensity - pred1)^2))
-			# rmse2 <- sqrt(mean((testData$latestDensity - pred2)^2))
-			
-			# meanAbsPercError1 <- mean(abs(pred1 - testData$latestDensity) / testData$latestDensity)
-			# meanAbsPercError2 <- mean(abs(pred2 - testData$latestDensity) / testData$latestDensity)
-			# meanAbsPercError <- c(meanAbsPercError1, meanAbsPercError2)
-			
-			# kFoldResults <- rbind(
-				# kFoldResults,
-				# data.frame(
-					# model = '(Intercept)',
-					# fold = k,
-					# region = c(FALSE, TRUE),
-					# rmse = c(rmse1, rmse2),
-					# meanAbsPercError = meanAbsPercError
-				# )
-			# )
-			
-		# } # next fold
-
-	# ### climate models
-	# ##################
+			file <- paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv')
+			write.csv(results, file, row.names=FALSE)
 	
-	# formulae <- getFormulaeDens()
-	# for (formula in formulae) {
-
-		# say(formula)
-
-		# for (k in 1:nrow(folds)) {
-
-			# trainIndex <- which(
-				# (pika$region == 'northwest' & pika$fold == folds$nwFold[k]) |
-				# (pika$region == 'southwest' & pika$fold == folds$swFold[k]) |
-				# (pika$region == 'northeast' & pika$fold == folds$neFold[k]) |
-				# (pika$region == 'southeast' & pika$fold == folds$seFold[k])
-			# )
-			
-			# testIndex <- which(
-				# (pika$region == 'northwest' & pika$fold != folds$nwFold[k]) |
-				# (pika$region == 'southwest' & pika$fold != folds$swFold[k]) |
-				# (pika$region == 'northeast' & pika$fold != folds$neFold[k]) |
-				# (pika$region == 'southeast' & pika$fold != folds$seFold[k])
-			# )
-			
-			# trainData <- pika[trainIndex, ]
-			# testData <- pika[testIndex, ]
-
-			# # train models
-			
-			# form1 <- as.formula(paste0('latestDensity ~ 1 + ', formula))
-			# form2 <- as.formula(paste0('latestDensity ~ 1 + ', formula, ' + region'))
+say('##################################################################################')
+say('### compile table of predictor importance for climate/isolation DENSITY models ###')
+say('##################################################################################')
 	
-			# start <- c(1, rep(0, length(attr(terms(form1), 'term.labels'))))
-			# model1 <- glm(form1, data=trainData, family=Gamma(link='log'), start=start)
-			# coeffs <- coefficients(model1)
-			# start <- c(1, rep(0, length(attr(terms(form2), 'term.labels')) - 1), 0, 0, 0)
-			# model2 <- glm(form2, data=trainData, family=Gamma(link='log'), start=start)
-			
-			# # test models
-			# pred1 <- predict(model1, testData, type='response')
-			# pred2 <- predict(model2, testData, type='response')
-			
-			# rmse1 <- sqrt(mean((testData$latestDensity - pred1)^2))
-			# rmse2 <- sqrt(mean((testData$latestDensity - pred2)^2))
-			
-			# meanAbsPercError1 <- mean(abs(pred1 - testData$latestDensity) / testData$latestDensity)
-			# meanAbsPercError2 <- mean(abs(pred2 - testData$latestDensity) / testData$latestDensity)
-			# meanAbsPercError <- c(meanAbsPercError1, meanAbsPercError2)
-			
-			# kFoldResults <- rbind(
-				# kFoldResults,
-				# data.frame(
-					# model = formula,
-					# fold = k,
-					# region = c(FALSE, TRUE),
-					# rmse = c(rmse1, rmse2),
-					# meanAbsPercError = meanAbsPercError
-				# )
-			# )
-			
-		# } # next fold
-			
-	# } # next model
-	
-	# write.csv(kFoldResults, file='./Figures & Tables/Density - Simple Models/Density - Simple GLMs Cross-validation Results.csv', row.names=FALSE)
+	# rank variables by mean AICc weight
 
-# say('###################################################################')
-# say('### univariate DENSITY analysis: cross-validated models summary ###')
-# say('###################################################################')
+	# get models
+	file <- paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv')
+	models <- read.csv(file)
 	
-	# results <- read.csv('./Figures & Tables/Density - Simple Models/Density - Simple GLMs Cross-validation Results.csv')
-	
-	# nulls <- results[results$model == '(Intercept)', ]
-	# nulls <- aggregate(nulls, by=list(nulls$region), FUN=mean)
-	# nulls$region <- nulls$fold <- NULL
-	# names(nulls)[1] <- 'region'
-	
-	# nulls <- cbind(nulls, data.frame(modelNice = rep('(Intercept)', nrow(nulls))))
-	
-	# clim <- results[results$model != '(Intercept)', ]
-	# clim <- aggregate(clim, by=list(clim$model, clim$region), FUN=mean)
-	# clim$model <- clim$fold <- clim$region <- NULL
-	# names(clim)[1:2] <- c('model', 'region')
-	# clim$modelNice <- niceFormulae(clim$model, occOrDens='density')
+	# get variables
+	vars <- getVars('density')
+	vars <- c(vars, 'meanDistToClosest4Patches')
 
-	# results <- rbind(nulls, clim)
+	imp <- data.frame()
+	for (var in vars) {
 	
-	# results <- results[order(results$meanAbsPercError, decreasing=FALSE), ]
-	# results$modelNice <- factor(results$modelNice, levels=unique(results$modelNice))
-
-	# p <- ggplot(data=results, aes(x=modelNice, y=meanAbsPercError, pch=region)) +
-		# geom_point(size=2) +
-		# labs(shape='Region\nCovariate') +
-		# xlab(NULL) + ylab('Mean absolute percent error') +
-		# theme(
-			# axis.text.y=element_text(size=10)
-		# ) +
-		# # scale_y_continuous(trans='log10') +
-		# scale_y_continuous(labels=scales::percent) +
-		# coord_flip()
+		index <- if (var != 'meanDistToClosest4Patches') {
+			which(grepl(models$model, pattern=var))
+		} else {
+			which(!is.na(models$isolationCoef))
+		}
+		n <- length(index)
+		sumWeight <- sum(models$weight[index])
+		meanWeight <- sumWeight / n
+		
+		imp <- rbind(
+			imp,
+			data.frame(
+				variable = var,
+				niceVar = makeNiceVars(var, 'density'),
+				numModels = n,
+				sumWeight = sumWeight,
+				meanWeight = meanWeight
+			)
+		)
+		
+	}
 	
-	# pdf('./Figures & Tables/Density - Simple Models/Density - Simple GLMs Cross-validation Results.pdf', width=8, height=10.5)
-		# print(p)
-	# dev.off()
+	imp <- imp[order(imp$meanWeight, decreasing=TRUE), ]
 
-
-say('###################################################################################')
-say('### post hoc analysis of DENSITY using all data and distance to nearest patches ###')
-say('###################################################################################')
-
-	### prepare climate data
-	########################
+	write.csv(imp, paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs - Var Import.csv'), row.names=FALSE)
 	
+say('################################################')
+say('### climate/isolation/ecology DENSITY models ###')
+say('################################################')
+
+	### collate data
+	################
+
+		### data
 		load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
 		pika <- pika[!is.na(pika$latestDensity), ]
+
+		### collate "latest" version of each predictor
+		ecoVars <- c('perimBurnedMostRecent_perc', 'latestGrazing', 'latestGrassForb') # NB grass, forbs, and grass/form are highly correlated
+
+		# pika$latestGrazing <- pika$latestGrass <- pika$latestForb <- pika$latestGrassForb <- NA
+		pika$latestGrazing <- pika$latestGrassForb <- NA
+		
+		for (i in 1:nrow(pika)) {
+		
+			pika$latestGrazing[i] <- pika[i, paste0('grazing', pika$latestDensSurveyYear[i])]
+			# pika$latestGrass[i] <- pika[i, paste0('grass', pika$latestDensSurveyYear[i], '_perc')]
+			# pika$latestForb[i] <- pika[i, paste0('forb', pika$latestDensSurveyYear[i], '_perc')]
+			pika$latestGrassForb[i] <- pika[i, paste0('grassForb', pika$latestDensSurveyYear[i], '_perc')]
+		
+		
+		}
+		
+		# remove any records with NAs in predictors
+		nas <- which(
+			# is.na(pika$latestGrazing) | is.na(pika$perimBurnedMostRecent_perc) | is.na(pika$latestGrass) | is.na(pika$latestForb) | is.na(pika$latestGrassForb)
+			is.na(pika$latestGrazing) | is.na(pika$perimBurnedMostRecent_perc) | is.na(pika$latestGrassForb)
+		)
+
+		if (length(nas) > 0) pika <- pika[-nas, ]
+
+		pika[ , ecoVars[ecoVars != 'latestGrazing']] <- scale(pika[ , ecoVars[ecoVars != 'latestGrazing']])
+		pika$meanDistToClosest4Patches <- log10(pika$meanDistToClosest4Patches)
+		pika$meanDistToClosest4Patches <- scale(pika$meanDistToClosest4Patches)
+		
 		pika$region <- as.factor(pika$region)
-		vars <- getVars('density')
-		pika[ , vars] <- scale(pika[ , vars])
 		
-	### generate and evaluate models
-	################################
-		
-		# Assuming no models are intercept-only models!
+	### models
+	##########
+	
+		allClimModels <- read.csv('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv')
+		topClimModels <- allClimModels[allClimModels$deltaAicc < maxDeltaAic_density, ]
 
-		# intercept-only null model for pseudo-R2
-		modelNull <- glm(latestDensity ~ 1, data=pika, family=Gamma(link='log'))
-		logLikeNull <- logLik(modelNull)
-
-		results <- data.frame()
-
-		climModels <- read.csv(paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv'))
+		report <- data.frame()
 		
-		climModels <- climModels[order(climModels$deltaAicc), ]
-		climModels <- climModels[climModels$deltaAicc <= maxDeltaAic_density, , drop=FALSE]
+		nullModel <- glm(latestDensity ~ 1, data=pika, family=Gamma(link='log'))
+		nullModelRegion <- glm(latestDensity ~ region, data=pika, family=Gamma(link='log'))
+		nullModelIsolation <- glm(latestDensity ~ meanDistToClosest4Patches, data=pika, family=Gamma(link='log'))
+		nullModelRegionIsolation <- glm(latestDensity ~ region + meanDistToClosest4Patches, data=pika, family=Gamma(link='log'))
 		
-		for (countClimModel in 1:nrow(climModels)) {
-		
-			form <- climModels$model[countClimModel]
-			thisForm <- paste('latestDensity ~', form)
-			
-			region <- climModels$region[countClimModel]
-			if (region) thisForm <- paste(thisForm, '+ region')
-			
-			thisForm_isolation <- paste(thisForm, '+ meanDistToClosestPatchesScaled')
-			
-			# evaluate n closest patches
-			for (thisNumClosestPatches in c(3, 4)) {
-			
-				thisPika <- pika
-				thisPika$meanDistToClosestPatches_m <-
-					rowMeans(thisPika[ , paste0('distClosestPatch_patch', 1:thisNumClosestPatches, '_m')])
-				thisPika$meanDistToClosestPatchesScaled <- scale(thisPika$meanDistToClosestPatches_m)
-			
-				model_noIsolation <- glm(thisForm, data=thisPika, family=Gamma(link='log'))
-				model_isolation <- glm(thisForm_isolation, data=thisPika, family=Gamma(link='log'))
+		llNull <- logLik(nullModel)
+		llNullRegion <- logLik(nullModelRegion)
+		llNullIsolation <- logLik(nullModelIsolation)
+		llNullRegionIsolation <- logLik(nullModelRegionIsolation)
 
-				aicc_noIsolation <- AICc(model_noIsolation)
-				aicc_isolation <- AICc(model_isolation)
+		ecoTermsGrid <- expand.grid(a = c(TRUE, FALSE), b = c(TRUE, FALSE), c = c(TRUE, FALSE))
+		names(ecoTermsGrid) <- ecoVars
+		
+		for (countClimModel in 1:nrow(topClimModels)) {
+
+			# climate formula
+			climForm <- topClimModels$model[countClimModel]
+			climForm <- paste0('latestDensity ~ ', climForm)
+			hasRegion <- topClimModels$region[countClimModel]
+			if (hasRegion) climForm <- paste(climForm, ' + region')
+			hasIsolation <- !is.na(topClimModels$isolationCoef[countClimModel])
+			if (hasIsolation) climForm <- paste0(climForm, ' + meanDistToClosest4Patches')
 				
-				logLikeModel_noIsolation <- logLik(model_noIsolation)
-				pseudoR2_noIsolation <- nagelR2(logLikeNull, logLikeModel_noIsolation, nrow(thisPika))
+			for (countEcoModel in 1:nrow(ecoTermsGrid)) {
 
-				logLikeModel_isolation <- logLik(model_isolation)
-				pseudoR2_isolation <- nagelR2(logLikeNull, logLikeModel_isolation, nrow(thisPika))
+				climEcoForm <- climForm
 
-				isolationCoeff <- coeffs(model_isolation)['meanDistToClosestPatchesScaled']
+				# eco-variable formula
+				ecoTermsInModel <- unlist(ecoTermsGrid[countEcoModel, ])
+				ecoTermsInModel <- ecoVars[ecoTermsInModel]
+				ecoTermsInModel <- paste(ecoTermsInModel, collapse = ' + ')
+				if (ecoTermsInModel != '') climEcoForm <- paste(climEcoForm, '+', ecoTermsInModel)
 
-				results <- rbind(
-					results,
+				# model
+				model <- glm(climEcoForm, data=pika, family=Gamma(link='log'))
+				terms <- extractTerms(model)
+
+				term1 <- terms$term1
+				term2 <- if (is.null(terms$term2)) { c(NA, NA) } else { terms$term2 }
+				term3 <- if (is.null(terms$term3)) { c(NA, NA) } else { terms$term3 }
+				term4 <- if (is.null(terms$term4)) { c(NA, NA) } else { terms$term4 }
+				term5 <- if (is.null(terms$term5)) { c(NA, NA) } else { terms$term5 }
+				term6 <- if (is.null(terms$term6)) { c(NA, NA) } else { terms$term6 }
+				term7 <- if (is.null(terms$term7)) { c(NA, NA) } else { terms$term7 }
+				term8 <- if (is.null(terms$term8)) { c(NA, NA) } else { terms$term8 }
+				term9 <- if (is.null(terms$term9)) { c(NA, NA) } else { terms$term9 }
+				
+				aicc <- AICc(model)
+				
+				ll <- logLik(model)
+				pseudoR2 <- nagelR2(llNull, ll, n=nrow(pika))
+				
+				# report
+				report <- rbind(
+					report,
 					data.frame(
-						thisNumClosestPatches = thisNumClosestPatches,
-						climateModel = form,
-						region = region,
-						isolationCoeff = isolationCoeff,
-						pseudoR2_noIsolation = pseudoR2_noIsolation,
-						pseudoR2_isolation = pseudoR2_isolation,
-						aicc_noIsolation = aicc_noIsolation,
-						aicc_isolation = aicc_isolation
+						model = climEcoForm,
+						term1 = term1,
+						term2 = term2,
+						term3 = term3,
+						term4 = term4,
+						term5 = term5,
+						term6 = term6,
+						term7 = term7,
+						term8 = term8,
+						term9 = term9,
+						region = hasRegion,
+						hasIsolation = hasIsolation,
+						aiccClim = topClimModels$aicc[countClimModel],
+						aiccClimEco = aicc,
+						pseudoR2Clim = pseudoR2,
+						pseudoR2ClimEco = topClimModels$pseudoR2[countClimModel]
 					)
-				
 				)
-			
-			} # next number of closest patches
+				
+			} # next eco-term model
 		
 		} # next climate model
 		
-		results$deltaAic_isolationNoIsolation <- results$aicc_noIsolation - results$aicc_isolation
-		results$deltaPseudoR2_isolationNoIsolation <- results$pseudoR2_isolation - results$pseudoR2_noIsolation
-		
-		rownames(results) <- NULL
-		write.csv(results, paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs - Isolation.csv'), row.names=FALSE)
+		# intercept-only model
+		report <- rbind(
+			report,
+			data.frame(
+				model = 'latestDensity ~ 1',
+				term1 = NA,
+				term2 = NA,
+				term3 = NA,
+				term4 = NA,
+				term5 = NA,
+				term6 = NA,
+				term7 = NA,
+				term8 = NA,
+				term9 = NA,
+				region = FALSE,
+				hasIsolation = FALSE,
+				aiccClim = AICc(nullModel),
+				aiccClimEco = AICc(nullModel),
+				pseudoR2Clim = 0,
+				pseudoR2ClimEco = NA
+			)
+		)
 
+		# region-only model
+		report <- rbind(
+			report,
+			data.frame(
+				model = 'latestDensity ~ 1',
+				term1 = NA,
+				term2 = NA,
+				term3 = NA,
+				term4 = NA,
+				term5 = NA,
+				term6 = NA,
+				term7 = NA,
+				term8 = NA,
+				term9 = NA,
+				region = TRUE,
+				hasIsolation = FALSE,
+				aiccClim = AICc(nullModelRegion),
+				aiccClimEco = AICc(nullModelRegion),
+				pseudoR2Clim = nagelR2(llNull, llNullRegion, n=nrow(pika)),
+				pseudoR2ClimEco = NA
+			)
+		)
+
+		# isolation-only model
+		report <- rbind(
+			report,
+			data.frame(
+				model = 'latestDensity ~ 1',
+				term1 = NA,
+				term2 = NA,
+				term3 = NA,
+				term4 = NA,
+				term5 = NA,
+				term6 = NA,
+				term7 = NA,
+				term8 = NA,
+				term9 = NA,
+				region = FALSE,
+				hasIsolation = TRUE,
+				aiccClim = AICc(nullModelIsolation),
+				aiccClimEco = AICc(nullModelIsolation),
+				pseudoR2Clim = nagelR2(llNull, llNullIsolation, n=nrow(pika)),
+				pseudoR2ClimEco = NA
+			)
+		)
+
+		# isolation/region-only model
+		report <- rbind(
+			report,
+			data.frame(
+				model = 'latestDensity ~ 1',
+				term1 = NA,
+				term2 = NA,
+				term3 = NA,
+				term4 = NA,
+				term5 = NA,
+				term6 = NA,
+				term7 = NA,
+				term8 = NA,
+				term9 = NA,
+				region = TRUE,
+				hasIsolation = TRUE,
+				aiccClim = AICc(nullModelRegionIsolation),
+				aiccClimEco = AICc(nullModelRegionIsolation),
+				pseudoR2Clim = nagelR2(llNull, llNullRegionIsolation, n=nrow(pika)),
+				pseudoR2ClimEco = NA
+			)
+		)
+
+	### report
+	##########
+	
+		report$deltaAiccClim <- report$aiccClim - min(report$aiccClim)
+		w <- exp(-0.5 * report$deltaAiccClim)
+		report$weightClim <- w / sum(w)
+
+		report$deltaAiccClimEco <- report$aiccClimEco - min(report$aiccClimEco)
+		w <- exp(-0.5 * report$deltaAiccClimEco)
+		report$weightClimEco <- w / sum(w)
+
+		report <- report[order(report$aiccClimEco), ]
+
+		rownames(report) <- NULL
+
+		file <- paste0('./Figures & Tables/Density - Simple Models/Top Climate & Isolation Density Models with Ecological Variables.csv')
+		write.csv(report, file, row.names=FALSE)
 	
 say('DONE!!!', level=1, deco='%')
