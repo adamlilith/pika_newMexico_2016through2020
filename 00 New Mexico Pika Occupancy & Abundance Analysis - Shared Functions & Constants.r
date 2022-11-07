@@ -43,6 +43,7 @@
 	
 	library(cowplot)
 	# library(elsa)
+	library(geodata)
 	library(ggplot2)
 	library(ggcorrplot)
 	library(glmnet)
