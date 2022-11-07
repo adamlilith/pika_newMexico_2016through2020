@@ -5,10 +5,13 @@
 ###
 ### CONTENTS ###
 ### setup ###
+###
 ### ORDINAL simple OCCUPANCY analysis ###
+### summarize occupancy status across regions ###
 ### report relative odds of class change across regions across all ORDINAL OCCUPANCY models ###
+### summarize support for 7- and 10-yr windows ###
 ### compile table of predictor weights for ORDINAL simple OCCUPANCY analysis: all-data models ###
-
+###
 ### BINARY simple OCCUPANCY analysis ###
 ### report relative odds of class change across regions across all BINARY OCCUPANCY models ###
 ### compile table of predictor weights for BINARY simple OCCUPANCY analysis ###
@@ -25,12 +28,54 @@
 
 	source(paste0(drive, '/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
 
+# say('#################################################')
+# say('### summarize occupancy status across regions ###')
+# say('#################################################')
+
+	# load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
+
+	# sink('./Figures & Tables/Occupancy - Simple Models/Occupancy - Status by Region.txt')
+
+		# say('Summary of occupancy status by region')
+		# say(date(), post=2)
+
+		# say('NORTHEAST:')
+		# region <- 'northeast'
+		# n <- sum(pika$region == region)
+		# say('     Never occupied:    ', sum(pika$region == region & pika$latestOccStatus == '0 never'), ' (', round(sum(pika$region == region & pika$latestOccStatus == '0 never') / n, 2), ')')
+		# say('     Old evidence:      ', sum(pika$region == region & pika$latestOccStatus == '1 old'), ' (', round(sum(pika$region == region & pika$latestOccStatus == '1 old') / n, 2), ')')
+		# say('     Occupied:          ', sum(pika$region == region & pika$latestOccStatus == '2 occupied'), ' (', round(sum(pika$region == region & pika$latestOccStatus == '2 occupied') / n, 2), ')')
+
+		# say('NORTHWEST:', pre=1)
+		# region <- 'northwest'
+		# n <- sum(pika$region == region)
+		# say('     Never occupied:    ', sum(pika$region == region & pika$latestOccStatus == '0 never'), ' (', round(sum(pika$region == region & pika$latestOccStatus == '0 never') / n, 2), ')')
+		# say('     Old evidence:      ', sum(pika$region == region & pika$latestOccStatus == '1 old'), ' (', round(sum(pika$region == region & pika$latestOccStatus == '1 old') / n, 2), ')')
+		# say('     Occupied:          ', sum(pika$region == region & pika$latestOccStatus == '2 occupied'), ' (', round(sum(pika$region == region & pika$latestOccStatus == '2 occupied') / n, 2), ')')
+
+		# say('SOUTHEAST:', pre=1)
+		# region <- 'southeast'
+		# n <- sum(pika$region == region)
+		# say('     Never occupied:    ', sum(pika$region == region & pika$latestOccStatus == '0 never'), ' (', round(sum(pika$region == region & pika$latestOccStatus == '0 never') / n, 2), ')')
+		# say('     Old evidence:      ', sum(pika$region == region & pika$latestOccStatus == '1 old'), ' (', round(sum(pika$region == region & pika$latestOccStatus == '1 old') / n, 2), ')')
+		# say('     Occupied:          ', sum(pika$region == region & pika$latestOccStatus == '2 occupied'), ' (', round(sum(pika$region == region & pika$latestOccStatus == '2 occupied') / n, 2), ')')
+
+		# say('SOUTHWEST:', pre=1)
+		# region <- 'southwest'
+		# n <- sum(pika$region == region)
+		# say('     Never occupied:    ', sum(pika$region == region & pika$latestOccStatus == '0 never'), ' (', round(sum(pika$region == region & pika$latestOccStatus == '0 never') / n, 2), ')')
+		# say('     Old evidence:      ', sum(pika$region == region & pika$latestOccStatus == '1 old'), ' (', round(sum(pika$region == region & pika$latestOccStatus == '1 old') / n, 2), ')')
+		# say('     Occupied:          ', sum(pika$region == region & pika$latestOccStatus == '2 occupied'), ' (', round(sum(pika$region == region & pika$latestOccStatus == '2 occupied') / n, 2), ')')
+
+	# sink()
+
 say('#########################################')
 say('### ORDINAL simple OCCUPANCY analysis ###')
 say('#########################################')
 
 	load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
 	pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'), ordered=TRUE)
+	
 	pika$region <- as.factor(pika$region)
 	
 	pika$meanDistToClosest4Patches <- log10(pika$meanDistToClosest4Patches)
@@ -147,6 +192,7 @@ say('#########################################')
 				term2 = NA,
 				term3 = NA,
 				term4 = NA,
+				period = NA,
 				numHomeRanges = numHomeRanges,
 				homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4, NA, numHomRangesCoef6, NA, numHomRangesCoef8),
 				isolationCoeff = c(NA, NA, NA, NA, isolationCoef5, isolationCoef6, isolationCoef7, isolationCoef8),
@@ -282,7 +328,13 @@ say('#########################################')
 			nw8 <- coef8['regionnorthwest']
 			se8 <- coef8['regionsoutheast']
 			sw8 <- coef8['regionsouthwest']
-
+			
+			period <- if (grepl(formula, pattern=paste0(7, 'yrWindow'))) {
+				'7-yr'
+			} else {
+				'10-yr'
+			}
+			
 			# remember
 			results <- rbind(
 				results,
@@ -292,6 +344,7 @@ say('#########################################')
 					term2 = term2,
 					term3 = term3,
 					term4 = term4,
+					period = period,
 					numHomeRanges = numHomeRanges,
 					homeRangeCoeff = c(NA, numHomRangesCoef2, NA, numHomRangesCoef4, NA, numHomRangesCoef6, NA, numHomRangesCoef8),
 					isolationCoeff = c(NA, NA, NA, NA, isolationCoef5, isolationCoef6, isolationCoef7, isolationCoef8),
@@ -391,10 +444,35 @@ say('###########################################################################
 	nw <- sum(results$nw * w, na.rm=TRUE)
 	se <- sum(results$se * w, na.rm=TRUE)
 	sw <- sum(results$sw * w, na.rm=TRUE)
+	
+	sink('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data Odds of Switching between Classes.txt')
 		
-	say('Ordinal odds of NW region relative to NE region: ', nw)
-	say('Ordinal odds of SE region relative to NE region: ', se)
-	say('Ordinal odds of SW region relative to NE region: ', sw)
+		say('Ordinal odds ratios (arithmetic scale):')
+		
+		say('Ordinal (arithmetic) odds of NW region relative to NE region: ', exp(nw))
+		say('Ordinal (arithmetic) odds of SE region relative to NE region: ', exp(se))
+		say('Ordinal (arithmetic) odds of SW region relative to NE region: ', exp(sw))
+		
+	sink()
+
+say('##################################################')
+say('### summarize support for 7- and 10-yr windows ###')
+say('##################################################')
+
+	file <- paste0('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Ordinal Models Using All Data - 7 & 10-yr Windows.csv')
+	results <- read.csv(file)
+	results <- results[results$region, ]
+	deltaAicc <- results$aicc - min(results$aicc)
+	w <- exp(-0.5 * deltaAicc)
+	w <- w / sum(w)
+
+	say('Relative support for 7- vs 10-yr windows for climatic variables:')
+	say(date(), post=1)
+	
+	aicc7yr <- sum(w[results$period == '7-yr'], na.rm=TRUE)
+	aicc10yr <- sum(w[results$period == '10-yr'], na.rm=TRUE)
+	say('Sum of AICc across all models using 7-yr period:  ', aicc7yr)
+	say('Sum of AICc across all models using 10-yr period: ', aicc10yr)
 
 say('#################################################################################################')
 say('### compile table of predictor weights for ORDINAL simple OCCUPANCY analysis: all-data models ###')
@@ -807,9 +885,15 @@ say('###########################################################################
 	se <- sum(results$se * w, na.rm=TRUE)
 	sw <- sum(results$sw * w, na.rm=TRUE)
 		
-	say('Ordinal odds of NW region relative to NE region: ', nw)
-	say('Ordinal odds of SE region relative to NE region: ', se)
-	say('Ordinal odds of SW region relative to NE region: ', sw)
+	sink('./Figures & Tables/Occupancy - Simple Models/Occupancy - Simple Binary Models Using All Data Odds of Switching between Classes.txt')
+
+		say('Binary odds ratios (arithmetic scale):')
+			
+		say('Binary odds of NW region relative to NE region: ', exp(nw))
+		say('Binary odds of SE region relative to NE region: ', exp(se))
+		say('Binary odds of SW region relative to NE region: ', exp(sw))
+		
+	sink()
 
 say('###############################################################################')
 say('### compile table of predictor weights for BINARY simple OCCUPANCY analysis ###')
