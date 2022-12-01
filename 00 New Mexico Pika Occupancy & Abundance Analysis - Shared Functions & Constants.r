@@ -29,9 +29,9 @@
 	gc()
 	options(stringsAsFactors=FALSE)
 	
-	# drive <- 'C:'
+	drive <- 'C:'
 	# drive <- 'D:'
-	drive <- 'E:'
+	# drive <- 'E:'
 	
 	setwd(paste0(drive, '/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)'))
 
@@ -55,7 +55,7 @@
 	library(raster)
 	library(sf)
 	library(terra)
-	library(tidyverse)
+	# library(tidyverse)
 	
 	ff <- listFiles(paste0(drive, '/ecology/Drive/R/airUpThere/R'))
 	for (f in ff) source(f)
