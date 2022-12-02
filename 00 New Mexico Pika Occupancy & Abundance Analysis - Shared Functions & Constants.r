@@ -25,7 +25,7 @@
 #############
 
 	cat(date(), '\n'); flush.console()
-	rm(list=ls())
+	# rm(list=ls())
 	gc()
 	options(stringsAsFactors=FALSE)
 	
@@ -39,6 +39,7 @@
 	library(legendary) # www.github.com/adamlilith/legendary
 	library(omnibus) # www.github.com/adamlilith/omnibus
 	library(enmSdm) # www.github.com/adamlilith/enmSdm
+	library(enmSdmX) # www.github.com/adamlilith/enmSdm
 	library(statisfactory) # www.github.com/adamlilith/statisfactory
 	
 	library(cowplot)

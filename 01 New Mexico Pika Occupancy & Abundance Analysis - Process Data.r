@@ -1662,7 +1662,7 @@ say('###########################################################')
 				labels = c('none', 'old', 'occ'),
 				values=alpha(c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen'), 0.2)
 			) +
-			labs(title=title, subtitle='All Regions', x=predDescriptorUnit, y='Density') +
+			labs(title=title, subtitle='Regions Together', x=predDescriptorUnit, y='Density') +
 			# geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
 			guides(
 				color=guide_legend(title='Evidence'),
@@ -1721,7 +1721,7 @@ say('###########################################################')
 				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
 				values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
 			) +
-			labs(title=title, subtitle='Old Evidence', x=predDescriptorUnit, y='Density') +
+			labs(title=title, subtitle='Previously Occupied', x=predDescriptorUnit, y='Density') +
 			guides(
 				color=guide_legend(title='Region'),
 				fill=guide_legend(title='Region')
@@ -1750,7 +1750,7 @@ say('###########################################################')
 				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
 				values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
 			) +
-			labs(title=title, subtitle='Occupied', x=predDescriptorUnit, y='Density') +
+			labs(title=title, subtitle='Currently Occupied', x=predDescriptorUnit, y='Density') +
 			guides(
 				color=guide_legend(title='Region'),
 				fill=guide_legend(title='Region')
