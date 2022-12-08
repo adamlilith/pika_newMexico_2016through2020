@@ -37,10 +37,8 @@
 
 	# library(rainbow) # www.github.com/adamlilith/rainbow
 	library(legendary) # www.github.com/adamlilith/legendary
-	library(omnibus) # www.github.com/adamlilith/omnibus
 	library(enmSdm) # www.github.com/adamlilith/enmSdm
-	library(enmSdmX) # www.github.com/adamlilith/enmSdm
-	library(statisfactory) # www.github.com/adamlilith/statisfactory
+	library(enmSdmX) # www.github.com/adamlilith/enmSdmX
 	
 	library(cowplot)
 	# library(elsa)
@@ -52,14 +50,17 @@
 	library(MASS)
 	library(MuMIn)
 	library(ordinalNet)
+	library(omnibus)
 	library(readxl)
 	library(raster)
 	library(sf)
+	library(statisfactory)
 	library(terra)
 	# library(tidyverse)
 	
-	ff <- listFiles(paste0(drive, '/ecology/Drive/R/airUpThere/R'))
-	for (f in ff) source(f)
+	# # only needed for extracting from PRISM
+	# ff <- listFiles(paste0(drive, '/ecology/Drive/R/airUpThere/R'))
+	# for (f in ff) source(f)
 	
 	ll <- c('longitude', 'latitude')
 	surveyYears <- 2016:2020

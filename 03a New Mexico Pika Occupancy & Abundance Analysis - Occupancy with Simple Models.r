@@ -22,9 +22,9 @@
 
 	rm(list=ls())
 
-	# drive <- 'C:'
+	drive <- 'C:'
 	# drive <- 'D:'
-	drive <- 'E:'
+	# drive <- 'E:'
 
 	source(paste0(drive, '/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
 
