@@ -9,14 +9,17 @@
 ### extract environmental data and calculate predictors ###
 ### distributions of predictors across all regions ###
 ### define regions and folds ###
+### extract distance to nearest patches ###
 ### distributions of predictors by region ###
+### distributions of predictors by region for main text ###
 ### contingency table analysis of site status by region ###
 
 #############
 ### setup ###
 #############
 
-	source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	# source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
 
 # say('###################################')
 # say('### process and clean pika data ###')
@@ -271,7 +274,7 @@
 		# nas <- which(is.na(pika$latestDensSurveyYear))
 		# say('There are ', length(nas), ' remaining sites surveyed for DENSITY that still do not have a year of survey assigned to them.')
 
-		# ## assign latest occupancy status
+		# ## assign latest density status
 		# pika$latestDensity <- NA
 		# for (i in 1:nrow(pika)) {
 			# if (!is.na(pika$latestDensSurveyYear[i])) {
@@ -1372,6 +1375,46 @@
 
 	# save(pika, file='./Data/03 New Mexico Pika - Assigned Folds.rda')
 
+# say('###########################################')
+# say('### extract distance to nearest patches ###')
+# say('###########################################')
+
+	# ### number of closest patches to which to measure distance
+	# numClosePatches <- 4
+
+	# sf_use_s2(FALSE) # to obviate error "Edge x has duplicate vertex with edge y"
+
+	# load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	# pikaSp <- SpatialPointsDataFrame(pika[ , ll], data=pika, proj4string=getCRS('wgs84', TRUE))
+	# pikaSf <- st_as_sf(pikaSp)
+	# pikaSf <- st_transform(pikaSf, crs=getCRS('albersNA'))
+	
+	# patchesSp <- shapefile('./Data/Patch Polygons/NM_Pika_Lcations_Polygon.shp')
+	# patchesSf <- st_as_sf(patchesSp)
+	# patchesSf <- st_transform(patchesSf, crs=getCRS('albersNA'))
+
+	# distsClosestPatches_m <- matrix(NA, ncol=numClosePatches, nrow=nrow(pikaSf))
+	# for (countPikaSite in 1:nrow(pikaSf)) {
+	
+		# closestPointsOnPolyToPatch <- sf::st_nearest_points(pikaSf[countPikaSite, ], patchesSf)
+		# closestPointsOnPolyToPatch <- sf::st_cast(closestPointsOnPolyToPatch, 'POINT')
+		
+		# dists_m <- st_distance(pikaSf[countPikaSite, ], closestPointsOnPolyToPatch)
+		# dists_m <- as.numeric(dists_m)
+		# dists_m <- dists_m[dists_m > 0]
+		# dists_m <- sort(dists_m)
+		
+		# distsClosestPatches_m[countPikaSite, ] <- dists_m[1:numClosePatches]
+	
+	# }
+	
+	# colnames(distsClosestPatches_m) <- paste0('distClosestPatch_patch', 1:numClosePatches, '_m')
+	# pika <- cbind(pika, distsClosestPatches_m)
+	
+	# pika$meanDistToClosest4Patches <- rowMeans(pika[ , paste0('distClosestPatch_patch', 1:numClosePatches, '_m')])
+	
+	# save(pika, file='./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
+
 # say('#############################################')
 # say('### distributions of predictors by region ###')
 # say('#############################################')
@@ -1550,6 +1593,183 @@
 		# ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region Set 2.png'), width=8, height=10, units='in')
 
 	# } # next occupancy window
+
+say('###########################################################')
+say('### distributions of predictors by region for main text ###')
+say('###########################################################')
+
+	titleSize <- 8
+	subtitleSize <- 7
+	legendTitleSize <- 7
+	legendTextSize <- 7
+	axisLabelSize <- 7
+	axisTextSize <- 6
+	
+	legendKeySize <- 0.4
+	
+	occWindow <- 7
+
+	### data
+	load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+
+	### occupancy predictors
+	########################
+	
+	pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
+	
+	preds <- c('chronicCold_C', 'chronicHeat_C', 'subLethalHeat18deg_d', 'gsPpt_mm')
+
+	figs <- list()
+	for (countPred in seq_along(preds)) {
+	
+		pred <- preds[countPred]
+		
+		predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
+		say(predWindow)
+	
+		predIndex <- which(predTable$var == pred)
+	
+		predNice <- predTable$varNice[predIndex]
+		predNice <- capIt(predNice)
+		predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
+	
+		# mus <- data.frame(
+			# latestOccStatus = c('0 never', '1 old', '2 occupied'),
+			# mu = c(
+				# mean(pika[pika$latestOccStatus == '0 never', predWindow]),
+				# mean(pika[pika$latestOccStatus == '1 old', predWindow]),
+				# mean(pika[pika$latestOccStatus == '2 occupied', predWindow])
+			# )
+		# )
+
+		thisData <- pika[ , c('latestOccStatus', 'region', predWindow)]
+		names(thisData)[3] <- 'value'
+
+		xlim <- range(thisData$value)
+		
+		letter <- letters[countPred]
+		letter <- paste0('(', letter, ') ')
+		
+		# all regions together
+		title <- paste0(letter, predNice)
+		figs[[length(figs) + 1]] <- ggplot(data=thisData, aes(x=value, col=latestOccStatus, fill=latestOccStatus)) +
+			geom_density(linewidth=1) +
+			scale_color_manual(
+				labels = c('none', 'old', 'occ'),
+				values=c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen')
+			) +
+			scale_fill_manual(
+				labels = c('none', 'old', 'occ'),
+				values=alpha(c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen'), 0.2)
+			) +
+			labs(title=title, subtitle='Regions Together', x=predDescriptorUnit, y='Density') +
+			# geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
+			guides(
+				color=guide_legend(title='Evidence'),
+				fill=guide_legend(title='Evidence')
+			) +
+			xlim(xlim[1], xlim[2]) +
+			theme(
+				legend.key.size = unit(legendKeySize, 'cm'),
+				plot.title=element_text(size=titleSize, face='bold'),
+				plot.subtitle=element_text(size=subtitleSize),
+				legend.title=element_text(size=legendTitleSize),
+				legend.text=element_text(size=legendTextSize),
+				axis.title=element_text(size=axisLabelSize),
+				axis.text=element_text(size=axisTextSize)
+			)
+
+		# "never" by region
+		title <- paste0('')
+		thisThisData <- thisData[thisData$latestOccStatus == '0 never', ]
+		figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+			geom_density(linewidth=1) +
+			scale_color_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+			) +
+			scale_fill_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+			) +
+			labs(title=title, subtitle='No Evidence', x=predDescriptorUnit, y='Density') +
+			guides(
+				color=guide_legend(title='Region'),
+				fill=guide_legend(title='Region')
+			) +
+			xlim(xlim[1], xlim[2]) +
+			theme(
+				legend.key.size = unit(legendKeySize, 'cm'),
+				plot.title=element_text(size=titleSize, face='bold'),
+				plot.subtitle=element_text(size=subtitleSize),
+				legend.title=element_text(size=legendTitleSize),
+				legend.text=element_text(size=legendTextSize),
+				axis.title=element_text(size=axisLabelSize),
+				axis.text=element_text(size=axisTextSize)
+			)
+
+		# "old" by region
+		title <- paste0('')
+		thisThisData <- thisData[thisData$latestOccStatus == '1 old', ]
+		figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+			geom_density(linewidth=1) +
+			scale_color_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+			) +
+			scale_fill_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+			) +
+			labs(title=title, subtitle='Previously Occupied', x=predDescriptorUnit, y='Density') +
+			guides(
+				color=guide_legend(title='Region'),
+				fill=guide_legend(title='Region')
+			) +
+			xlim(xlim[1], xlim[2]) +
+			theme(
+				legend.key.size = unit(legendKeySize, 'cm'),
+				plot.title=element_text(size=titleSize, face='bold'),
+				plot.subtitle=element_text(size=subtitleSize),
+				legend.title=element_text(size=legendTitleSize),
+				legend.text=element_text(size=legendTextSize),
+				axis.title=element_text(size=axisLabelSize),
+				axis.text=element_text(size=axisTextSize)
+			)
+
+		# "occupied" by region
+		title <- paste0('')
+		thisThisData <- thisData[thisData$latestOccStatus == '2 occupied', ]
+		figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+			geom_density(linewidth=1) +
+			scale_color_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+			) +
+			scale_fill_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+			) +
+			labs(title=title, subtitle='Currently Occupied', x=predDescriptorUnit, y='Density') +
+			guides(
+				color=guide_legend(title='Region'),
+				fill=guide_legend(title='Region')
+			) +
+			xlim(xlim[1], xlim[2]) +
+			theme(
+				legend.key.size = unit(legendKeySize, 'cm'),
+				plot.title=element_text(size=titleSize, face='bold'),
+				plot.subtitle=element_text(size=subtitleSize),
+				legend.title=element_text(size=legendTitleSize),
+				legend.text=element_text(size=legendTextSize),
+				axis.title=element_text(size=axisLabelSize),
+				axis.text=element_text(size=axisTextSize)
+			)
+			
+	} # next predictor
+
+	main <- plot_grid(plotlist=figs, align='h', ncol=4, rel_widths=1, labels=NULL, label_size=12)
+	ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT.pdf'), width=8, height=length(preds) * 1.8, units='in')
 
 # say('###########################################################')
 # say('### contingency table analysis of site status by region ###')

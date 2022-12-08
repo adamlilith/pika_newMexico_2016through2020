@@ -25,24 +25,24 @@
 #############
 
 	cat(date(), '\n'); flush.console()
-	rm(list=ls())
+	# rm(list=ls())
 	gc()
 	options(stringsAsFactors=FALSE)
 	
-	# drive <- 'C:'
+	drive <- 'C:'
 	# drive <- 'D:'
-	drive <- 'E:'
+	# drive <- 'E:'
 	
 	setwd(paste0(drive, '/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)'))
 
 	# library(rainbow) # www.github.com/adamlilith/rainbow
 	library(legendary) # www.github.com/adamlilith/legendary
-	library(omnibus) # www.github.com/adamlilith/omnibus
 	library(enmSdm) # www.github.com/adamlilith/enmSdm
-	library(statisfactory) # www.github.com/adamlilith/statisfactory
+	library(enmSdmX) # www.github.com/adamlilith/enmSdmX
 	
 	library(cowplot)
 	# library(elsa)
+	library(geodata)
 	library(ggplot2)
 	library(ggcorrplot)
 	library(glmnet)
@@ -50,13 +50,17 @@
 	library(MASS)
 	library(MuMIn)
 	library(ordinalNet)
+	library(omnibus)
 	library(readxl)
 	library(raster)
+	library(sf)
+	library(statisfactory)
 	library(terra)
-	library(tidyverse)
+	# library(tidyverse)
 	
-	ff <- listFiles(paste0(drive, '/ecology/Drive/R/airUpThere/R'))
-	for (f in ff) source(f)
+	# # only needed for extracting from PRISM
+	# ff <- listFiles(paste0(drive, '/ecology/Drive/R/airUpThere/R'))
+	# for (f in ff) source(f)
 	
 	ll <- c('longitude', 'latitude')
 	surveyYears <- 2016:2020
@@ -71,13 +75,15 @@
 
 	dirCreate('./Figures & Tables')
 	dirCreate('./Figures & Tables/Occupancy - Simple Models')
-	dirCreate('./Figures & Tables/Occupancy - Multivariate')
 	dirCreate('./Figures & Tables/Density - Simple Models')
-	dirCreate('./Figures & Tables/Density - Multivariate')
 
 	occCol <- 'chartreuse'
 	oldCol <- 'darkgoldenrod3'
 	neverCol <- 'firebrick3'
+	
+	# for post hoc analyses including isolation, what cutoff of delta AICc to use for selecting top "climate-only" models?
+	maxDeltaAic_occupancy <- 10
+	maxDeltaAic_density <- 3
 
 ##########################################
 ### convert variable name to nice name ###
@@ -89,6 +95,8 @@
 		# occOrDens 'occupancy' or 'density'
 		# incTime	include time frame in parentheses?
 		# wrapTime  insert "\n" before time?
+	
+		origVars <- vars
 	
 		# time frame
 		if (occOrDens == 'occupancy') {
@@ -117,8 +125,11 @@
 		vars <- predTable$varNice[match(vars, predTable$var)]
 		
 		wrap <- ifelse(wrapTime, '\n', ' ')
-		if (incTime & occOrDens == 'occupancy') vars <- paste0(vars, wrap, '(', timeFrame, '-yr window)')
-		if (incTime & occOrDens == 'density') vars <- paste0(vars, wrap, '(', timeFrame, ' yr prior)')
+		if (incTime & occOrDens == 'occupancy') vars <- paste0(vars, wrap, '(', timeFrame, '-yr)')
+		if (incTime & occOrDens == 'density') vars <- paste0(vars, wrap, '(', timeFrame, ' yr)')
+		
+		if (any(origVars == 'meanDistToClosest4Patches')) vars[origVars == 'meanDistToClosest4Patches'] <- 'isolation'
+		
 		vars
 	
 	}
@@ -562,7 +573,12 @@
 		} else if (occOrDens == 'density') {
 			paste0('densVar_', univars)
 		}
-
+		
+		# univars <- if (occOrDens == 'occupancy') {
+			# c(univars, 'numHomeRangesScaled', 'meanDistToClosest4Patches')
+		# } else if (occOrDens == 'density') {
+			# c(univars, 'meanDistToClosest4Patches')
+		# }
 		univars
 		
 	}
@@ -634,6 +650,17 @@
 		trivars <- paste0(term1, ' ', rep(trivars$fxBetweenTerms1and2, each=2), ' ', term2, ' + ', term3)
 
 		models <- c(univars, bivars, trivars)
+		
+		# models <- c(
+			# models,
+			# paste0(models, ' + numHomeRangesScaled')
+		# )
+		
+		# models <- c(
+			# models,
+			# paste0(models, ' + meanDistToClosest4Patches')
+		# )
+		
 		models
 		
 	}
@@ -844,12 +871,13 @@ extractTerms <- function(...) {
 	models <- list(...)
 	n <- length(models)
 	
-	term1 <- term2 <- term3 <- term4 <- term5 <- term6 <- term7 <- term8 <- rep(NA, n)
+	term1 <- term2 <- term3 <- term4 <- term5 <- term6 <- term7 <- term8 <- term9 <- rep(NA, n)
 	for (countModel in 1:n) {
 	
 		coefs <- coefficients(models[[countModel]])
 		if (any(names(coefs) == '(Intercept)')) coefs <- coefs[names(coefs) != '(Intercept)']
 		if (any(names(coefs) == 'numHomeRangesScaled')) coefs <- coefs[names(coefs) != 'numHomeRangesScaled']
+		if (any(names(coefs) == 'meanDistToClosest4Patches')) coefs <- coefs[names(coefs) != 'meanDistToClosest4Patches']
 		if (any(names(coefs) == 'regionnorthwest')) coefs <- coefs[names(coefs) != 'regionnorthwest']
 		if (any(names(coefs) == 'regionsoutheast')) coefs <- coefs[names(coefs) != 'regionsoutheast']
 		if (any(names(coefs) == 'regionsouthwest')) coefs <- coefs[names(coefs) != 'regionsouthwest']
@@ -892,6 +920,11 @@ extractTerms <- function(...) {
 			term8[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
 		}
 	
+		if (length(coefs) > 8) {
+			term <- coefs[9]
+			term9[countModel] <- paste(sprintf('%.2f', round(term, 2)), names(term))
+		}
+	
 	}
 	
 	occOrDens <- if (grepl(term1[1], pattern='occVar_')) {
@@ -905,8 +938,8 @@ extractTerms <- function(...) {
 	term3 <- niceFormulae(term3, occOrDens=occOrDens)
 	term4 <- niceFormulae(term4, occOrDens=occOrDens)
 
-	out <- list(term1, term2, term3, term4, term5, term6, term7, term8)
-	names(out) <- paste0('term', 1:8)
+	out <- list(term1, term2, term3, term4, term5, term6, term7, term8, term9)
+	names(out) <- paste0('term', 1:9)
 	out
 	
 }
