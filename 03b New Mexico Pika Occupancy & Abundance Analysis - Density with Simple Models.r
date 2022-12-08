@@ -1,6 +1,7 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
+### source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/03b New Mexico Pika Occupancy & Abundance Analysis - Density with Simple Models.r')
 ### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/03b New Mexico Pika Occupancy & Abundance Analysis - Density with Simple Models.r')
 ###
 ### CONTENTS ###
@@ -15,11 +16,12 @@
 
 	rm(list=ls())
 
-	# drive <- 'C:'
+	drive <- 'C:'
 	# drive <- 'D:'
-	drive <- 'E:'
+	# drive <- 'E:'
 
-	source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	# source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
 
 say('########################################')
 say('### climate/isolation DENSITY models ###')
@@ -94,7 +96,7 @@ say('########################################')
 
 			form1 <- as.formula(paste0('latestDensity ~ 1 + ', formula))
 			form2 <- as.formula(paste0('latestDensity ~ 1 + ', formula, ' + region'))
-			form3 <- as.formula(paste0('latestDensity ~ 1 + ', formula, ' + region + meanDistToClosest4Patches'))
+			form3 <- as.formula(paste0('latestDensity ~ 1 + ', formula, ' + meanDistToClosest4Patches'))
 			form4 <- as.formula(paste0('latestDensity ~ 1 + ', formula, ' + region + meanDistToClosest4Patches'))
 	
 			model1 <- glm(form1, data=pika, family=Gamma(link='log'))
@@ -335,6 +337,8 @@ say('################################################')
 		} # next climate model
 		
 		# intercept-only model
+		aiccClim <- allClimModels$aicc[allClimModels$model == '(Intercept)' & is.na(allClimModels$isolation) & !allClimModels$region]
+		
 		report <- rbind(
 			report,
 			data.frame(
@@ -350,7 +354,7 @@ say('################################################')
 				term9 = NA,
 				region = FALSE,
 				hasIsolation = FALSE,
-				aiccClim = AICc(nullModel),
+				aiccClim = aiccClim,
 				aiccClimEco = AICc(nullModel),
 				pseudoR2Clim = 0,
 				pseudoR2ClimEco = NA
@@ -358,6 +362,8 @@ say('################################################')
 		)
 
 		# region-only model
+		aiccClim <- allClimModels$aicc[allClimModels$model == '(Intercept)' & is.na(allClimModels$isolation) & allClimModels$region]
+
 		report <- rbind(
 			report,
 			data.frame(
@@ -373,7 +379,7 @@ say('################################################')
 				term9 = NA,
 				region = TRUE,
 				hasIsolation = FALSE,
-				aiccClim = AICc(nullModelRegion),
+				aiccClim = aiccClim,
 				aiccClimEco = AICc(nullModelRegion),
 				pseudoR2Clim = nagelR2(llNull, llNullRegion, n=nrow(pika)),
 				pseudoR2ClimEco = NA
@@ -381,6 +387,8 @@ say('################################################')
 		)
 
 		# isolation-only model
+		aiccClim <- allClimModels$aicc[allClimModels$model == '(Intercept)' & !is.na(allClimModels$isolation) & !allClimModels$region]
+
 		report <- rbind(
 			report,
 			data.frame(
@@ -396,7 +404,7 @@ say('################################################')
 				term9 = NA,
 				region = FALSE,
 				hasIsolation = TRUE,
-				aiccClim = AICc(nullModelIsolation),
+				aiccClim = aiccClim,
 				aiccClimEco = AICc(nullModelIsolation),
 				pseudoR2Clim = nagelR2(llNull, llNullIsolation, n=nrow(pika)),
 				pseudoR2ClimEco = NA
@@ -404,6 +412,8 @@ say('################################################')
 		)
 
 		# isolation/region-only model
+		aiccClim <- allClimModels$aicc[allClimModels$model == '(Intercept)' & !is.na(allClimModels$isolation) & !allClimModels$region]
+
 		report <- rbind(
 			report,
 			data.frame(
@@ -419,7 +429,7 @@ say('################################################')
 				term9 = NA,
 				region = TRUE,
 				hasIsolation = TRUE,
-				aiccClim = AICc(nullModelRegionIsolation),
+				aiccClim = aiccClim,
 				aiccClimEco = AICc(nullModelRegionIsolation),
 				pseudoR2Clim = nagelR2(llNull, llNullRegionIsolation, n=nrow(pika)),
 				pseudoR2ClimEco = NA

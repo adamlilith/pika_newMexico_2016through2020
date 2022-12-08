@@ -306,7 +306,9 @@ say('#################################################')
 	xSumWeight <- x
 	xSumWeight <- xSumWeight[xSumWeight$sumWeight > 0.001, ]
 	
-	ylim <- c(0, 1.2 * max(x$meanWeight))
+	ylim <- c(0, 1.225 * max(x$meanWeight))
+	
+	breaks <- pretty(x$meanWeight, 3)
 	
 	density <- ggplot(x, aes(x=predsNice, y=meanWeight, fill=predsNice)) +
 		geom_bar(stat='identity') +
@@ -333,12 +335,12 @@ say('#################################################')
 				'Acute Cold (0 yr)' = 'gray30',
 				'GS Moisture Deficit (1 yr)' = 'gray30',
 				'GS Moisture Deficit (0 yr)' = 'gray30',
-				'Acute Heat (1 yr)' = 'gray30',
-				'Acute Heat (0 yr)' = 'gray30',
+				'Acute Heat (1 yr)' = '#8B0000',
+				'Acute Heat (0 yr)' = '#8B0000',
 				'Winter Snowfall (1 yr)' = '#00FFFF',
 				'Winter Snowfall (0 yr)' = '#00FFFF',
-				'Summer Respite (1 yr)' = 'gray30',
-				'Summer Respite (0 yr)' = 'gray30',
+				'Summer Respite (1 yr)' = '#800080',
+				'Summer Respite (0 yr)' = '#800080',
 				'Spring Precipitation (1 yr)' = 'gray30',
 				'Spring Precipitation (0 yr)' = 'gray30',
 				'Annual Precipitation (1 yr)' = 'gray30',
@@ -347,14 +349,19 @@ say('#################################################')
 		) +
 		geom_text(data=xSumWeight, aes(y=meanWeight, label=sumWeightNice), hjust=-0.2) +
 		coord_flip() +
-		ylim(ylim[1], ylim[2]) +
 		xlab('') + ylab('Mean AICc Weight') +
+		scale_y_continuous(limits = ylim, breaks = breaks) +
 		ggtitle('(c) Density') +
 		theme(
 			legend.position = 'none'
 		)
 	
 	combined <- plot_grid(occs, density, ncol=2, rel_widths=1, labels=NULL)
+	combined <- combined +
+		theme(
+			plot.margin = unit(c(0, 0.4, 0, 0), 'cm')
+		)
+	
 
 	ggsave(combined, file=paste0('./Figures & Tables/Variable Importance for All Models (Using ', occWindow_y, '-yr Occupancy Window.pdf'), width=8, height=8)
 	
