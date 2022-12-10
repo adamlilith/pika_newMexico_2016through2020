@@ -1,91 +1,57 @@
-			
-			figs <- list()
-			
-			xlim <- range(thisData$value)
-			
-			# all regions together
-			title <- paste0(predNice, ': all regions')
-			figs[[length(figs) + 1]] <- ggplot(data=thisData, aes(x=value, col=latestOccStatus, fill=latestOccStatus)) +
-				geom_density(size=1) +
-				scale_color_manual(
-					labels = c('never', 'old', 'occupied'),
-					values=c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen')
-				) +
-				scale_fill_manual(
-					labels = c('never', 'old', 'occupied'),
-					values=alpha(c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen'), 0.2)
-				) +
-				xlim(xlim[1], xlim[2]) +
-				labs(title=title, subtitle=pred, x=predDescriptorUnit, y=NULL) +
-				# geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
-				theme(
-					# legend.position='none',
-					plot.title=element_text(face='bold')
-				) +
-				guides(
-					color=guide_legend(title='Status'),
-					fill=guide_legend(title='Status')
-				)
+# source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/TEMP.r')
 
-			# "never" by region
-			title <- paste0(predNice, ': no evidence')
-			thisThisData <- thisData[thisData$latestOccStatus == '0 never', ]
-			figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
-				geom_density(size=1) +
-				scale_color_manual(
-					values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
-				) +
-				scale_fill_manual(
-					values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
-				) +
-				xlim(xlim[1], xlim[2]) +
-				labs(title=title, subtitle=pred, x=predDescriptorUnit, y=NULL) +
-				theme(
-					plot.title=element_text(face='bold')
-				) +
-				guides(
-					color=guide_legend(title='Region'),
-					fill=guide_legend(title='Region')
-				)
-
-			# "old" by region
-			title <- paste0(predNice, ': old evidence')
-			thisThisData <- thisData[thisData$latestOccStatus == '1 old', ]
-			figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
-				geom_density(size=1) +
-				scale_color_manual(
-					values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
-				) +
-				scale_fill_manual(
-					values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
-				) +
-				xlim(xlim[1], xlim[2]) +
-				labs(title=title, subtitle=pred, x=predDescriptorUnit, y=NULL) +
-				theme(
-					plot.title=element_text(face='bold')
-				) +
-				guides(
-					color=guide_legend(title='Region'),
-					fill=guide_legend(title='Region')
-				)
-
-			# "occupied" by region
-			title <- paste0(predNice, ': occupied')
-			thisThisData <- thisData[thisData$latestOccStatus == '2 occupied', ]
-			figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
-				geom_density(size=1) +
-				scale_color_manual(
-					values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
-				) +
-				scale_fill_manual(
-					values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
-				) +
-				xlim(xlim[1], xlim[2]) +
-				labs(title=title, subtitle=pred, x=predDescriptorUnit, y=NULL) +
-				theme(
-					plot.title=element_text(face='bold')
-				) +
-				guides(
-					color=guide_legend(title='Region'),
-					fill=guide_legend(title='Region')
-				)
+	### data
+	load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	
+	cont <- table(pika$latestOccStatus, pika$region)
+	regions <- c('NE', 'NW', 'SE', 'SW')
+	statuses <- c('None', 'Previous', 'Occupied')
+	colnames(cont) <- regions
+	rownames(cont) <- statuses
+	
+	contPrime <- t(cont)
+	contPrime <- contPrime[ , 3:1]
+	
+	propPerRegion <- rowSums(contPrime) / sum(contPrime)
+	regionCenters <- propPerRegion[1] / 2
+	regionCenters <- c(
+		propPerRegion[1] / 2,
+		propPerRegion[1] + propPerRegion[2] / 2,
+		sum(propPerRegion[1:2]) + propPerRegion[3] / 2,
+		sum(propPerRegion[1:3]) + propPerRegion[4] / 2
+	)
+	
+	yCont <- contPrime
+	sitesPerRegion <- rowSums(contPrime)
+	for (i in seq_along(regions)) yCont[i, ] <- yCont[i, ] / sitesPerRegion[i]
+	yContFull <- yCont
+	yCont[ , 'None'] <- yContFull[ , 'None'] / 2
+	yCont[ , 'Previous'] <- yContFull[ , 'None'] + yContFull[ , 'Previous'] / 2
+	yCont[ , 'Occupied'] <- yContFull[ , 'None'] + yContFull[ , 'Previous'] + yContFull[ , 'Occupied'] / 2
+	
+	png('./Figures & Tables/Sites by Region.png', width=1200, height=900, res=600)
+	
+		par(oma = c(0, 0, 0, 0), mar = c(2, 2, 1, 1), cex = 0.6, lwd = 0.6)
+		mosaicplot(
+			contPrime,
+			xlab='Region',
+			ylab='Evidence',
+			color=c('chartreuse3', 'darkgoldenrod3', 'firebrick'),
+			main=''
+		)
+		
+		# frequencies
+		for (r in seq_along(regions)) {
+		
+			x <- regionCenters[r]
+			for (s in seq_along(statuses)) {
+				
+				y <- yCont[r, s]
+				n <- contPrime[r, s]
+				text(x, y, labels = n, adj = c(0.41, 1), cex = 0.8)
+				
+			}
+		
+		}
+	
+	dev.off()
