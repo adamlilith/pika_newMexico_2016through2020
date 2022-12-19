@@ -77,9 +77,10 @@
 	dirCreate('./Figures & Tables/Occupancy - Simple Models')
 	dirCreate('./Figures & Tables/Density - Simple Models')
 
-	occCol <- 'chartreuse'
-	oldCol <- 'darkgoldenrod3'
-	neverCol <- 'firebrick3'
+	# colors
+	occCol <- 'chartreuse' # occupied sites
+	oldCol <- 'darkgoldenrod3' # old occupancy
+	neverCol <- 'firebrick3' # never occupied
 	
 	# for post hoc analyses including isolation, what cutoff of delta AICc to use for selecting top "climate-only" models?
 	maxDeltaAic_occupancy <- 10
