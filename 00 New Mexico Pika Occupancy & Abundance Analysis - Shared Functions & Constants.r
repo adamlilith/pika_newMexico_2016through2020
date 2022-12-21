@@ -41,7 +41,7 @@
 	library(enmSdmX) # www.github.com/adamlilith/enmSdmX
 	
 	library(cowplot)
-	# library(elsa)
+	library(data.table)
 	library(geodata)
 	library(ggplot2)
 	library(ggcorrplot)
