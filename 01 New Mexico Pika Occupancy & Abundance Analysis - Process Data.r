@@ -11,7 +11,8 @@
 ### define regions and folds ###
 ### extract distance to nearest patches ###
 ### distributions of predictors by region ###
-### distributions of predictors by region for main text ###
+### distributions of predictors by region and ordinal occupancy for main text ###
+### distributions of predictors by region and binary occupancy for main text ###
 ### contingency table analysis of site status by region ###
 
 #############
@@ -1594,9 +1595,9 @@
 
 	# } # next occupancy window
 
-# say('###########################################################')
-# say('### distributions of predictors by region for main text ###')
-# say('###########################################################')
+# say('#################################################################################')
+# say('### distributions of predictors by region and ordinal occupancy for main text ###')
+# say('#################################################################################')
 
 	# titleSize <- 8
 	# subtitleSize <- 7
@@ -1607,7 +1608,8 @@
 	
 	# legendKeySize <- 0.4
 	
-	# occWindow <- 7
+	# # occWindow <- 7
+	# occWindow <- 10
 
 	# ### data
 	# load('./Data/03 New Mexico Pika - Assigned Folds.rda')
@@ -1769,73 +1771,223 @@
 	# } # next predictor
 
 	# main <- plot_grid(plotlist=figs, align='h', ncol=4, rel_widths=1, labels=NULL, label_size=12)
-	# ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT.pdf'), width=8, height=length(preds) * 1.8, units='in')
+	# ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT Ordinal.pdf'), width=8, height=length(preds) * 1.8, units='in')
 
-say('###########################################################')
-say('### contingency table analysis of site status by region ###')
-say('###########################################################')
+say('################################################################################')
+say('### distributions of predictors by region and binary occupancy for main text ###')
+say('################################################################################')
+
+	titleSize <- 8
+	subtitleSize <- 7
+	legendTitleSize <- 6.5
+	legendTextSize <- 6.5
+	axisLabelSize <- 7
+	axisTextSize <- 6
+	
+	legendKeySize <- 0.4
+	
+	lw <- 0.5 # width of lines for density smoother
+	occWindow <- 10
 
 	### data
 	load('./Data/03 New Mexico Pika - Assigned Folds.rda')
-	
-	cont <- table(pika$latestOccStatus, pika$region)
-	regions <- c('NE', 'NW', 'SE', 'SW')
-	statuses <- c('None', 'Previous', 'Occupied')
-	colnames(cont) <- regions
-	rownames(cont) <- statuses
-	
-	contPrime <- t(cont)
-	contPrime <- contPrime[ , 3:1]
-	
-	propPerRegion <- rowSums(contPrime) / sum(contPrime)
-	regionCenters <- propPerRegion[1] / 2
-	regionCenters <- c(
-		propPerRegion[1] / 2,
-		propPerRegion[1] + propPerRegion[2] / 2,
-		sum(propPerRegion[1:2]) + propPerRegion[3] / 2,
-		sum(propPerRegion[1:3]) + propPerRegion[4] / 2
-	)
-	
-	yCont <- contPrime
-	sitesPerRegion <- rowSums(contPrime)
-	for (i in seq_along(regions)) yCont[i, ] <- yCont[i, ] / sitesPerRegion[i]
-	yContFull <- yCont
-	yCont[ , 'None'] <- yContFull[ , 'None'] / 2
-	yCont[ , 'Previous'] <- yContFull[ , 'None'] + yContFull[ , 'Previous'] / 2
-	yCont[ , 'Occupied'] <- yContFull[ , 'None'] + yContFull[ , 'Previous'] + yContFull[ , 'Occupied'] / 2
-	
-	png('./Figures & Tables/Sites by Region.png', width=1200, height=900, res=600)
-	
-		par(oma = c(0, 0, 0, 0), mar = c(2, 2, 1, 1), cex = 0.6, lwd = 0.6)
-		mosaicplot(
-			contPrime,
-			xlab='Region',
-			ylab='Evidence',
-			color=c('chartreuse3', 'darkgoldenrod3', 'firebrick'),
-			main=''
-		)
-		
-		# frequencies
-		for (r in seq_along(regions)) {
-		
-			x <- regionCenters[r]
-			for (s in seq_along(statuses)) {
-				
-				y <- yCont[r, s]
-				n <- contPrime[r, s]
-				text(x, y, labels = n, adj = c(0.41, 1), cex = 0.8)
-				
-			}
-		
-		}
-	
-	dev.off()
-	
-	sink('./Figures & Tables/Sites by Region Risk Ratio Text.txt', split=TRUE)
-		say('Risk ratio test of site status by region:', post=2)
-		epitools::riskratio(cont, method = 'wald')
-	sink()
 
-	write.csv(cont, './Figures & Tables/Sites by Region.csv')
+	### occupancy predictors
+	########################
+	
+	pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
+	pika$presAbs <- ifelse(pika$latestOccStatus %in% c('0 never', '1 old'), 'unoccupied', 'occupied')
+
+	preds <- c('chronicCold_C', 'chronicHeat_C', 'subLethalHeat18deg_d', 'gsPpt_mm')
+
+	figs <- list()
+	for (countPred in seq_along(preds)) {
+	
+		pred <- preds[countPred]
+		
+		predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
+		say(predWindow)
+	
+		predIndex <- which(predTable$var == pred)
+	
+		predNice <- predTable$varNice[predIndex]
+		predNice <- capIt(predNice)
+		predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
+	
+		# mus <- data.frame(
+			# latestOccStatus = c('0 never', '1 old', '2 occupied'),
+			# mu = c(
+				# mean(pika[pika$latestOccStatus == '0 never', predWindow]),
+				# mean(pika[pika$latestOccStatus == '1 old', predWindow]),
+				# mean(pika[pika$latestOccStatus == '2 occupied', predWindow])
+			# )
+		# )
+
+		thisData <- pika[ , c('presAbs', 'region', predWindow)]
+		names(thisData)[3] <- 'value'
+
+		xlim <- range(thisData$value)
+		
+		letter <- letters[countPred]
+		letter <- paste0('(', letter, ') ')
+		
+		# all regions together
+		title <- paste0(letter, predNice)
+		figs[[length(figs) + 1]] <- ggplot(data=thisData, aes(x=value, col=presAbs, fill=presAbs)) +
+			geom_density(linewidth=lw) +
+			scale_color_manual(
+				labels = c('occ.', 'unocc.'),
+				values=c('unoccupied'='firebrick3', 'occupied'='darkgreen')
+			) +
+			scale_fill_manual(
+				labels = c('occ.', 'unocc.'),
+				values=alpha(c('unoccupied'='firebrick3', 'occupied'='darkgreen'), 0.2)
+			) +
+			labs(title=title, subtitle='Regions Together', x=predDescriptorUnit, y='Density') +
+			# geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
+			guides(
+				color=guide_legend(title='Status'),
+				fill=guide_legend(title='Status')
+			) +
+			xlim(xlim[1], xlim[2]) +
+			theme(
+				legend.key.size = unit(legendKeySize, 'cm'),
+				plot.title=element_text(size=titleSize, face='bold'),
+				plot.subtitle=element_text(size=subtitleSize),
+				legend.title=element_text(size=legendTitleSize),
+				legend.text=element_text(size=legendTextSize),
+				axis.title=element_text(size=axisLabelSize),
+				axis.text=element_text(size=axisTextSize)
+			)
+
+		# "unoccupied" by region
+		title <- paste0('')
+		thisThisData <- thisData[thisData$presAbs == 'unoccupied', ]
+		figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+			geom_density(linewidth=lw) +
+			scale_color_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+			) +
+			scale_fill_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+			) +
+			labs(title=title, subtitle='Unoccupied', x=predDescriptorUnit, y='Density') +
+			guides(
+				color=guide_legend(title='Region'),
+				fill=guide_legend(title='Region')
+			) +
+			xlim(xlim[1], xlim[2]) +
+			theme(
+				legend.key.size = unit(legendKeySize, 'cm'),
+				plot.title=element_text(size=titleSize, face='bold'),
+				plot.subtitle=element_text(size=subtitleSize),
+				legend.title=element_text(size=legendTitleSize),
+				legend.text=element_text(size=legendTextSize),
+				axis.title=element_text(size=axisLabelSize),
+				axis.text=element_text(size=axisTextSize)
+			)
+
+		# "occupied" by region
+		title <- paste0('')
+		thisThisData <- thisData[thisData$presAbs == 'occupied', ]
+		figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+			geom_density(linewidth=lw) +
+			scale_color_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+			) +
+			scale_fill_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+			) +
+			labs(title=title, subtitle='Currently Occupied', x=predDescriptorUnit, y='Density') +
+			guides(
+				color=guide_legend(title='Region'),
+				fill=guide_legend(title='Region')
+			) +
+			xlim(xlim[1], xlim[2]) +
+			theme(
+				legend.key.size = unit(legendKeySize, 'cm'),
+				plot.title=element_text(size=titleSize, face='bold'),
+				plot.subtitle=element_text(size=subtitleSize),
+				legend.title=element_text(size=legendTitleSize),
+				legend.text=element_text(size=legendTextSize),
+				axis.title=element_text(size=axisLabelSize),
+				axis.text=element_text(size=axisTextSize)
+			)
+			
+	} # next predictor
+
+	main <- plot_grid(plotlist=figs, align='h', ncol=3, rel_widths=1, labels=NULL, label_size=12)
+	ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT Binary.pdf'), width=7, height=length(preds) * 1.8, units='in')
+
+# say('###########################################################')
+# say('### contingency table analysis of site status by region ###')
+# say('###########################################################')
+
+# 	### data
+# 	load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	
+# 	cont <- table(pika$latestOccStatus, pika$region)
+# 	regions <- c('NE', 'NW', 'SE', 'SW')
+# 	statuses <- c('None', 'Previous', 'Occupied')
+# 	colnames(cont) <- regions
+# 	rownames(cont) <- statuses
+	
+# 	contPrime <- t(cont)
+# 	contPrime <- contPrime[ , 3:1]
+	
+# 	propPerRegion <- rowSums(contPrime) / sum(contPrime)
+# 	regionCenters <- propPerRegion[1] / 2
+# 	regionCenters <- c(
+# 		propPerRegion[1] / 2,
+# 		propPerRegion[1] + propPerRegion[2] / 2,
+# 		sum(propPerRegion[1:2]) + propPerRegion[3] / 2,
+# 		sum(propPerRegion[1:3]) + propPerRegion[4] / 2
+# 	)
+	
+# 	yCont <- contPrime
+# 	sitesPerRegion <- rowSums(contPrime)
+# 	for (i in seq_along(regions)) yCont[i, ] <- yCont[i, ] / sitesPerRegion[i]
+# 	yContFull <- yCont
+# 	yCont[ , 'None'] <- yContFull[ , 'None'] / 2
+# 	yCont[ , 'Previous'] <- yContFull[ , 'None'] + yContFull[ , 'Previous'] / 2
+# 	yCont[ , 'Occupied'] <- yContFull[ , 'None'] + yContFull[ , 'Previous'] + yContFull[ , 'Occupied'] / 2
+	
+# 	png('./Figures & Tables/Sites by Region.png', width=1200, height=900, res=600)
+	
+# 		par(oma = c(0, 0, 0, 0), mar = c(2, 2, 1, 1), cex = 0.6, lwd = 0.6)
+# 		mosaicplot(
+# 			contPrime,
+# 			xlab='Region',
+# 			ylab='Evidence',
+# 			color=c('chartreuse3', 'darkgoldenrod3', 'firebrick'),
+# 			main=''
+# 		)
+		
+# 		# frequencies
+# 		for (r in seq_along(regions)) {
+		
+# 			x <- regionCenters[r]
+# 			for (s in seq_along(statuses)) {
+				
+# 				y <- yCont[r, s]
+# 				n <- contPrime[r, s]
+# 				text(x, y, labels = n, adj = c(0.41, 1), cex = 0.8)
+				
+# 			}
+		
+# 		}
+	
+# 	dev.off()
+	
+# 	sink('./Figures & Tables/Sites by Region Risk Ratio Text.txt', split=TRUE)
+# 		say('Risk ratio test of site status by region:', post=2)
+# 		epitools::riskratio(cont, method = 'wald')
+# 	sink()
+
+# 	write.csv(cont, './Figures & Tables/Sites by Region.csv')
 
 say('DONE!!!', level=1, deco='%')
