@@ -29,15 +29,15 @@
 	gc()
 	options(stringsAsFactors=FALSE)
 	
-	drive <- 'C:'
+	# drive <- 'C:'
 	# drive <- 'D:'
-	# drive <- 'E:'
+	drive <- 'E:'
 	
 	setwd(paste0(drive, '/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)'))
 
 	# library(rainbow) # www.github.com/adamlilith/rainbow
 	library(legendary) # www.github.com/adamlilith/legendary
-	library(enmSdm) # www.github.com/adamlilith/enmSdm
+	# # library(enmSdm) # www.github.com/adamlilith/enmSdm
 	library(enmSdmX) # www.github.com/adamlilith/enmSdmX
 	
 	library(cowplot)
@@ -809,7 +809,7 @@
 			theseModels <- paste(theseModels, rep(term3, each=length(theseModels)), sep=' + ')
 			trivarModels <- c(trivarModels, theseModels)
 			
-		} # next bivariate model form
+		} # next trivariate model form
 
 		models <- c(bivarModels, trivarModels)
 		models
