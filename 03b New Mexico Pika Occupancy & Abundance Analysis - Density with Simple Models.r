@@ -9,6 +9,7 @@
 ### climate/isolation DENSITY models ###
 ### compile table of predictor importance for climate/isolation DENSITY models ###
 ### climate/isolation/ecology DENSITY models ###
+### double-checking number of models each variable should be in ###
 
 #############
 ### setup ###
@@ -453,5 +454,28 @@ say('################################################')
 
 		file <- paste0('./Figures & Tables/Density - Simple Models/Top Climate & Isolation Density Models with Ecological Variables.csv')
 		write.csv(report, file, row.names=FALSE)
+	
+say('###################################################################')
+say('### double-checking number of models each variable should be in ###')
+say('###################################################################')
+	
+	vars <- getVars('density')
+	formulae <- getFormulaeDens()
+	
+	counts <- data.frame()
+	for (var in vars) {
+	
+		ins <- sum(grepl(var, formulae))
+		counts <- rbind(
+			counts,
+			data.frame(
+				var = var,
+				n = ins
+			)
+		)
+	
+	}
+	
+	write.csv(counts, './Figures & Tables/Density - Simple Models/Number of Base Models with Each Variable.csv', row.names=FALSE)
 	
 say('DONE!!!', level=1, deco='%')
