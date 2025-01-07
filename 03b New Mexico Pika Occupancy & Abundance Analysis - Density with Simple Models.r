@@ -28,7 +28,7 @@ say('### climate/isolation DENSITY models ###')
 say('########################################')
 
 	load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
-	
+
 	pika$meanDistToClosest4Patches <- log10(pika$meanDistToClosest4Patches)
 	
 	pika <- pika[!is.na(pika$latestDensity), ]
@@ -212,6 +212,19 @@ say('################################################')
 say('### climate/isolation/ecology DENSITY models ###')
 say('################################################')
 
+	### function to create a "long" table with variable, coefficients, and AICc
+
+		tallyVariableImp <- function(varImport, model) {
+		
+			coeffs <- coefficients(model)
+			
+			thisOut <- data.frame(var = names(coeffs), coefficent = as.numeric(coeffs))
+			thisOut$AICc <- AICc(model)
+			
+			varImport <- rbind(varImport, thisOut)
+		
+		}
+		
 	### collate data
 	################
 
@@ -248,7 +261,7 @@ say('################################################')
 		pika$meanDistToClosest4Patches <- scale(pika$meanDistToClosest4Patches)
 		
 		pika$region <- as.factor(pika$region)
-		
+
 	### models
 	##########
 	
@@ -256,11 +269,15 @@ say('################################################')
 		topClimModels <- allClimModels[allClimModels$deltaAicc < maxDeltaAic_density, ]
 
 		report <- data.frame()
+		varImport <- data.frame()
 		
 		nullModel <- glm(latestDensity ~ 1, data=pika, family=Gamma(link='log'))
 		nullModelRegion <- glm(latestDensity ~ region, data=pika, family=Gamma(link='log'))
 		nullModelIsolation <- glm(latestDensity ~ meanDistToClosest4Patches, data=pika, family=Gamma(link='log'))
 		nullModelRegionIsolation <- glm(latestDensity ~ region + meanDistToClosest4Patches, data=pika, family=Gamma(link='log'))
+		
+		varImport <- tallyVariableImp(varImport, model = nullModelIsolation)
+		varImport <- tallyVariableImp(varImport, model = nullModelRegionIsolation)
 		
 		llNull <- logLik(nullModel)
 		llNullRegion <- logLik(nullModelRegion)
@@ -307,9 +324,11 @@ say('################################################')
 				aicc <- AICc(model)
 				
 				ll <- logLik(model)
-				pseudoR2 <- nagelR2(llNull, ll, n=nrow(pika))
+				pseudoR2 <- nagelR2(llNull, ll, n=nrow(pika))				
 				
 				# report
+				varImport <- tallyVariableImp(varImport, model = model)
+				
 				report <- rbind(
 					report,
 					data.frame(
@@ -439,6 +458,7 @@ say('################################################')
 	### report
 	##########
 	
+		# model performance
 		report$deltaAiccClim <- report$aiccClim - min(report$aiccClim)
 		w <- exp(-0.5 * report$deltaAiccClim)
 		report$weightClim <- w / sum(w)
@@ -453,28 +473,60 @@ say('################################################')
 
 		file <- paste0('./Figures & Tables/Density - Simple Models/Top Climate & Isolation Density Models with Ecological Variables.csv')
 		write.csv(report, file, row.names=FALSE)
+		
+		# variable importance
+		varImport$deltaAicc <- varImport$AICc - min(varImport$AICc)
+		w <- exp(-0.5 * varImport$deltaAicc)
+		varImport$aiccWeight <- w / sum(w)
+		
+		vars <- unique(varImport$var)
+		vars <- vars[vars %notin% c('(Intercept)', 'regionsouthwest', 'regionnorthwest', 'regionsoutheast')]
 	
-say('###################################################################')
-say('### double-checking number of models each variable should be in ###')
-say('###################################################################')
-	
-	vars <- getVars('density')
-	formulae <- getFormulaeDens()
-	
-	counts <- data.frame()
-	for (var in vars) {
-	
-		ins <- sum(grepl(var, formulae))
-		counts <- rbind(
-			counts,
-			data.frame(
-				var = var,
-				n = ins
+		varImportOverall <- data.frame()
+		for (var in vars) {
+		
+			subVarImport <- varImport[varImport$var == var, ]
+		
+			varImportOverall <- rbind(
+				varImportOverall,
+				data.frame(
+					var = var,
+					sumAiccWeight = sum(subVarImport$aiccWeight),
+					meanAiccWeight = sum(subVarImport$aiccWeight) / nrow(subVarImport),
+					avgCoeff = sum(subVarImport$coefficent * subVarImport$aiccWeight) / sum(subVarImport$aiccWeight),
+					nModels = nrow(subVarImport),
+					nPos = sum(subVarImport$coefficent > 0),
+					nNeg = sum(subVarImport$coefficent < 0)
+				)
 			)
-		)
+		
+		}
 	
-	}
+		file <- paste0('./Figures & Tables/Density - Simple Models/Top Climate & Isolation Density Models with Ecological Variables - Predictor Importance.csv')
+		write.csv(varImportOverall, file, row.names=FALSE)
+		
 	
-	write.csv(counts, './Figures & Tables/Density - Simple Models/Number of Base Models with Each Variable.csv', row.names=FALSE)
+# say('###################################################################')
+# say('### double-checking number of models each variable should be in ###')
+# say('###################################################################')
+	
+	# vars <- getVars('density')
+	# formulae <- getFormulaeDens()
+	
+	# counts <- data.frame()
+	# for (var in vars) {
+	
+		# ins <- sum(grepl(var, formulae))
+		# counts <- rbind(
+			# counts,
+			# data.frame(
+				# var = var,
+				# n = ins
+			# )
+		# )
+	
+	# }
+	
+	# write.csv(counts, './Figures & Tables/Density - Simple Models/Number of Base Models with Each Variable.csv', row.names=FALSE)
 	
 say('DONE!!!', level=1, deco='%')

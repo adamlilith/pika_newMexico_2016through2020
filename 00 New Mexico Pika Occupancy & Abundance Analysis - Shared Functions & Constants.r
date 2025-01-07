@@ -30,7 +30,7 @@
 	options(stringsAsFactors=FALSE)
 	
 	drive <- 'C:/Ecology/'
-	# drive <- 'E:/Adam/'
+	# drive <- 'C:/Subarashi/'
 	
 	setwd(paste0(drive, '/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)'))
 
