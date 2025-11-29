@@ -27,8 +27,8 @@
 
 	rm(list=ls())
 
-	drive <- 'C:/Ecology/'
-	# drive <- 'E:/Adam/'
+	# drive <- 'C:/Ecology/'
+	drive <- 'C:/Subarashi/'
 
 	source(paste0(drive, '/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
 
@@ -905,127 +905,130 @@
 	# main <- plot_grid(plotlist=figs, align='h', ncol=3, rel_widths=1, labels=NULL, label_size=12)
 	# ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT Binary.pdf'), width=7, height=length(preds) * 1.8, units='in')
 
-say('############################################################################################')
-say('### distributions of predictors by region and binary and ordinal occupancy for main text ###')
-say('############################################################################################')
+# say('############################################################################################')
+# say('### distributions of predictors by region and binary and ordinal occupancy for main text ###')
+# say('############################################################################################')
 
-	occWindow <- 10
+	# occWindow <- 10
 
-	titleSize <- 8
-	subtitleSize <- 7
-	legendTitleSize <- 6.5
-	legendTextSize <- 6.5
-	axisLabelSize <- 7
-	axisTextSize <- 6
+	# titleSize <- 8
+	# subtitleSize <- 7
+	# legendTitleSize <- 6.5
+	# legendTextSize <- 6.5
+	# axisLabelSize <- 7
+	# axisTextSize <- 6
 	
-	legendKeySize <- 0.4
+	# legendKeySize <- 0.4
 	
-	lw <- 0.5 # width of lines for density smoother
+	# lw <- 0.5 # width of lines for density smoother
 
-	### data
-	load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	# ### data
+	# load('./Data/03 New Mexico Pika - Assigned Folds.rda')
 
-	### occupancy predictors
-	########################
+	# ### occupancy predictors
+	# ########################
 	
-	pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
-	pika$presAbs <- ifelse(pika$latestOccStatus %in% c('0 never', '1 old'), 'unoccupied', 'occupied')
+	# pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
+	# pika$presAbs <- ifelse(pika$latestOccStatus %in% c('0 never', '1 old'), 'unoccupied', 'occupied')
 
-	preds <- c('chronicCold_C', 'chronicHeat_C', 'subLethalHeat18deg_d', 'gsPpt_mm')
+	# preds <- c('chronicCold_C', 'chronicHeat_C', 'subLethalHeat18deg_d', 'gsPpt_mm')
 
-	### BINARY
-	ordinals <- binaries <- list()
-	for (countPred in seq_along(preds)) {
+	# ### BINARY
+	# ordinals <- binaries <- list()
+	# for (countPred in seq_along(preds)) {
 	
-		pred <- preds[countPred]
+		# pred <- preds[countPred]
 		
-		predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
-		say(predWindow)
+		# predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
+		# say(predWindow)
 	
-		predIndex <- which(predTable$var == pred)
+		# predIndex <- which(predTable$var == pred)
 	
-		predNice <- predTable$varNice[predIndex]
-		predNice <- capIt(predNice)
-		predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
+		# predNice <- predTable$varNice[predIndex]
+		# predNice <- capIt(predNice)
+		# predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
 	
-		thisData <- pika[ , c('presAbs', 'latestOccStatus', 'region', predWindow)]
-		names(thisData)[ncol(thisData)] <- 'value'
+		# thisData <- pika[ , c('presAbs', 'latestOccStatus', 'region', predWindow)]
+		# names(thisData)[ncol(thisData)] <- 'value'
 
-		xlim <- range(thisData$value)
+		# xlim <- range(thisData$value)
 		
-		letter <- letters[countPred]
-		letter <- paste0('(', letter, ') ')
+		# letter <- letters[countPred]
+		# letter <- paste0('(', letter, ') ')
 		
-		letterPlus <- letters[countPred + length(preds)]
-		letterPlus <- paste0('(', letterPlus, ') ')
+		# letterPlus <- letters[countPred + length(preds)]
+		# letterPlus <- paste0('(', letterPlus, ') ')
 		
-		# binary
-		title <- paste0(letter, predNice, ' (Binary)')
-		binaries[[length(binaries) + 1]] <- ggplot(data=thisData, aes(x=value, col=presAbs, fill=presAbs)) +
-			geom_density(linewidth=lw) +
-			scale_color_manual(
-				labels = c('occupied', 'unoccupied'),
-				values=c('unoccupied'='firebrick3', 'occupied'='darkgreen')
-			) +
-			scale_fill_manual(
-				labels = c('occupied', 'unoccupied'),
-				values=alpha(c('unoccupied'='firebrick3', 'occupied'='darkgreen'), 0.2)
-			) +
-			labs(title=title, x=predDescriptorUnit, y='Density') +
-			guides(
-				color=guide_legend(title='Status'),
-				fill=guide_legend(title='Status')
-			) +
-			xlim(xlim[1], xlim[2]) +
-			theme(
-				legend.key.size = unit(legendKeySize, 'cm'),
-				plot.title=element_text(size=titleSize, face='bold'),
-				plot.subtitle=element_text(size=subtitleSize),
-				legend.title=element_text(size=legendTitleSize),
-				legend.text=element_text(size=legendTextSize),
-				axis.title=element_text(size=axisLabelSize),
-				axis.text=element_text(size=axisTextSize)
-			)
+		# # binary
+		# title <- paste0(letter, predNice, ' (Binary)')
+		# binaries[[length(binaries) + 1]] <- ggplot(data=thisData, aes(x=value, col=presAbs, fill=presAbs)) +
+			# geom_density(linewidth=lw) +
+			# scale_color_manual(
+				# labels = c('occupied', 'unoccupied'),
+				# values=c('unoccupied'='firebrick3', 'occupied'='darkgreen')
+			# ) +
+			# scale_fill_manual(
+				# labels = c('occupied', 'unoccupied'),
+				# values=alpha(c('unoccupied'='firebrick3', 'occupied'='darkgreen'), 0.2)
+			# ) +
+			# labs(title=title, x=predDescriptorUnit, y='Density') +
+			# guides(
+				# color=guide_legend(title='Status'),
+				# fill=guide_legend(title='Status')
+			# ) +
+			# xlim(xlim[1], xlim[2]) +
+			# theme(
+				# legend.key.size = unit(legendKeySize, 'cm'),
+				# plot.title=element_text(size=titleSize, face='bold'),
+				# plot.subtitle=element_text(size=subtitleSize),
+				# legend.title=element_text(size=legendTitleSize),
+				# legend.text=element_text(size=legendTextSize),
+				# axis.title=element_text(size=axisLabelSize),
+				# axis.text=element_text(size=axisTextSize)
+			# )
 
-		# ordinal
-		title <- paste0(letterPlus, predNice, ' (Ordinal)')
-		ordinals[[length(ordinals) + 1]] <- ggplot(data=thisData, aes(x=value, col=latestOccStatus, fill=latestOccStatus)) +
-			geom_density(linewidth=lw) +
-			scale_color_manual(
-				labels = c('0 never' = 'no evidence', '1 old' = 'previously\n  occupied', '2 occupied' = 'currently\n  occupied'),
-				values=c('0 never'='firebrick3', '1 old' = 'darkgoldenrod3', '2 occupied' = 'darkgreen')
-			) +
-			scale_fill_manual(
-				labels = c('0 never' = 'no evidence', '1 old' = 'previously\n  occupied', '2 occupied' = 'currently\n  occupied'),
-				values=alpha(c('0 never'='firebrick3', '1 old' = 'darkgoldenrod3', '2 occupied' = 'darkgreen'), 0.2)
-			) +
-			labs(title=title, x=predDescriptorUnit, y='Density') +
-			guides(
-				color=guide_legend(title='Status'),
-				fill=guide_legend(title='Status')
-			) +
-			xlim(xlim[1], xlim[2]) +
-			theme(
-				legend.key.size = unit(legendKeySize, 'cm'),
-				plot.title=element_text(size=titleSize, face='bold'),
-				plot.subtitle=element_text(size=subtitleSize),
-				legend.title=element_text(size=legendTitleSize),
-				legend.text=element_text(size=legendTextSize),
-				axis.title=element_text(size=axisLabelSize),
-				axis.text=element_text(size=axisTextSize)
-			)
+		# # ordinal
+		# title <- paste0(letterPlus, predNice, ' (Ordinal)')
+		# ordinals[[length(ordinals) + 1]] <- ggplot(data=thisData, aes(x=value, col=latestOccStatus, fill=latestOccStatus)) +
+			# geom_density(linewidth=lw) +
+			# scale_color_manual(
+				# labels = c('0 never' = 'no evidence', '1 old' = 'previously\n  occupied', '2 occupied' = 'currently\n  occupied'),
+				# values=c('0 never'='firebrick3', '1 old' = 'darkgoldenrod3', '2 occupied' = 'darkgreen')
+			# ) +
+			# scale_fill_manual(
+				# labels = c('0 never' = 'no evidence', '1 old' = 'previously\n  occupied', '2 occupied' = 'currently\n  occupied'),
+				# values=alpha(c('0 never'='firebrick3', '1 old' = 'darkgoldenrod3', '2 occupied' = 'darkgreen'), 0.2)
+			# ) +
+			# labs(title=title, x=predDescriptorUnit, y='Density') +
+			# guides(
+				# color=guide_legend(title='Status'),
+				# fill=guide_legend(title='Status')
+			# ) +
+			# xlim(xlim[1], xlim[2]) +
+			# theme(
+				# legend.key.size = unit(legendKeySize, 'cm'),
+				# plot.title=element_text(size=titleSize, face='bold'),
+				# plot.subtitle=element_text(size=subtitleSize),
+				# legend.title=element_text(size=legendTitleSize),
+				# legend.text=element_text(size=legendTextSize),
+				# axis.title=element_text(size=axisLabelSize),
+				# axis.text=element_text(size=axisTextSize)
+			# )
 			
-	} # next predictor
+	# } # next predictor
 
-	binaries <- plot_grid(plotlist = binaries, align='v', ncol=1)
-	ordinals <- plot_grid(plotlist = ordinals, align='v', ncol=1)
-	main <- binaries + ordinals
+	# binaries <- plot_grid(plotlist = binaries, align='v', ncol=1)
+	# ordinals <- plot_grid(plotlist = ordinals, align='v', ncol=1)
+	# main <- binaries + ordinals
 	
-	ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT Binary & Ordinal.pdf'), width=6, height = 8, units='in')
+	# ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT Binary & Ordinal.pdf'), width=6, height = 8, units='in')
 
 # say('###########################################################')
 # say('### contingency table analysis of site status by region ###')
 # say('###########################################################')
+
+	# ### TRINARY occurrence states
+	# #############################
 
 	# ### data
 	# load('./Data/03 New Mexico Pika - Assigned Folds.rda')
@@ -1056,7 +1059,7 @@ say('###########################################################################
 	# yCont[ , 'Previous'] <- yContFull[ , 'None'] + yContFull[ , 'Previous'] / 2
 	# yCont[ , 'Occupied'] <- yContFull[ , 'None'] + yContFull[ , 'Previous'] + yContFull[ , 'Occupied'] / 2
 	
-	# png('./Figures & Tables/Sites by Region.png', width=1200, height=900, res=600)
+	# png('./Figures & Tables/Sites by Region - Trinary.png', width=1200, height=900, res=600)
 	
 		# par(oma = c(0, 0, 0, 0), mar = c(2, 2, 1, 1), cex = 0.6, lwd = 0.6)
 		# mosaicplot(
@@ -1083,12 +1086,82 @@ say('###########################################################################
 	
 	# dev.off()
 	
-	# sink('./Figures & Tables/Sites by Region Risk Ratio Text.txt', split=TRUE)
+	# sink('./Figures & Tables/Sites by Region Risk Ratio Text - Trinary.txt', split=TRUE)
 		# say('Risk ratio test of site status by region:', post=2)
 		# epitools::riskratio(cont, method = 'wald')
 	# sink()
 
-	# write.csv(cont, './Figures & Tables/Sites by Region.csv')
+	# write.csv(cont, './Figures & Tables/Sites by Region - Trinary.csv')
+	
+	# ### BINARY occurrence states
+	# ############################
+
+	# ### data
+	# load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	
+	# pika$binary <- NA_character_
+	# pika$binary[pika$latestOccStatus %in% c('0 never', '1 old')] <- 0
+	# pika$binary[pika$latestOccStatus %in% c('2 occupied')] <- 1
+	
+	# cont <- table(pika$binary, pika$region)
+	# regions <- c('NE', 'NW', 'SE', 'SW')
+	# statuses <- c('Unoccupied', 'Occupied')
+	# colnames(cont) <- regions
+	# rownames(cont) <- statuses
+	
+	# contPrime <- t(cont)
+	# contPrime <- contPrime[ , 2:1]
+	
+	# # coordinates for placement of number of sites text
+	# propPerRegion <- rowSums(contPrime) / sum(contPrime)
+	# regionCenters <- propPerRegion[1] / 2
+	# regionCenters <- c(
+		# propPerRegion[1] / 2,
+		# propPerRegion[1] + propPerRegion[2] / 2,
+		# sum(propPerRegion[1:2]) + propPerRegion[3] / 2,
+		# sum(propPerRegion[1:3]) + propPerRegion[4] / 2
+	# )
+	
+	# yCont <- contPrime
+	# sitesPerRegion <- rowSums(contPrime)
+	# for (i in seq_along(regions)) yCont[i, ] <- yCont[i, ] / sitesPerRegion[i]
+	# yContFull <- yCont
+	# yCont[ , 'Unoccupied'] <- yContFull[ , 'Unoccupied'] / 2
+	# yCont[ , 'Occupied'] <- yContFull[ , 'Unoccupied'] + yContFull[ , 'Occupied'] / 2
+	
+	# png('./Figures & Tables/Sites by Region - Binary.png', width=1200, height=900, res=600)
+	
+		# par(oma = c(0, 0, 0, 0), mar = c(2, 2, 1, 1), cex = 0.6, lwd = 0.6)
+		# mosaicplot(
+			# contPrime,
+			# xlab = 'Region',
+			# ylab = 'Number of sites',
+			# color = c('chartreuse3', 'firebrick'),
+			# main = ''
+		# )
+		
+		# # frequencies
+		# for (r in seq_along(regions)) {
+		
+			# x <- regionCenters[r]
+			# for (s in seq_along(statuses)) {
+				
+				# y <- yCont[r, s]
+				# n <- contPrime[r, s]
+				# text(x, y, labels = n, adj = c(0.41, 1), cex = 0.8)
+				
+			# }
+		
+		# }
+	
+	# dev.off()
+	
+	# sink('./Figures & Tables/Sites by Region Risk Ratio Text - Binary.txt', split=TRUE)
+		# say('Risk ratio test of site status by region:', post=2)
+		# epitools::riskratio(cont, method = 'wald')
+	# sink()
+
+	# write.csv(cont, './Figures & Tables/Sites by Region - Binary.csv')
 	
 # say('########################################################################')
 # say('### statistical comparison of environmental variables across regions ###')

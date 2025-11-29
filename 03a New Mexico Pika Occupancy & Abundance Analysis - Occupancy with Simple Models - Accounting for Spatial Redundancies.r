@@ -6,7 +6,6 @@
 ###
 ### This script is the same as the other of the same name, except that it accounts for the fact that some sites occur in the same cell.
 ###
-###
 ### CONTENTS ###
 ### setup ###
 ###
