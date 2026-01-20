@@ -55,6 +55,7 @@
 	library(patchwork)
 	library(readxl)
 	library(raster)
+	library(RColorBrewer)
 	library(sf)
 	library(statisfactory)
 	library(terra)
@@ -363,6 +364,7 @@
 				startDate='startDate',
 				endDate='endDate',
 				prDir=prDir,
+				subver='an81',
 				vars=prVar,
 				res=30,
 				rastSuffix = 'tif',
@@ -459,6 +461,7 @@
 				startDate='startDate',
 				endDate='endDate',
 				prDir=prDir,
+				subver='an81',
 				vars=prVar,
 				res=30,
 				rastSuffix = 'tif',
@@ -519,6 +522,7 @@
 					startDate='startDate',
 					endDate='endDate',
 					prDir=prDir,
+					subver='an81',
 					vars=prVar,
 					res=30,
 					rastSuffix = 'tif',
