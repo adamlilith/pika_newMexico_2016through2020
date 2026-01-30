@@ -1,8 +1,7 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('C:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
-### source('E:/Ecology/Drive/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+### source('C:/Kaji/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
 ###
 ### CONTENTS ###
 ### setup ###
@@ -29,8 +28,7 @@
 	gc()
 	options(stringsAsFactors=FALSE)
 	
-	drive <- 'C:/Ecology/'
-	# drive <- 'E:/Adam/'
+	drive <- 'C:/Kaji/'
 	
 	setwd(paste0(drive, '/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)'))
 
@@ -45,7 +43,9 @@
 	library(ggcorrplot)
 	library(ggnewscale)
 	library(ggplot2)
+	library(gplots)
 	library(ggspatial)
+	library(glmmTMB)
 	library(glmnet)
 	library(lubridate)
 	library(MASS)
@@ -55,6 +55,7 @@
 	library(patchwork)
 	library(readxl)
 	library(raster)
+	library(RColorBrewer)
 	library(sf)
 	library(statisfactory)
 	library(terra)
@@ -79,7 +80,7 @@
 	dirCreate('./Figures & Tables')
 	dirCreate('./Figures & Tables/Occupancy - Simple Models')
 	dirCreate('./Figures & Tables/Occupancy - Simple Models - Accounting for Spatial Redundancies')
-	dirCreate('./Figures & Tables/Density - Simple Models')
+	# dirCreate('./Figures & Tables/Density - Simple Models')
 
 	# colors
 	occCol <- 'chartreuse' # occupied sites
@@ -363,6 +364,7 @@
 				startDate='startDate',
 				endDate='endDate',
 				prDir=prDir,
+				subver='an81',
 				vars=prVar,
 				res=30,
 				rastSuffix = 'tif',
@@ -459,6 +461,7 @@
 				startDate='startDate',
 				endDate='endDate',
 				prDir=prDir,
+				subver='an81',
 				vars=prVar,
 				res=30,
 				rastSuffix = 'tif',
@@ -519,6 +522,7 @@
 					startDate='startDate',
 					endDate='endDate',
 					prDir=prDir,
+					subver='an81',
 					vars=prVar,
 					res=30,
 					rastSuffix = 'tif',
@@ -816,6 +820,60 @@
 
 		models <- c(bivarModels, trivarModels)
 		models
+		
+	}
+
+	getFormulaeDensExtended <- function() {
+
+		# get univariate models from original models
+		forms <- getFormulaeDens()
+		x <- character()
+		for (i in seq_along(forms)) {
+		
+			this_form <- forms[i]
+			this_form <- paste('~', this_form)
+			this_form <- as.formula(this_form)
+
+			terms <- terms(this_form)
+			terms <- attr(terms, 'term.labels')
+			x <- c(x, terms)
+		
+		}
+
+		x <- c(
+			x,
+			'densVar_acuteHeat_d_1yrPrior',
+			'densVar_acuteHeat_d_1yrPrior + densVar_gsPpt_mm_1yrPrior',
+			'densVar_acuteHeat_d_1yrPrior + densVar_acuteCold_d_1yrPrior',
+			'densVar_acuteHeat_d_1yrPrior + densVar_acuteCold_d_1yrPrior + densVar_acuteHeat_d_1yrPrior:densVar_acuteCold_d_1yrPrior',
+			'densVar_acuteHeat_d_1yrPrior + densVar_gsPpt_mm_1yrPrior + densVar_acuteCold_d_1yrPrior',
+			'densVar_acuteHeat_d_1yrPrior + densVar_monsoonPpt_mm_1yrPrior',
+			'densVar_acuteHeat_d_1yrPrior + densVar_peakMoistStress_hPa_1yrPrior',
+
+			'densVar_gsPpt_mm_1yrPrior',
+			'densVar_gsPpt_mm_1yrPrior + densVar_chronicHeat_C_1yrPrior',
+			'densVar_gsPpt_mm_1yrPrior + densVar_chronicHeat_C_1yrPrior + densVar_gsPpt_mm_1yrPrior:densVar_chronicHeat_C_1yrPrior',
+			'densVar_gsPpt_mm_1yrPrior + densVar_subLethalHeat18deg_d_1yrPrior',
+			'densVar_gsPpt_mm_1yrPrior + densVar_peakMoistStress_hPa_1yrPrior',
+
+			'densVar_acuteCold_d_1yrPrior',
+			'densVar_acuteCold_d_1yrPrior + densVar_winterSnow_mm_0yrPrior',
+			'densVar_acuteCold_d_1yrPrior + densVar_winterSnow_mm_0yrPrior + densVar_acuteCold_d_1yrPrior:densVar_winterSnow_mm_0yrPrior',
+			'densVar_gsPpt_mm_1yrPrior + densVar_acuteCold_d_1yrPrior',
+
+			'densVar_winterSnow_mm_0yrPrior',
+			'densVar_gsPpt_mm_1yrPrior + densVar_winterSnow_mm_0yrPrior',
+			'densVar_gsPpt_mm_1yrPrior + densVar_winterSnow_mm_0yrPrior + densVar_gsPpt_mm_1yrPrior:densVar_winterSnow_mm_0yrPrior',
+			'densVar_winterSnow_mm_0yrPrior + densVar_chronicHeat_C_1yrPrior',
+			'densVar_winterSnow_mm_0yrPrior + densVar_acuteHeat_d_1yrPrior',
+
+			'densVar_peakMoistStress_hPa_1yrPrior',
+			'densVar_peakMoistStress_hPa_1yrPrior + densVar_gsPpt_mm_1yrPrior'
+		
+		)
+
+		x <- sort(unique(x))
+		x
 		
 	}
 

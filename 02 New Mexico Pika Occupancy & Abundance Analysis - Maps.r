@@ -1,8 +1,7 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('C:/Ecology/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/02 New Mexico Pika Occupancy & Abundance Analysis - Maps.r')
-### source('E:/Adam/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/02 New Mexico Pika Occupancy & Abundance Analysis - Maps.r')
+### source('C:/Kaji/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/02 New Mexico Pika Occupancy & Abundance Analysis - Maps.r')
 ###
 ### CONTENTS ###
 ### setup ###
@@ -13,8 +12,9 @@
 ### setup ###
 #############
 
-	source('C:/Ecology/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
-	# source('E:/Adam/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	rm(list = ls())
+
+	source('C:/Kaji/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
 
 # say('##############################')
 # say('### fetch elevation raster ###')
@@ -259,150 +259,292 @@
 			
 	# dev.off()
 
-say('################################################')
-say('### map of sampling sites & GBIF occurrences ###')
-say('################################################')
+# say('################################################')
+# say('### map of sampling sites & GBIF occurrences ###')
+# say('################################################')
+
+# 	# survey sites
+# 	load('./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
+# 	pikaVectUnproj <- vect(as.matrix(pika[ , ll]), 'points', crs=getCRS('wgs84'))
+	
+# 	# plot extent
+# 	pikaBuffUnprojXXL <- terra::buffer(pikaVectUnproj, width=2000000)
+# 	pikaBuffUnprojXL <- terra::buffer(pikaVectUnproj, width=1000000)
+# 	pikaBuffUnprojLg <- terra::buffer(pikaVectUnproj, width=200000)
+# 	pikaBuffUnprojSm <- terra::buffer(pikaVectUnproj, width=40000)
+# 	pikaBuffProjSm <- project(pikaBuffUnprojSm, getCRS('naAlbers'))
+
+# 	# GADM
+# 	mex1 <- gadm(country='MEX', level=1, path=paste0('C:!Scratch'), version=4.1, resolution=1)
+# 	usa1 <- gadm(country='USA', level=1, path=paste0('C:/!Scratch'), version=4.1, resolution=1)
+# 	usa2 <- gadm(country='USA', level=2, path=paste0('C:/!Scratch'), version=4.1, resolution=1)
+
+# 	usa1 <- usa1[usa1$NAME_1 != 'Alaska', ]
+# 	usa1 <- usa1[usa1$NAME_1 != 'Hawaii', ]
+
+# 	usa2 <- usa2[usa2$NAME_1 != 'Alaska', ]
+# 	usa2 <- usa2[usa2$NAME_1 != 'Hawaii', ]
+
+# 	nam1 <- rbind(usa1, mex1)
+	
+# 	nam1XXL <- crop(nam1, ext(pikaBuffUnprojXXL))
+# 	nam1XL <- crop(nam1, ext(pikaBuffUnprojXL))
+# 	nam1Lg <- crop(nam1, ext(pikaBuffUnprojLg))
+# 	usa2Lg <- crop(usa2, ext(pikaBuffUnprojLg))
+	
+# 	# elevation
+# 	elev_fine_m <- rast('./Data/elev_fine_m.tif')
+# 	elev_fine_m <- crop(elev_fine_m, pikaBuffUnprojLg)
+# 	elev_fine_m <- crop(elev_fine_m, pikaBuffUnprojLg)
+	
+# 	slope <- terrain(elev_fine_m, 'slope', unit='radians')
+# 	aspect <- terrain(elev_fine_m, 'aspect', unit='radians')
+# 	slopeR <- raster(slope)
+# 	aspectR <- raster(aspect)
+
+# 	hs <- hillShade(slopeR, aspectR, direction=45)
+# 	hs <- rast(hs)
+# 	hs <- project(hs, getCRS('naAlbers'))
+	
+# 	# project
+# 	pikaVectProj <- project(pikaVectUnproj, getCRS('naAlbers'))
+# 	nam1XXL <- project(nam1XXL, getCRS('naAlbers'))
+# 	nam1XL <- project(nam1XL, getCRS('naAlbers'))
+# 	nam1Lg <- project(nam1Lg, getCRS('naAlbers'))
+# 	usa2Lg <- project(usa2Lg, getCRS('naAlbers'))
+	
+# 	# split records
+# 	noEvid <- pikaVectProj[pika$latestOccStatus == '0 never']
+# 	oldEvid <- pikaVectProj[pika$latestOccStatus == '1 old']
+# 	occs <- pikaVectProj[pika$latestOccStatus == '2 occupied']
+
+# 	# plot extent
+# 	pikaBuffProjSmSp <- as(pikaBuffProjSm, 'Spatial')
+# 	ext <- extent(pikaBuffProjSmSp)
+# 	ext <- as(ext, 'SpatialPolygons')
+# 	projection(ext) <- getCRS('naAlbers')
+
+# 	usa2LgCrop <- crop(usa2Lg, ext)
+# 	nam1LgCrop <- crop(nam1Lg, ext)
+# 	hs <- crop(hs, ext)
+# 	hs <- hs - global(hs, 'min', na.rm=TRUE)$min
+# 	hs <- hs / global(hs, 'max', na.rm=TRUE)$max
+# 	hs <- crop(hs, pikaBuffProjSmSp)
+# 	hsR <- rast(hs)
+	
+# 	elev <- project(elev_fine_m, getCRS('naAlbers'))
+# 	elev <- crop(elev, pikaBuffProjSmSp)
+
+# 	# GBIF
+# 	gbif <- read.csv('./Data/GBIF 2022-12-19/ochotona_princeps.csv')
+# 	gbif <- gbif[gbif$species == 'Ochotona princeps', ]
+# 	gbif <- gbif[gbif$year <= 2015, ]
+	
+# 	ext <- as.vector(ext(project(usa2LgCrop, getCRS('wgs84'))))
+	
+# 	gbif <- vect(gbif, geom=c('decimalLongitude', 'decimalLatitude'), crs=getCRS('wgs84'), keepgeom = TRUE)
+# 	crs(gbif) <- getCRS('wgs84')
+	
+# 	gbif <- project(gbif, getCRS('naAlbers'))
+	
+# 	ins <- extract(nam1LgCrop, gbif)
+# 	ins$CC_1 <- NULL
+# 	gbif <- gbif[ins$COUNTRY == 'United States', ]
+
+# 	### colors
+	
+# 		# colors for elevation
+# 		load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
+		
+# 		minElev <- globalx(elev, 'min')
+# 		lowestNeverOcc <- min(pika$elevation_m[pika$latestOccStatus == '0 never'])
+# 		# medianNeverOcc <- median(pika$elevation_m[pika$latestOccStatus == '0 never'])
+# 		medianPastOcc <- median(pika$elevation_m[pika$latestOccStatus == '1 old'])
+# 		medianOcc <- median(pika$elevation_m[pika$latestOccStatus == '2 occupied'])
+# 		maxElev <- globalx(elev, 'max')
+
+# 		elevBreaks <- c(minElev, lowestNeverOcc, medianPastOcc, medianOcc, maxElev)
+# 		names(elevBreaks) <- c('minElev', 'medianNeverOcc', 'medianPastOcc', 'medianOcc', 'maxElev')
+
+# 		elevCols <- c('gray80', 'firebrick3', 'darkgoldenrod3', 'chartreuse')
+# 		elevCols <- alpha(elevCols, 0.5)
+
+# 		# hillshade colors
+# 		hsCols <- colorRampPalette(c('gray0', 'gray100'))
+# 		hsCols <- hsCols(20)
+		
+# 	### placement
+	
+# 		legendInset <- c(0.019, 0.02)
+# 		mar <- c(0, 0.5, 1, 1)
+		
+# 	### plot!
+# 	png('./Figures & Tables/Study Region with Sampling Sites with GBIF.png', width=2300, height=2400, res=300)
+
+# 		par(mar=rep(0.1, 4), mai=rep(0.1, 4), oma=rep(0, 4), mgp=c(0, 0, 0))
+			
+# 		### all together
+# 		################
+			
+# 			plot(hs, col=hsCols, legend=FALSE, axes=FALSE, mar=mar)
+# 			plot(nam1LgCrop, lwd=3, add=TRUE)
+# 			plot(usa2LgCrop, lwd=1, add=TRUE)
+# 			plot(elev, legend = FALSE, axes = FALSE, add = TRUE, col = elevCols, breaks = elevBreaks)
+
+# 			noEvid <- pikaVectProj[pika$latestOccStatus == '0 never']
+# 			oldEvid <- pikaVectProj[pika$latestOccStatus == '1 old']
+# 			occs <- pikaVectProj[pika$latestOccStatus == '2 occupied']
+			
+# 			plot(noEvid, pch=25, bg=alpha('firebrick2', 0.5), cex=1.2, add=TRUE)
+# 			plot(oldEvid, pch=22, bg=alpha('darkgoldenrod3', 0.5), cex=1.2, add=TRUE)
+# 			plot(occs, pch=21, bg=alpha('chartreuse', 0.5), cex=1.2, add=TRUE)
+# 			plot(gbif, pch=21, cex=1, bg='blue', add=TRUE)
+
+# 			legend('bottomleft', inset=legendInset, legend=c('Currently occupied', 'Previously occupied', 'No evidence', 'GBIF'), pch=c(21, 22, 25, 21), pt.bg=c('chartreuse', 'darkgoldenrod3', 'firebrick2', 'blue'), bg='white', cex=1.05)
+			
+			
+# 	dev.off()
+
+say('#############################')
+say('### map of sampling sites ###')
+say('#############################')
+
+	# user-defined
+
+		min_high_elev_m <- 2829 # "high" elevation starts here
+		min_mid_elev_m <- 2303 # "middle" elevation starts here
+
+	# North America
+	nam1 <- gadm(country = c('CAN', 'USA', 'MEX'), level = 1, path = paste0('C:/!Scratch/gadm'), version = 4.1, resolution = 1)
+	nam1 <- nam1[nam1$NAME_1 %notin% c('Alaska', 'Hawaii')]
+	nam1 <- nam1[nam1$NAME_1 %in% c('California', 'Oregon', 'Washington', 'British Columbia', 'Alberta', 'Saskatchewan', 'Manitoba', 'Yukon', 'Northwest Territories', 'Idaho', 'Montana', 'North Dakota', 'South Dakota', 'Colorado', 'Nebraska', 'Wyoming', 'Utah', 'Nevada', 'Arizona', 'New Mexico', 'Baja California', 'Sonora', 'Oklahoma', 'Texas', 'Kansas', 'Nebraska')]
+
+	# IUCN range
+	iucn <- vect('./Data/IUCN Range Map 2025-03-12/pika_range_map.gpkg')
 
 	# survey sites
 	load('./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
-	pikaVectUnproj <- vect(as.matrix(pika[ , ll]), 'points', crs=getCRS('wgs84'))
-	
+	pika <- vect(pika, geom = ll, crs = getCRS('NAD83'))
+
 	# plot extent
-	pikaBuffUnprojXXL <- terra::buffer(pikaVectUnproj, width=2000000)
-	pikaBuffUnprojXL <- terra::buffer(pikaVectUnproj, width=1000000)
-	pikaBuffUnprojLg <- terra::buffer(pikaVectUnproj, width=200000)
-	pikaBuffUnprojSm <- terra::buffer(pikaVectUnproj, width=40000)
-	pikaBuffProjSm <- project(pikaBuffUnprojSm, getCRS('naAlbers'))
+	extent_nm <- buffer(pika, width = 20000)
+	extent_nam <- buffer(iucn, width = 600000)
 
-	# GADM
-	mex1 <- gadm(country='MEX', level=1, path=paste0('C:!Scratch'), version=4.1, resolution=1)
-	usa1 <- gadm(country='USA', level=1, path=paste0('C:/!Scratch'), version=4.1, resolution=1)
-	usa2 <- gadm(country='USA', level=2, path=paste0('C:/!Scratch'), version=4.1, resolution=1)
+	extent_nm <- ext(extent_nm)
+	extent_nam <- ext(extent_nam)
 
-	usa1 <- usa1[usa1$NAME_1 != 'Alaska', ]
-	usa1 <- usa1[usa1$NAME_1 != 'Hawaii', ]
+	extent_nm <- as.polygons(extent_nm, crs = getCRS('WGS84'))
+	extent_nam <- as.polygons(extent_nam, crs = getCRS('WGS84'))
 
-	usa2 <- usa2[usa2$NAME_1 != 'Alaska', ]
-	usa2 <- usa2[usa2$NAME_1 != 'Hawaii', ]
+	nam1_nm <- crop(nam1, extent_nm)
 
-	nam1 <- rbind(usa1, mex1)
+	# cities
+	cities <- data.frame(
+		name = c('Santa Fe', 'Los Alamos'),
+		x = c(-105.964444, -106.263889),
+		y = c(35.667222, 35.891111)
+	)
+	cities <- vect(cities, geom = c('x', 'y'), crs = getCRS('NAD83'))
 	
-	nam1XXL <- crop(nam1, ext(pikaBuffUnprojXXL))
-	nam1XL <- crop(nam1, ext(pikaBuffUnprojXL))
-	nam1Lg <- crop(nam1, ext(pikaBuffUnprojLg))
-	usa2Lg <- crop(usa2, ext(pikaBuffUnprojLg))
+	# major rivers and lakes
+	rivers <- vect('C:/Kaji/Research Data/Rivers and Lakes - North America USGS/hydrography_l_rivers_v2.shp') # Adjust path to your rivers data
+	rivers <- makeValid(rivers)
+	extent_nm_proj <- project(extent_nm, rivers)
+	rivers <- crop(rivers, extent_nm_proj)
 	
 	# elevation
 	elev_fine_m <- rast('./Data/elev_fine_m.tif')
-	elev_fine_m <- crop(elev_fine_m, pikaBuffUnprojLg)
-	elev_fine_m <- crop(elev_fine_m, pikaBuffUnprojLg)
+	elev_fine_m <- crop(elev_fine_m, extent_nm)
 	
-	slope <- terrain(elev_fine_m, 'slope', unit='radians')
-	aspect <- terrain(elev_fine_m, 'aspect', unit='radians')
-	slopeR <- raster(slope)
-	aspectR <- raster(aspect)
+# elev_fine_m <- aggregate(elev_fine_m, 16, mean)
 
-	hs <- hillShade(slopeR, aspectR, direction=45)
-	hs <- rast(hs)
-	hs <- project(hs, getCRS('naAlbers'))
-	
+	# hillshade
+	slope <- terrain(elev_fine_m, 'slope', unit = 'radians')
+	aspect <- terrain(elev_fine_m, 'aspect', unit = 'radians')
+	hs <- shade(slope, aspect, angle = 15, direction = 45)
+
+	# elevation above given threshold
+	elev_high_m <- elev_mid_m <- elev_fine_m
+	elev_high_m[elev_high_m < min_high_elev_m] <- NA
+	elev_mid_m[elev_mid_m < min_mid_elev_m | elev_mid_m >= min_high_elev_m] <- NA
+
 	# project
-	pikaVectProj <- project(pikaVectUnproj, getCRS('naAlbers'))
-	nam1XXL <- project(nam1XXL, getCRS('naAlbers'))
-	nam1XL <- project(nam1XL, getCRS('naAlbers'))
-	nam1Lg <- project(nam1Lg, getCRS('naAlbers'))
-	usa2Lg <- project(usa2Lg, getCRS('naAlbers'))
-	
+	hs <- project(hs, getCRS('North America Lambert'))
+	pika <- project(pika, getCRS('North America Lambert'))
+	nam1 <- project(nam1, getCRS('North America Lambert'))
+	cities <- project(cities, getCRS('North America Lambert'))
+	rivers <- project(rivers, getCRS('North America Lambert'))
+	iucn <- project(iucn, getCRS('North America Lambert'))
+	extent_nm_proj <- project(extent_nm_proj, getCRS('North America Lambert'))
+	extent_nam_proj <- project(extent_nam, getCRS('North America Lambert'))
+
+	extent_nam_proj_vect <- as.vector(ext(extent_nam_proj))
+
+	iucn_nm <- crop(iucn, extent_nm_proj)
+
+	extent_nam_proj <- ext(extent_nam_proj)
+	extent_nam_proj <- as.vector(extent_nam_proj)
+
+	extent_nm_proj_vect <- as.vector(ext(extent_nm_proj))
+	say('Extent along x-axis is ', (extent_nm_proj_vect[2] - extent_nm_proj_vect[1]) / 1000, ' km')
+
 	# split records
-	noEvid <- pikaVectProj[pika$latestOccStatus == '0 never']
-	oldEvid <- pikaVectProj[pika$latestOccStatus == '1 old']
-	occs <- pikaVectProj[pika$latestOccStatus == '2 occupied']
+	present <- pika[pika$latestOccStatus %in% c('2 occupied')]
+	absent <- pika[pika$latestOccStatus %in% c('0 never', '1 old')]
 
-	# plot extent
-	pikaBuffProjSmSp <- as(pikaBuffProjSm, 'Spatial')
-	ext <- extent(pikaBuffProjSmSp)
-	ext <- as(ext, 'SpatialPolygons')
-	projection(ext) <- getCRS('naAlbers')
+	# hillshade colors
+	hs_cols <- colorRampPalette(c('gray30', 'gray100'))(20)
+	high_cols <- rev(brewer.pal(9, 'YlGn')[1:6])
+	mid_cols <- brewer.pal(11, 'Spectral')[1:5]
 
-	usa2LgCrop <- crop(usa2Lg, ext)
-	nam1LgCrop <- crop(nam1Lg, ext)
-	hs <- crop(hs, ext)
-	hs <- hs - global(hs, 'min', na.rm=TRUE)$min
-	hs <- hs / global(hs, 'max', na.rm=TRUE)$max
-	hs <- crop(hs, pikaBuffProjSmSp)
-	hsR <- rast(hs)
+	# ### range map	
+	# extent_nam_proj[1] <- extent_nam_proj[1] + 1300000
+	# extent_nam_proj[2] <- extent_nam_proj[2] - 600000
+	# extent_nam_proj[3] <- extent_nam_proj[3] + 600000
+	# extent_nam_proj[4] <- extent_nam_proj[4] - 900000
+	# range_map <- ggplot() +
+	# 	layer_spatial(nam1, fill = 'gray85') +
+	# 	layer_spatial(iucn, fill = 'orange') +
+	# 	layer_spatial(extent_nm_proj, color = 'black', fill = NA, linewidth = 1) +
+	# 	xlim(extent_nam_proj[1], extent_nam_proj[2]) + ylim(extent_nam_proj[3], extent_nam_proj[4]) +
+	# 	theme(
+	# 		axis.text = element_text(size = 16)
+	# 	)
+
+	### study region map
+	sr_map <- ggplot() +
+		layer_spatial(hs, aes(fill = stat(band1))) +
+		scale_fill_gradientn(colors = hs_cols, guide = 'none', na.value = 'transparent') +
+		new_scale_fill() +
+		layer_spatial(elev_mid_m, aes(fill = stat(band1))) +
+		scale_fill_gradientn(colors = mid_cols, name = 'Elevation (m)\n(Middle)', na.value = 'transparent') +
+		new_scale_fill() +
+		layer_spatial(elev_high_m, aes(fill = stat(band1))) +
+		scale_fill_gradientn(colors = high_cols, name = 'Elevation (m)\n(High)', na.value = 'transparent') +
+		layer_spatial(rivers, color = 'blue', size = 0.5) +
+		layer_spatial(iucn_nm, fill = NA, color = 'orange', linewidth = 1) +
+		layer_spatial(absent, pch = 4, size = 2.4, alpha = 0.5, color = 'black') +
+		layer_spatial(present, pch = 1, size = 2.4, alpha = 0.9, color = 'darkgreen') +
+		layer_spatial(cities, pch = 19, size = 2) +
+		layer_spatial(nam1_nm) +
+		geom_sf_text(data = st_as_sf(cities), aes(label = name), 
+			nudge_x = c(-5000, 10000), nudge_y = c(-5000, -5000),
+			size = 4.5, fontface = 'bold'
+		) +
+		xlim(extent_nm_proj_vect[1], extent_nm_proj_vect[2]) +
+		ylim(extent_nm_proj_vect[3], extent_nm_proj_vect[4]) +
+		coord_sf(expand = FALSE) +
+		theme_void() +
+		theme(
+			legend.position = c(1.06, 0.25),
+			legend.key.height = unit(0.7, 'cm'),
+			legend.title = element_text(size = 16),
+			legend.text = element_text(size = 16),
+			plot.margin = margin(t = 0, r = 100, b = 0, l = 0, unit = 'pt')
+		)
 	
-	elev <- project(elev_fine_m, getCRS('naAlbers'))
-	elev <- crop(elev, pikaBuffProjSmSp)
+	ggsave(sr_map, filename = './Figures & Tables/Study Region with Sampling Sites V2 Study Region.png', width = 10, height = 9, dpi = 600, bg = 'white')
+	# ggsave(range_map, filename = './Figures & Tables/Study Region with Sampling Sites V2 Range Map.png', width = 6, height = 8, dpi = 600, bg = 'white')
 
-	# GBIF
-	gbif <- read.csv('./Data/GBIF 2022-12-19/ochotona_princeps.csv')
-	gbif <- gbif[gbif$species == 'Ochotona princeps', ]
-	gbif <- gbif[gbif$year <= 2015, ]
-	
-	ext <- as.vector(ext(project(usa2LgCrop, getCRS('wgs84'))))
-	
-	gbif <- vect(gbif, geom=c('decimalLongitude', 'decimalLatitude'), crs=getCRS('wgs84'), keepgeom = TRUE)
-	crs(gbif) <- getCRS('wgs84')
-	
-	gbif <- project(gbif, getCRS('naAlbers'))
-	
-	ins <- extract(nam1LgCrop, gbif)
-	ins$CC_1 <- NULL
-	gbif <- gbif[ins$COUNTRY == 'United States', ]
-
-	### colors
-	
-		# colors for elevation
-		load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
-		
-		minElev <- globalx(elev, 'min')
-		lowestNeverOcc <- min(pika$elevation_m[pika$latestOccStatus == '0 never'])
-		# medianNeverOcc <- median(pika$elevation_m[pika$latestOccStatus == '0 never'])
-		medianPastOcc <- median(pika$elevation_m[pika$latestOccStatus == '1 old'])
-		medianOcc <- median(pika$elevation_m[pika$latestOccStatus == '2 occupied'])
-		maxElev <- globalx(elev, 'max')
-
-		elevBreaks <- c(minElev, lowestNeverOcc, medianPastOcc, medianOcc, maxElev)
-		names(elevBreaks) <- c('minElev', 'medianNeverOcc', 'medianPastOcc', 'medianOcc', 'maxElev')
-
-		elevCols <- c('gray80', 'firebrick3', 'darkgoldenrod3', 'chartreuse')
-		elevCols <- alpha(elevCols, 0.5)
-
-		# hillshade colors
-		hsCols <- colorRampPalette(c('gray0', 'gray100'))
-		hsCols <- hsCols(20)
-		
-	### placement
-	
-		legendInset <- c(0.019, 0.02)
-		mar <- c(0, 0.5, 1, 1)
-		
-	### plot!
-	png('./Figures & Tables/Study Region with Sampling Sites with GBIF.png', width=2300, height=2400, res=300)
-
-		par(mar=rep(0.1, 4), mai=rep(0.1, 4), oma=rep(0, 4), mgp=c(0, 0, 0))
-			
-		### all together
-		################
-			
-			plot(hs, col=hsCols, legend=FALSE, axes=FALSE, mar=mar)
-			plot(nam1LgCrop, lwd=3, add=TRUE)
-			plot(usa2LgCrop, lwd=1, add=TRUE)
-			plot(elev, legend = FALSE, axes = FALSE, add = TRUE, col = elevCols, breaks = elevBreaks)
-
-			noEvid <- pikaVectProj[pika$latestOccStatus == '0 never']
-			oldEvid <- pikaVectProj[pika$latestOccStatus == '1 old']
-			occs <- pikaVectProj[pika$latestOccStatus == '2 occupied']
-			
-			plot(noEvid, pch=25, bg=alpha('firebrick2', 0.5), cex=1.2, add=TRUE)
-			plot(oldEvid, pch=22, bg=alpha('darkgoldenrod3', 0.5), cex=1.2, add=TRUE)
-			plot(occs, pch=21, bg=alpha('chartreuse', 0.5), cex=1.2, add=TRUE)
-			plot(gbif, pch=21, cex=1, bg='blue', add=TRUE)
-
-			legend('bottomleft', inset=legendInset, legend=c('Currently occupied', 'Previously occupied', 'No evidence', 'GBIF'), pch=c(21, 22, 25, 21), pt.bg=c('chartreuse', 'darkgoldenrod3', 'firebrick2', 'blue'), bg='white', cex=1.05)
-			
-			
-	dev.off()
 
 say('DONE!!!', level=1, deco='%')

@@ -1,14 +1,15 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('C:/Ecology/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/03b New Mexico Pika Occupancy & Abundance Analysis - Density with Simple Models.r')
-### source('E:/Adam/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/03b New Mexico Pika Occupancy & Abundance Analysis - Density with Simple Models.r')
+### Analysis of sites where non-zero density of pikas was recorded. Constructs and compares multiple simple models of density and estimates of variable importance.
+###
+### source('C:/Kaji/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/03b New Mexico Pika Occupancy & Abundance Analysis - Density with Simple Models.r')
 ###
 ### CONTENTS ###
 ### setup ###
-### climate/isolation DENSITY models ###
-### compile table of predictor importance for climate/isolation DENSITY models ###
-### climate/isolation/ecology DENSITY models ###
+### climate/biogeography DENSITY models ###
+### compile table of predictor importance for climate/biogeography DENSITY models ###
+### climate/biogeography/management DENSITY models ###
 ### double-checking number of models each variable should be in ###
 
 #############
@@ -17,18 +18,31 @@
 
 	rm(list=ls())
 
-	drive <- 'C:/Ecology/'
-	# drive <- 'E:/Adam/'
+	drive <- 'C:/Kaji/'
 
-	source('C:/Ecology/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
-	# source('E:/Adam/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r')
+	source(paste0(drive, '/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
 
-say('########################################')
-say('### climate/isolation DENSITY models ###')
-say('########################################')
+	# use "extended" list of climate models provided by Erik 2025-09
+	# affects all analyses herein
+	extended <- TRUE # original plus extended set
+	# extended <- FALSE # original set
+
+	if (extended) {
+		say('Using EXTENDED set of climate models!!!', level = 2)
+		dirCreate('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models')
+	} else {
+		say('Using ORIGINAL set of climate models!!!', level = 2)
+		dirCreate('./Figures & Tables/Density - Simple Models with Original Set of Climate Models')
+	}
+
+say('###########################################')
+say('### climate/biogeography DENSITY models ###')
+say('###########################################')
+
+	# Models of pika density at sites where pika were detected. Models use only climate and biogeographic (isolation, patch size) variables.
 
 	load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
-	
+
 	pika$meanDistToClosest4Patches <- log10(pika$meanDistToClosest4Patches)
 	
 	pika <- pika[!is.na(pika$latestDensity), ]
@@ -89,6 +103,12 @@ say('########################################')
 	##################
 	
 		formulae <- getFormulaeDens()
+		if (extended) {
+		
+			formulaeExtended <- getFormulaeDensExtended()
+			formulae <- sort(unique(c(formulae, formulaeExtended)))
+
+		}
 
 		for (formula in formulae) {
 	
@@ -162,17 +182,25 @@ say('########################################')
 			results <- results[order(results$weight, decreasing=TRUE), ]
 			rownames(results) <- NULL
 
-			file <- paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv')
+			file <- if (extended) {
+				paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models/Density - Models without Management Variables.csv')
+			} else {
+				paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models/Density - Models without Management Variables.csv')
+			}
 			write.csv(results, file, row.names=FALSE)
 	
-say('##################################################################################')
-say('### compile table of predictor importance for climate/isolation DENSITY models ###')
-say('##################################################################################')
+say('#####################################################################################')
+say('### compile table of predictor importance for climate/biogeography DENSITY models ###')
+say('#####################################################################################')
 	
-	# rank variables by mean AICc weight
+	# Assess importance of variables in models of pika density at sites where pika were detected. Models use only climate and biogeographic (isolation, patch size) variables.
 
 	# get models
-	file <- paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv')
+	file <- if (extended) {
+		paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models/Density - Models without Management Variables.csv')
+	} else {
+		paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models/Density - Models without Management Variables.csv')
+	}
 	models <- read.csv(file)
 	
 	# get variables
@@ -183,14 +211,40 @@ say('###########################################################################
 	for (var in vars) {
 	
 		index <- if (var != 'meanDistToClosest4Patches') {
-			which(grepl(models$model, pattern=var))
+			which(grepl(pattern=var, x=models$model))
 		} else {
 			which(!is.na(models$isolationCoef))
 		}
 		n <- length(index)
 		sumWeight <- sum(models$weight[index])
 		meanWeight <- sumWeight / n
+
+		# number of pos/necg cases
+		forms <- models[index, c('model', 'term1', 'term2', 'term3'), drop = FALSE]
+		negatives <- positives <- 0
 		
+		if (var != 'meanDistToClosest4Patches') {
+			
+			for (i in 1:nrow(forms)) {
+						
+				modelExploded <- strsplit(forms$model[i], split = ' \\+ ')[[1]]
+				match <- which(modelExploded == var)
+				term <- forms[i, paste0('term', match), drop = TRUE]
+				if (substr(term, 1, 1) == '-') {
+					negatives <- negatives + 1
+				} else {
+					positives <- positives + 1
+				}
+				
+			}
+			
+		} else if (var == 'meanDistToClosest4Patches') {
+			
+			negatives <- sum(substr(models$isolationCoef, 1, 1) == '-', na.rm = TRUE)
+			positives <- sum(substr(models$isolationCoef, 1, 1) != '-' & substr(models$isolationCoef, 1, 2) != 'NA', na.rm = TRUE)
+			
+		}
+
 		imp <- rbind(
 			imp,
 			data.frame(
@@ -198,7 +252,9 @@ say('###########################################################################
 				niceVar = makeNiceVars(var, 'density'),
 				numModels = n,
 				sumWeight = sumWeight,
-				meanWeight = meanWeight
+				meanWeight = meanWeight,
+				negatives = negatives,
+				positives = positives
 			)
 		)
 		
@@ -206,12 +262,32 @@ say('###########################################################################
 	
 	imp <- imp[order(imp$meanWeight, decreasing=TRUE), ]
 
-	write.csv(imp, paste0('./Figures & Tables/Density - Simple Models/Density - Simple GLMs - Var Import.csv'), row.names=FALSE)
+	file <- if (extended) {
+		paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models/Density - Variable Importance in Models without Management Variables.csv')
+	} else {
+		paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models/Density - Variable Importance in Models without Management Variables.csv')
+	}
+	write.csv(imp, file, row.names=FALSE)
 	
-say('################################################')
-say('### climate/isolation/ecology DENSITY models ###')
-say('################################################')
+say('######################################################')
+say('### climate/biogeography/management DENSITY models ###')
+say('######################################################')
 
+	# Models of pika density at sites where pika were detected. Models use climate, biogeographic (isolation, patch size), and management (perimeter burned, grazing, grass/forb) variables.
+
+	### function to create a "long" table with variable, coefficients, and AICc
+
+		tallyVariableImp <- function(varImport, model) {
+		
+			coeffs <- coefficients(model)
+			
+			thisOut <- data.frame(var = names(coeffs), coefficient = as.numeric(coeffs))
+			thisOut$AICc <- AICc(model)
+			
+			varImport <- rbind(varImport, thisOut)
+		
+		}
+		
 	### collate data
 	################
 
@@ -248,19 +324,29 @@ say('################################################')
 		pika$meanDistToClosest4Patches <- scale(pika$meanDistToClosest4Patches)
 		
 		pika$region <- as.factor(pika$region)
-		
+
 	### models
 	##########
 	
-		allClimModels <- read.csv('./Figures & Tables/Density - Simple Models/Density - Simple GLMs.csv')
+		# use climate/biogeographic models as basis
+		file <- if (extended) {
+			'./Figures & Tables/Density - Simple Models with Extended Set of Climate Models/Density - Models without Management Variables.csv'
+		} else {
+			'./Figures & Tables/Density - Simple Models with Original Set of Climate Models/Density - Models without Management Variables.csv'
+		}
+		allClimModels <- read.csv(file)
 		topClimModels <- allClimModels[allClimModels$deltaAicc < maxDeltaAic_density, ]
 
 		report <- data.frame()
+		varImport <- data.frame()
 		
 		nullModel <- glm(latestDensity ~ 1, data=pika, family=Gamma(link='log'))
 		nullModelRegion <- glm(latestDensity ~ region, data=pika, family=Gamma(link='log'))
 		nullModelIsolation <- glm(latestDensity ~ meanDistToClosest4Patches, data=pika, family=Gamma(link='log'))
 		nullModelRegionIsolation <- glm(latestDensity ~ region + meanDistToClosest4Patches, data=pika, family=Gamma(link='log'))
+		
+		varImport <- tallyVariableImp(varImport, model = nullModelIsolation)
+		varImport <- tallyVariableImp(varImport, model = nullModelRegionIsolation)
 		
 		llNull <- logLik(nullModel)
 		llNullRegion <- logLik(nullModelRegion)
@@ -282,16 +368,16 @@ say('################################################')
 				
 			for (countEcoModel in 1:nrow(ecoTermsGrid)) {
 
-				climEcoForm <- climForm
+				climMgmtForm <- climForm
 
 				# eco-variable formula
 				ecoTermsInModel <- unlist(ecoTermsGrid[countEcoModel, ])
 				ecoTermsInModel <- ecoVars[ecoTermsInModel]
 				ecoTermsInModel <- paste(ecoTermsInModel, collapse = ' + ')
-				if (ecoTermsInModel != '') climEcoForm <- paste(climEcoForm, '+', ecoTermsInModel)
+				if (ecoTermsInModel != '') climMgmtForm <- paste(climMgmtForm, '+', ecoTermsInModel)
 
 				# model
-				model <- glm(climEcoForm, data=pika, family=Gamma(link='log'))
+				model <- glm(climMgmtForm, data=pika, family=Gamma(link='log'))
 				terms <- extractTerms(model)
 
 				term1 <- terms$term1
@@ -307,13 +393,15 @@ say('################################################')
 				aicc <- AICc(model)
 				
 				ll <- logLik(model)
-				pseudoR2 <- nagelR2(llNull, ll, n=nrow(pika))
+				pseudoR2 <- nagelR2(llNull, ll, n=nrow(pika))				
 				
 				# report
+				varImport <- tallyVariableImp(varImport, model = model)
+				
 				report <- rbind(
 					report,
 					data.frame(
-						model = climEcoForm,
+						model = climMgmtForm,
 						term1 = term1,
 						term2 = term2,
 						term3 = term3,
@@ -326,9 +414,9 @@ say('################################################')
 						region = hasRegion,
 						hasIsolation = hasIsolation,
 						aiccClim = topClimModels$aicc[countClimModel],
-						aiccClimEco = aicc,
+						aiccClimMgmt = aicc,
 						pseudoR2Clim = pseudoR2,
-						pseudoR2ClimEco = topClimModels$pseudoR2[countClimModel]
+						pseudoR2climMgmt = topClimModels$pseudoR2[countClimModel]
 					)
 				)
 				
@@ -355,9 +443,9 @@ say('################################################')
 				region = FALSE,
 				hasIsolation = FALSE,
 				aiccClim = aiccClim,
-				aiccClimEco = AICc(nullModel),
+				aiccClimMgmt = AICc(nullModel),
 				pseudoR2Clim = 0,
-				pseudoR2ClimEco = NA
+				pseudoR2climMgmt = NA
 			)
 		)
 
@@ -380,9 +468,9 @@ say('################################################')
 				region = TRUE,
 				hasIsolation = FALSE,
 				aiccClim = aiccClim,
-				aiccClimEco = AICc(nullModelRegion),
+				aiccClimMgmt = AICc(nullModelRegion),
 				pseudoR2Clim = nagelR2(llNull, llNullRegion, n=nrow(pika)),
-				pseudoR2ClimEco = NA
+				pseudoR2climMgmt = NA
 			)
 		)
 
@@ -405,14 +493,14 @@ say('################################################')
 				region = FALSE,
 				hasIsolation = TRUE,
 				aiccClim = aiccClim,
-				aiccClimEco = AICc(nullModelIsolation),
+				aiccClimMgmt = AICc(nullModelIsolation),
 				pseudoR2Clim = nagelR2(llNull, llNullIsolation, n=nrow(pika)),
-				pseudoR2ClimEco = NA
+				pseudoR2climMgmt = NA
 			)
 		)
 
 		# isolation/region-only model
-		aiccClim <- allClimModels$aicc[allClimModels$model == '(Intercept)' & !is.na(allClimModels$isolation) & !allClimModels$region]
+		aiccClim <- allClimModels$aicc[allClimModels$model == '(Intercept)' & !is.na(allClimModels$isolation) & allClimModels$region]
 
 		report <- rbind(
 			report,
@@ -430,36 +518,80 @@ say('################################################')
 				region = TRUE,
 				hasIsolation = TRUE,
 				aiccClim = aiccClim,
-				aiccClimEco = AICc(nullModelRegionIsolation),
+				aiccClimMgmt = AICc(nullModelRegionIsolation),
 				pseudoR2Clim = nagelR2(llNull, llNullRegionIsolation, n=nrow(pika)),
-				pseudoR2ClimEco = NA
+				pseudoR2climMgmt = NA
 			)
 		)
 
 	### report
 	##########
 	
+		# model performance
 		report$deltaAiccClim <- report$aiccClim - min(report$aiccClim)
 		w <- exp(-0.5 * report$deltaAiccClim)
 		report$weightClim <- w / sum(w)
 
-		report$deltaAiccClimEco <- report$aiccClimEco - min(report$aiccClimEco)
-		w <- exp(-0.5 * report$deltaAiccClimEco)
-		report$weightClimEco <- w / sum(w)
+		report$deltaAiccClimMgmt <- report$aiccClimMgmt - min(report$aiccClimMgmt)
+		w <- exp(-0.5 * report$deltaAiccClimMgmt)
+		report$weightClimMgmt <- w / sum(w)
 
-		report <- report[order(report$aiccClimEco), ]
+		report <- report[order(report$aiccClimMgmt), ]
 
 		rownames(report) <- NULL
 
-		file <- paste0('./Figures & Tables/Density - Simple Models/Top Climate & Isolation Density Models with Ecological Variables.csv')
+		file <- if (extended) {
+			paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models/Density - Models with Management Variables.csv')
+		} else {
+			paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models/Density - Models with Management Variables.csv')
+		}
 		write.csv(report, file, row.names=FALSE)
+		
+		# variable importance
+		varImport$deltaAicc <- varImport$AICc - min(varImport$AICc)
+		w <- exp(-0.5 * varImport$deltaAicc)
+		varImport$aiccWeight <- w / sum(w)
+		
+		vars <- unique(varImport$var)
+		vars <- vars[vars %notin% c('(Intercept)', 'regionsouthwest', 'regionnorthwest', 'regionsoutheast')]
 	
+		varImportOverall <- data.frame()
+		for (var in vars) {
+		
+			subVarImport <- varImport[varImport$var == var, ]
+		
+			varImportOverall <- rbind(
+				varImportOverall,
+				data.frame(
+					var = var,
+					sumAiccWeight = sum(subVarImport$aiccWeight),
+					meanAiccWeight = sum(subVarImport$aiccWeight) / nrow(subVarImport),
+					avgCoeff = sum(subVarImport$coefficient * subVarImport$aiccWeight) / sum(subVarImport$aiccWeight),
+					nModels = nrow(subVarImport),
+					nPos = sum(subVarImport$coefficient > 0),
+					nNeg = sum(subVarImport$coefficient < 0)
+				)
+			)
+		
+		}
+	
+		file <- if (extended) {
+			paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models/Density - Variable Importance in Models with Management Variables.csv')
+		} else {
+			paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models/Density - Variable Importance in Models with Management Variables.csv')
+		}
+		write.csv(varImportOverall, file, row.names=FALSE)
+			
 say('###################################################################')
 say('### double-checking number of models each variable should be in ###')
 say('###################################################################')
 	
 	vars <- getVars('density')
 	formulae <- getFormulaeDens()
+	if (extended) {
+		formulaeExtended <- getFormulaeDensExtended()
+		formulae <- sort(unique(c(formulae, formulaeExtended)))
+	}
 	
 	counts <- data.frame()
 	for (var in vars) {
@@ -474,7 +606,11 @@ say('###################################################################')
 		)
 	
 	}
-	
-	write.csv(counts, './Figures & Tables/Density - Simple Models/Number of Base Models with Each Variable.csv', row.names=FALSE)
+	file <- if (extended) {
+		'./Figures & Tables/Density - Simple Models with Extended Set of Climate Models/Number of Base Models with Each Variable.csv'
+	} else {
+		'./Figures & Tables/Density - Simple Models with Original Set of Climate Models/Number of Base Models with Each Variable.csv'
+	}
+	write.csv(counts, file, row.names=FALSE)
 	
 say('DONE!!!', level=1, deco='%')
