@@ -24,12 +24,13 @@
 #############
 
 	cat(date(), '\n'); flush.console()
-	# rm(list=ls())
 	gc()
 	options(stringsAsFactors=FALSE)
 	
+
 	drive <- 'C:/Kaji/'
 	
+	.libPaths(paste0(drive, 'R/libraries'))
 	setwd(paste0(drive, '/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)'))
 
 	# library(rainbow) # www.github.com/adamlilith/rainbow
@@ -127,7 +128,6 @@
 		# variables
 		vars <- gsub(vars, pattern='occVar_', replacement='')
 		vars <- gsub(vars, pattern='densVar_', replacement='')
-
 		vars <- predTable$varNice[match(vars, predTable$var)]
 		
 		wrap <- ifelse(wrapTime, '\n', ' ')
