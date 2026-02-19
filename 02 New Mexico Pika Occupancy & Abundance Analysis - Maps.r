@@ -478,6 +478,8 @@ say('#############################')
 	extent_nm_proj <- project(extent_nm_proj, getCRS('North America Lambert'))
 	extent_nam_proj <- project(extent_nam, getCRS('North America Lambert'))
 
+	nam1_iucn <- iucn * nam1 
+
 	extent_nam_proj_vect <- as.vector(ext(extent_nam_proj))
 
 	iucn_nm <- crop(iucn, extent_nm_proj)
@@ -497,19 +499,21 @@ say('#############################')
 	high_cols <- rev(brewer.pal(9, 'YlGn')[1:6])
 	mid_cols <- brewer.pal(11, 'Spectral')[1:5]
 
-	# ### range map	
-	# extent_nam_proj[1] <- extent_nam_proj[1] + 1300000
-	# extent_nam_proj[2] <- extent_nam_proj[2] - 600000
-	# extent_nam_proj[3] <- extent_nam_proj[3] + 600000
-	# extent_nam_proj[4] <- extent_nam_proj[4] - 900000
-	# range_map <- ggplot() +
-	# 	layer_spatial(nam1, fill = 'gray85') +
-	# 	layer_spatial(iucn, fill = 'orange') +
-	# 	layer_spatial(extent_nm_proj, color = 'black', fill = NA, linewidth = 1) +
-	# 	xlim(extent_nam_proj[1], extent_nam_proj[2]) + ylim(extent_nam_proj[3], extent_nam_proj[4]) +
-	# 	theme(
-	# 		axis.text = element_text(size = 16)
-	# 	)
+	### range map	
+	extent_nam_proj[1] <- extent_nam_proj[1] + 1300000
+	extent_nam_proj[2] <- extent_nam_proj[2] - 600000
+	extent_nam_proj[3] <- extent_nam_proj[3] + 600000
+	extent_nam_proj[4] <- extent_nam_proj[4] - 900000
+	
+	range_map <- ggplot() +
+		layer_spatial(nam1, fill = 'gray85') +
+		layer_spatial(iucn, fill = 'gray40') +
+		layer_spatial(extent_nm_proj, color = 'black', fill = NA, linewidth = 1) +
+		layer_spatial(nam1_iucn, color = 'gray60', fill = NA) +
+		xlim(extent_nam_proj[1], extent_nam_proj[2]) + ylim(extent_nam_proj[3], extent_nam_proj[4]) +
+		theme(
+			axis.text = element_text(size = 16)
+		)
 
 	### study region map
 	sr_map <- ggplot() +
@@ -522,13 +526,13 @@ say('#############################')
 		layer_spatial(elev_high_m, aes(fill = stat(band1))) +
 		scale_fill_gradientn(colors = high_cols, name = 'Elevation (m)\n(High)', na.value = 'transparent') +
 		layer_spatial(rivers, color = 'blue', size = 0.5) +
-		layer_spatial(iucn_nm, fill = NA, color = 'orange', linewidth = 1) +
-		layer_spatial(absent, pch = 4, size = 2.4, alpha = 0.5, color = 'black') +
-		layer_spatial(present, pch = 1, size = 2.4, alpha = 0.9, color = 'darkgreen') +
-		layer_spatial(cities, pch = 19, size = 2) +
+		layer_spatial(iucn_nm, fill = NA, color = 'black', linewidth = 1.2) +
+		layer_spatial(absent, pch = 2, size = 3.2, alpha = 1, color = 'black') +
+		layer_spatial(present, pch = 1, size = 3.4, alpha = 1, color = 'darkgreen') +
+		layer_spatial(cities, pch = 19, size = 4) +
 		layer_spatial(nam1_nm) +
 		geom_sf_text(data = st_as_sf(cities), aes(label = name), 
-			nudge_x = c(-5000, 10000), nudge_y = c(-5000, -5000),
+			nudge_x = c(-10000, 10000), nudge_y = c(-5000, -5000),
 			size = 4.5, fontface = 'bold'
 		) +
 		xlim(extent_nm_proj_vect[1], extent_nm_proj_vect[2]) +
@@ -536,15 +540,15 @@ say('#############################')
 		coord_sf(expand = FALSE) +
 		theme_void() +
 		theme(
-			legend.position = c(1.06, 0.25),
+			legend.position = c(-0.07, 0.25),
 			legend.key.height = unit(0.7, 'cm'),
 			legend.title = element_text(size = 16),
 			legend.text = element_text(size = 16),
-			plot.margin = margin(t = 0, r = 100, b = 0, l = 0, unit = 'pt')
+			plot.margin = margin(t = 1, r = 1, b = 1, l = 100, unit = 'pt')
 		)
 	
 	ggsave(sr_map, filename = './Figures & Tables/Study Region with Sampling Sites V2 Study Region.png', width = 10, height = 9, dpi = 600, bg = 'white')
-	# ggsave(range_map, filename = './Figures & Tables/Study Region with Sampling Sites V2 Range Map.png', width = 6, height = 8, dpi = 600, bg = 'white')
+	ggsave(range_map, filename = './Figures & Tables/Study Region with Sampling Sites V2 Range Map.png', width = 6, height = 8, dpi = 600, bg = 'white')
 
 
 say('DONE!!!', level=1, deco='%')
