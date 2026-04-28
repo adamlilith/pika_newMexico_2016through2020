@@ -770,7 +770,7 @@ say('###########################################################################
 
 	main <- plot_grid(alls, byTypeLegends, align='hv', ncol=2, rel_widths=c(1.5, 3.5), labels=NULL, label_size=12)
 
-	ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT Ordinal.pdf'), width=8, height=length(preds) * 1.8, units='in')
+	ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT Ordinal.png'), width=8, height=length(preds) * 1.8, units='in', dpi = 600, bg = 'white')
 
 # say('################################################################################')
 # say('### distributions of predictors by region and binary occupancy for main text ###')
