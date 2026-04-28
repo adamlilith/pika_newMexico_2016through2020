@@ -1,8 +1,7 @@
 ### NEW MEXICO PIKA ANALYSIS
 ### Adam B. Smith | Missouri Botanical Garden | adam.smith@mobot.org | 2021-04
 ###
-### source('C:/Ecology/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/04 Summaries.r')
-### source('E:/Adam/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/04 Summaries.r')
+### source('C:/Kaji/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/04 Summaries.r')
 ###
 ### CONTENTS ###
 ### setup ###
@@ -27,8 +26,7 @@
 
 	rm(list=ls())
 
-	# drive <- 'C:/Ecology/'
-	drive <- 'C:/Subarashi/'
+	drive <- 'C:/Kaji/'
 
 	source(paste0(drive, '/Research/Pikas - New Mexico 2016-2020 (Erik Beever et al)/pika_newMexico_2016through2020/00 New Mexico Pika Occupancy & Abundance Analysis - Shared Functions & Constants.r'))
 
@@ -577,333 +575,352 @@
 
 	# } # next occupancy window
 
-# say('#################################################################################')
-# say('### distributions of predictors by region and ordinal occupancy for main text ###')
-# say('#################################################################################')
+say('#################################################################################')
+say('### distributions of predictors by region and ordinal occupancy for main text ###')
+say('#################################################################################')
 
-	# titleSize <- 8
-	# subtitleSize <- 7
-	# legendTitleSize <- 7
-	# legendTextSize <- 7
-	# axisLabelSize <- 7
-	# axisTextSize <- 6
+	titleSize <- 8
+	subtitleSize <- 7
+	legendTitleSize <- 7
+	legendTextSize <- 7
+	axisLabelSize <- 7
+	axisTextSize <- 6
 	
-	# legendKeySize <- 0.4
+	legendKeySize <- 0.4
 	
-	# # occWindow <- 7
-	# occWindow <- 10
+	# occWindow <- 7
+	occWindow <- 10
 
-	# ### data
-	# load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+	### data
+	load('./Data/03 New Mexico Pika - Assigned Folds.rda')
 
-	# ### occupancy predictors
-	# ########################
+	### occupancy predictors
+	########################
 	
-	# pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
+	pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
 	
 	# preds <- c('chronicCold_C', 'chronicHeat_C', 'subLethalHeat18deg_d', 'gsPpt_mm')
+	preds <- c('chronicHeat_C', 'chronicMoistStress_hPa', 'monsoonPpt_mm', 'gsPpt_mm')
 
-	# figs <- list()
-	# for (countPred in seq_along(preds)) {
+	figsAll <- figsByType <- list()
+	for (countPred in seq_along(preds)) {
 	
-		# pred <- preds[countPred]
+		pred <- preds[countPred]
 		
-		# predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
-		# say(predWindow)
+		predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
+		say(predWindow)
 	
-		# predIndex <- which(predTable$var == pred)
+		predIndex <- which(predTable$var == pred)
 	
-		# predNice <- predTable$varNice[predIndex]
-		# predNice <- capIt(predNice)
-		# predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
+		predNice <- predTable$varNice[predIndex]
+		predNice <- capIt(predNice)
+		predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
 	
-		# # mus <- data.frame(
-			# # latestOccStatus = c('0 never', '1 old', '2 occupied'),
-			# # mu = c(
-				# # mean(pika[pika$latestOccStatus == '0 never', predWindow]),
-				# # mean(pika[pika$latestOccStatus == '1 old', predWindow]),
-				# # mean(pika[pika$latestOccStatus == '2 occupied', predWindow])
-			# # )
-		# # )
+		# mus <- data.frame(
+			# latestOccStatus = c('0 never', '1 old', '2 occupied'),
+			# mu = c(
+				# mean(pika[pika$latestOccStatus == '0 never', predWindow]),
+				# mean(pika[pika$latestOccStatus == '1 old', predWindow]),
+				# mean(pika[pika$latestOccStatus == '2 occupied', predWindow])
+			# )
+		# )
 
-		# thisData <- pika[ , c('latestOccStatus', 'region', predWindow)]
-		# names(thisData)[3] <- 'value'
+		thisData <- pika[ , c('latestOccStatus', 'region', predWindow)]
+		names(thisData)[3] <- 'value'
 
-		# xlim <- range(thisData$value)
+		xlim <- range(thisData$value)
 		
-		# letter <- letters[countPred]
-		# letter <- paste0('(', letter, ') ')
+		letter <- letters[countPred]
+		letter <- paste0('(', letter, ') ')
 		
-		# # all regions together
-		# title <- paste0(letter, predNice)
-		# figs[[length(figs) + 1]] <- ggplot(data=thisData, aes(x=value, col=latestOccStatus, fill=latestOccStatus)) +
-			# geom_density(linewidth=1) +
-			# scale_color_manual(
-				# labels = c('none', 'old', 'occ'),
-				# values=c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen')
-			# ) +
-			# scale_fill_manual(
-				# labels = c('none', 'old', 'occ'),
-				# values=alpha(c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen'), 0.2)
-			# ) +
-			# labs(title=title, subtitle='Regions Together', x=predDescriptorUnit, y='Density') +
-			# # geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
-			# guides(
-				# color=guide_legend(title='Evidence'),
-				# fill=guide_legend(title='Evidence')
-			# ) +
-			# xlim(xlim[1], xlim[2]) +
-			# theme(
-				# legend.key.size = unit(legendKeySize, 'cm'),
-				# plot.title=element_text(size=titleSize, face='bold'),
-				# plot.subtitle=element_text(size=subtitleSize),
-				# legend.title=element_text(size=legendTitleSize),
-				# legend.text=element_text(size=legendTextSize),
-				# axis.title=element_text(size=axisLabelSize),
-				# axis.text=element_text(size=axisTextSize)
-			# )
+		lw <- 0.6 # linewidth
 
-		# # "never" by region
-		# title <- paste0('')
-		# thisThisData <- thisData[thisData$latestOccStatus == '0 never', ]
-		# figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
-			# geom_density(linewidth=1) +
-			# scale_color_manual(
-				# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
-				# values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
-			# ) +
-			# scale_fill_manual(
-				# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
-				# values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
-			# ) +
-			# labs(title=title, subtitle='No Evidence', x=predDescriptorUnit, y='Density') +
-			# guides(
-				# color=guide_legend(title='Region'),
-				# fill=guide_legend(title='Region')
-			# ) +
-			# xlim(xlim[1], xlim[2]) +
-			# theme(
-				# legend.key.size = unit(legendKeySize, 'cm'),
-				# plot.title=element_text(size=titleSize, face='bold'),
-				# plot.subtitle=element_text(size=subtitleSize),
-				# legend.title=element_text(size=legendTitleSize),
-				# legend.text=element_text(size=legendTextSize),
-				# axis.title=element_text(size=axisLabelSize),
-				# axis.text=element_text(size=axisTextSize)
-			# )
+		# all regions together
+		title <- paste0(letter, predNice)
+		figsAll[[length(figsAll) + 1]] <- ggplot(data=thisData, aes(x=value, col=latestOccStatus, fill=latestOccStatus)) +
+			geom_density(linewidth=lw) +
+			scale_color_manual(
+				labels = c('none', 'old', 'occ'),
+				values=c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen')
+			) +
+			scale_fill_manual(
+				labels = c('none', 'old', 'occ'),
+				values=alpha(c('0 never'='firebrick3', '1 old'='darkgoldenrod3', '2 occupied'='darkgreen'), 0.2)
+			) +
+			labs(title=title, subtitle='Regions Together', x=predDescriptorUnit, y='Density') +
+			# geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
+			guides(
+				color=guide_legend(title='Evidence'),
+				fill=guide_legend(title='Evidence')
+			) +
+			xlim(xlim[1], xlim[2]) +
+			theme(
+				legend.key.size = unit(legendKeySize, 'cm'),
+				plot.title=element_text(size=titleSize, face='bold'),
+				plot.subtitle=element_text(size=subtitleSize),
+				legend.title=element_text(size=legendTitleSize),
+				legend.text=element_text(size=legendTextSize),
+				axis.title=element_text(size=axisLabelSize),
+				axis.text=element_text(size=axisTextSize)
+			)
 
-		# # "old" by region
-		# title <- paste0('')
-		# thisThisData <- thisData[thisData$latestOccStatus == '1 old', ]
-		# figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
-			# geom_density(linewidth=1) +
-			# scale_color_manual(
-				# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
-				# values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
-			# ) +
-			# scale_fill_manual(
-				# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
-				# values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
-			# ) +
-			# labs(title=title, subtitle='Previously Occupied', x=predDescriptorUnit, y='Density') +
-			# guides(
-				# color=guide_legend(title='Region'),
-				# fill=guide_legend(title='Region')
-			# ) +
-			# xlim(xlim[1], xlim[2]) +
-			# theme(
-				# legend.key.size = unit(legendKeySize, 'cm'),
-				# plot.title=element_text(size=titleSize, face='bold'),
-				# plot.subtitle=element_text(size=subtitleSize),
-				# legend.title=element_text(size=legendTitleSize),
-				# legend.text=element_text(size=legendTextSize),
-				# axis.title=element_text(size=axisLabelSize),
-				# axis.text=element_text(size=axisTextSize)
-			# )
+		# "never" by region
+		title <- paste0('')
+		thisThisData <- thisData[thisData$latestOccStatus == '0 never', ]
+		figsByType[[length(figsByType) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+			geom_density(linewidth=lw) +
+			scale_color_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+			) +
+			scale_fill_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+			) +
+			labs(title=title, subtitle='No Evidence', x=predDescriptorUnit, y='Density') +
+			guides(
+				color=guide_legend(title='Region'),
+				fill=guide_legend(title='Region')
+			) +
+			xlim(xlim[1], xlim[2]) +
+			theme(
+				legend.key.size = unit(legendKeySize, 'cm'),
+				plot.title=element_text(size=titleSize, face='bold'),
+				plot.subtitle=element_text(size=subtitleSize),
+				legend.title=element_text(size=legendTitleSize),
+				legend.text=element_text(size=legendTextSize),
+				axis.title=element_text(size=axisLabelSize),
+				axis.text=element_text(size=axisTextSize)
+			)
 
-		# # "occupied" by region
-		# title <- paste0('')
-		# thisThisData <- thisData[thisData$latestOccStatus == '2 occupied', ]
-		# figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
-			# geom_density(linewidth=1) +
-			# scale_color_manual(
-				# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
-				# values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
-			# ) +
-			# scale_fill_manual(
-				# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
-				# values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
-			# ) +
-			# labs(title=title, subtitle='Currently Occupied', x=predDescriptorUnit, y='Density') +
-			# guides(
-				# color=guide_legend(title='Region'),
-				# fill=guide_legend(title='Region')
-			# ) +
-			# xlim(xlim[1], xlim[2]) +
-			# theme(
-				# legend.key.size = unit(legendKeySize, 'cm'),
-				# plot.title=element_text(size=titleSize, face='bold'),
-				# plot.subtitle=element_text(size=subtitleSize),
-				# legend.title=element_text(size=legendTitleSize),
-				# legend.text=element_text(size=legendTextSize),
-				# axis.title=element_text(size=axisLabelSize),
-				# axis.text=element_text(size=axisTextSize)
-			# )
+		
+
+		# "old" by region
+		title <- paste0('')
+		thisThisData <- thisData[thisData$latestOccStatus == '1 old', ]
+		figsByType[[length(figsByType) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+			geom_density(linewidth=lw) +
+			scale_color_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+			) +
+			scale_fill_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+			) +
+			labs(title=title, subtitle='Previously Occupied', x=predDescriptorUnit, y='Density') +
+			guides(
+				color=guide_legend(title='Region'),
+				fill=guide_legend(title='Region')
+			) +
+			xlim(xlim[1], xlim[2]) +
+			theme(
+				legend.key.size = unit(legendKeySize, 'cm'),
+				plot.title=element_text(size=titleSize, face='bold'),
+				plot.subtitle=element_text(size=subtitleSize),
+				legend.title=element_text(size=legendTitleSize),
+				legend.text=element_text(size=legendTextSize),
+				axis.title=element_text(size=axisLabelSize),
+				axis.text=element_text(size=axisTextSize)
+			)
+
+		# "occupied" by region
+		title <- paste0('')
+		thisThisData <- thisData[thisData$latestOccStatus == '2 occupied', ]
+		figsByType[[length(figsByType) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+			geom_density(linewidth=lw) +
+			scale_color_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+			) +
+			scale_fill_manual(
+				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+				values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+			) +
+			labs(title=title, subtitle='Currently Occupied', x=predDescriptorUnit, y='Density') +
+			guides(
+				color=guide_legend(title='Region'),
+				fill=guide_legend(title='Region')
+			) +
+			xlim(xlim[1], xlim[2]) +
+			theme(
+				legend.key.size = unit(legendKeySize, 'cm'),
+				plot.title=element_text(size=titleSize, face='bold'),
+				plot.subtitle=element_text(size=subtitleSize),
+				legend.title=element_text(size=legendTitleSize),
+				legend.text=element_text(size=legendTextSize),
+				axis.title=element_text(size=axisLabelSize),
+				axis.text=element_text(size=axisTextSize)
+			)
 			
-	# } # next predictor
+	} # next predictor
 
-	# main <- plot_grid(plotlist=figs, align='h', ncol=4, rel_widths=1, labels=NULL, label_size=12)
-	# ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT Ordinal.pdf'), width=8, height=length(preds) * 1.8, units='in')
+	legend <- get_legend(
+		# create some space to the left of the legend
+		figsByType[[1]] + theme(legend.box.margin = margin(0, 0, 0, 12))
+	)
+	for (i in seq_along(figsByType)) figsByType[[i]] <- figsByType[[i]] + theme(legend.position = 'none')
+
+	legends <- list(legend, legend, legend, legend)
+
+	byType <- plot_grid(plotlist=figsByType, align='hv', ncol=3, rel_widths=1, labels=NULL, label_size=12)
+	legendsColumn <- plot_grid(plotlist=legends, align='hv', ncol=1, rel_widths=1, labels=NULL, label_size=12)
+	byTypeLegends <- plot_grid(byType, legendsColumn, align='hv', ncol=2, rel_widths=c(3, 0.5), labels=NULL, label_size=12)
+	alls <- plot_grid(plotlist = figsAll, align='hv', ncol=1, labels=NULL, label_size=12)
+
+	main <- plot_grid(alls, byTypeLegends, align='hv', ncol=2, rel_widths=c(1.5, 3.5), labels=NULL, label_size=12)
+
+	ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT Ordinal.png'), width=8, height=length(preds) * 1.8, units='in', dpi = 600, bg = 'white')
 
 # say('################################################################################')
 # say('### distributions of predictors by region and binary occupancy for main text ###')
 # say('################################################################################')
 
-	# titleSize <- 8
-	# subtitleSize <- 7
-	# legendTitleSize <- 6.5
-	# legendTextSize <- 6.5
-	# axisLabelSize <- 7
-	# axisTextSize <- 6
+# 	titleSize <- 8
+# 	subtitleSize <- 7
+# 	legendTitleSize <- 6.5
+# 	legendTextSize <- 6.5
+# 	axisLabelSize <- 7
+# 	axisTextSize <- 6
 	
-	# legendKeySize <- 0.4
+# 	legendKeySize <- 0.4
 	
-	# lw <- 0.5 # width of lines for density smoother
-	# occWindow <- 10
+# 	lw <- 0.5 # width of lines for density smoother
+# 	occWindow <- 10
 
-	# ### data
-	# load('./Data/03 New Mexico Pika - Assigned Folds.rda')
+# 	### data
+# 	load('./Data/03 New Mexico Pika - Assigned Folds.rda')
 
-	# ### occupancy predictors
-	# ########################
+# 	### occupancy predictors
+# 	########################
 	
-	# pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
-	# pika$presAbs <- ifelse(pika$latestOccStatus %in% c('0 never', '1 old'), 'unoccupied', 'occupied')
+# 	pika$latestOccStatus <- factor(pika$latestOccStatus, levels=c('0 never', '1 old', '2 occupied'))
+# 	pika$presAbs <- ifelse(pika$latestOccStatus %in% c('0 never', '1 old'), 'unoccupied', 'occupied')
 
-	# preds <- c('chronicCold_C', 'chronicHeat_C', 'subLethalHeat18deg_d', 'gsPpt_mm')
+# 	preds <- c('chronicHeat_C', 'chronicMoistStress_hPa', 'monsoonPpt_mm', 'gsPpt_mm')
 
-	# figs <- list()
-	# for (countPred in seq_along(preds)) {
+# 	figs <- list()
+# 	for (countPred in seq_along(preds)) {
 	
-		# pred <- preds[countPred]
+# 		pred <- preds[countPred]
 		
-		# predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
-		# say(predWindow)
+# 		predWindow <- paste0('occVar_', pred, '_', occWindow, 'yrWindow')
+# 		say(predWindow)
 	
-		# predIndex <- which(predTable$var == pred)
+# 		predIndex <- which(predTable$var == pred)
 	
-		# predNice <- predTable$varNice[predIndex]
-		# predNice <- capIt(predNice)
-		# predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
+# 		predNice <- predTable$varNice[predIndex]
+# 		predNice <- capIt(predNice)
+# 		predDescriptorUnit <- paste0(predTable$unitDescriptor[predIndex], ' (', predTable$unit[predIndex], ')')
 	
-		# # mus <- data.frame(
-			# # latestOccStatus = c('0 never', '1 old', '2 occupied'),
-			# # mu = c(
-				# # mean(pika[pika$latestOccStatus == '0 never', predWindow]),
-				# # mean(pika[pika$latestOccStatus == '1 old', predWindow]),
-				# # mean(pika[pika$latestOccStatus == '2 occupied', predWindow])
-			# # )
-		# # )
+# 		# mus <- data.frame(
+# 			# latestOccStatus = c('0 never', '1 old', '2 occupied'),
+# 			# mu = c(
+# 				# mean(pika[pika$latestOccStatus == '0 never', predWindow]),
+# 				# mean(pika[pika$latestOccStatus == '1 old', predWindow]),
+# 				# mean(pika[pika$latestOccStatus == '2 occupied', predWindow])
+# 			# )
+# 		# )
 
-		# thisData <- pika[ , c('presAbs', 'region', predWindow)]
-		# names(thisData)[3] <- 'value'
+# 		thisData <- pika[ , c('presAbs', 'region', predWindow)]
+# 		names(thisData)[3] <- 'value'
 
-		# xlim <- range(thisData$value)
+# 		xlim <- range(thisData$value)
 		
-		# letter <- letters[countPred]
-		# letter <- paste0('(', letter, ') ')
+# 		letter <- letters[countPred]
+# 		letter <- paste0('(', letter, ') ')
 		
-		# # all regions together
-		# title <- paste0(letter, predNice)
-		# figs[[length(figs) + 1]] <- ggplot(data=thisData, aes(x=value, col=presAbs, fill=presAbs)) +
-			# geom_density(linewidth=lw) +
-			# scale_color_manual(
-				# labels = c('occ.', 'unocc.'),
-				# values=c('unoccupied'='firebrick3', 'occupied'='darkgreen')
-			# ) +
-			# scale_fill_manual(
-				# labels = c('occ.', 'unocc.'),
-				# values=alpha(c('unoccupied'='firebrick3', 'occupied'='darkgreen'), 0.2)
-			# ) +
-			# labs(title=title, subtitle='Regions Together', x=predDescriptorUnit, y='Density') +
-			# # geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
-			# guides(
-				# color=guide_legend(title='Status'),
-				# fill=guide_legend(title='Status')
-			# ) +
-			# xlim(xlim[1], xlim[2]) +
-			# theme(
-				# legend.key.size = unit(legendKeySize, 'cm'),
-				# plot.title=element_text(size=titleSize, face='bold'),
-				# plot.subtitle=element_text(size=subtitleSize),
-				# legend.title=element_text(size=legendTitleSize),
-				# legend.text=element_text(size=legendTextSize),
-				# axis.title=element_text(size=axisLabelSize),
-				# axis.text=element_text(size=axisTextSize)
-			# )
+# 		# all regions together
+# 		title <- paste0(letter, predNice)
+# 		figs[[length(figs) + 1]] <- ggplot(data=thisData, aes(x=value, col=presAbs, fill=presAbs)) +
+# 			geom_density(linewidth=lw) +
+# 			scale_color_manual(
+# 				labels = c('occ.', 'unocc.'),
+# 				values=c('unoccupied'='firebrick3', 'occupied'='darkgreen')
+# 			) +
+# 			scale_fill_manual(
+# 				labels = c('occ.', 'unocc.'),
+# 				values=alpha(c('unoccupied'='firebrick3', 'occupied'='darkgreen'), 0.2)
+# 			) +
+# 			labs(title=title, subtitle='Regions Together', x=predDescriptorUnit, y='Density') +
+# 			# geom_vline(data=mus, aes(xintercept=mu, color=latestOccStatus), linetype='dotted', size=1) +
+# 			guides(
+# 				color=guide_legend(title='Status'),
+# 				fill=guide_legend(title='Status')
+# 			) +
+# 			xlim(xlim[1], xlim[2]) +
+# 			theme(
+# 				legend.key.size = unit(legendKeySize, 'cm'),
+# 				plot.title=element_text(size=titleSize, face='bold'),
+# 				plot.subtitle=element_text(size=subtitleSize),
+# 				legend.title=element_text(size=legendTitleSize),
+# 				legend.text=element_text(size=legendTextSize),
+# 				axis.title=element_text(size=axisLabelSize),
+# 				axis.text=element_text(size=axisTextSize)
+# 			)
 
-		# # "unoccupied" by region
-		# title <- paste0('')
-		# thisThisData <- thisData[thisData$presAbs == 'unoccupied', ]
-		# figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
-			# geom_density(linewidth=lw) +
-			# scale_color_manual(
-				# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
-				# values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
-			# ) +
-			# scale_fill_manual(
-				# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
-				# values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
-			# ) +
-			# labs(title=title, subtitle='Unoccupied', x=predDescriptorUnit, y='Density') +
-			# guides(
-				# color=guide_legend(title='Region'),
-				# fill=guide_legend(title='Region')
-			# ) +
-			# xlim(xlim[1], xlim[2]) +
-			# theme(
-				# legend.key.size = unit(legendKeySize, 'cm'),
-				# plot.title=element_text(size=titleSize, face='bold'),
-				# plot.subtitle=element_text(size=subtitleSize),
-				# legend.title=element_text(size=legendTitleSize),
-				# legend.text=element_text(size=legendTextSize),
-				# axis.title=element_text(size=axisLabelSize),
-				# axis.text=element_text(size=axisTextSize)
-			# )
+# 		# "unoccupied" by region
+# 		title <- paste0('')
+# 		thisThisData <- thisData[thisData$presAbs == 'unoccupied', ]
+# 		figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+# 			geom_density(linewidth=lw) +
+# 			scale_color_manual(
+# 				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+# 				values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+# 			) +
+# 			scale_fill_manual(
+# 				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+# 				values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+# 			) +
+# 			labs(title=title, subtitle='Unoccupied', x=predDescriptorUnit, y='Density') +
+# 			guides(
+# 				color=guide_legend(title='Region'),
+# 				fill=guide_legend(title='Region')
+# 			) +
+# 			xlim(xlim[1], xlim[2]) +
+# 			theme(
+# 				legend.key.size = unit(legendKeySize, 'cm'),
+# 				plot.title=element_text(size=titleSize, face='bold'),
+# 				plot.subtitle=element_text(size=subtitleSize),
+# 				legend.title=element_text(size=legendTitleSize),
+# 				legend.text=element_text(size=legendTextSize),
+# 				axis.title=element_text(size=axisLabelSize),
+# 				axis.text=element_text(size=axisTextSize)
+# 			)
 
-		# # "occupied" by region
-		# title <- paste0('')
-		# thisThisData <- thisData[thisData$presAbs == 'occupied', ]
-		# figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
-			# geom_density(linewidth=lw) +
-			# scale_color_manual(
-				# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
-				# values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
-			# ) +
-			# scale_fill_manual(
-				# labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
-				# values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
-			# ) +
-			# labs(title=title, subtitle='Currently Occupied', x=predDescriptorUnit, y='Density') +
-			# guides(
-				# color=guide_legend(title='Region'),
-				# fill=guide_legend(title='Region')
-			# ) +
-			# xlim(xlim[1], xlim[2]) +
-			# theme(
-				# legend.key.size = unit(legendKeySize, 'cm'),
-				# plot.title=element_text(size=titleSize, face='bold'),
-				# plot.subtitle=element_text(size=subtitleSize),
-				# legend.title=element_text(size=legendTitleSize),
-				# legend.text=element_text(size=legendTextSize),
-				# axis.title=element_text(size=axisLabelSize),
-				# axis.text=element_text(size=axisTextSize)
-			# )
+# 		# "occupied" by region
+# 		title <- paste0('')
+# 		thisThisData <- thisData[thisData$presAbs == 'occupied', ]
+# 		figs[[length(figs) + 1]] <- ggplot(data=thisThisData, aes(x=value, col=region, fill=region)) +
+# 			geom_density(linewidth=lw) +
+# 			scale_color_manual(
+# 				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+# 				values=c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred')
+# 			) +
+# 			scale_fill_manual(
+# 				labels=c('southwest'='SW', 'southeast'='SE', 'northwest'='NW', 'northeast'='NE'),
+# 				values=alpha(c('southwest'='darkgoldenrod3', 'southeast'='darkgreen', 'northwest'='navyblue', 'northeast'='darkred'), 0.2),
+# 			) +
+# 			labs(title=title, subtitle='Currently Occupied', x=predDescriptorUnit, y='Density') +
+# 			guides(
+# 				color=guide_legend(title='Region'),
+# 				fill=guide_legend(title='Region')
+# 			) +
+# 			xlim(xlim[1], xlim[2]) +
+# 			theme(
+# 				legend.key.size = unit(legendKeySize, 'cm'),
+# 				plot.title=element_text(size=titleSize, face='bold'),
+# 				plot.subtitle=element_text(size=subtitleSize),
+# 				legend.title=element_text(size=legendTitleSize),
+# 				legend.text=element_text(size=legendTextSize),
+# 				axis.title=element_text(size=axisLabelSize),
+# 				axis.text=element_text(size=axisTextSize)
+# 			)
 			
-	# } # next predictor
+# 	} # next predictor
 
-	# main <- plot_grid(plotlist=figs, align='h', ncol=3, rel_widths=1, labels=NULL, label_size=12)
-	# ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT Binary.pdf'), width=7, height=length(preds) * 1.8, units='in')
+# 	main <- plot_grid(plotlist=figs, align='h', ncol=3, rel_widths=1, labels=NULL, label_size=12)
+# 	ggsave(paste0('./Figures & Tables/Distributions of Occupancy Variables for ', occWindow, '-yr Window by Region MAIN TEXT Binary.pdf'), width=7, height=length(preds) * 1.8, units='in')
 
 # say('############################################################################################')
 # say('### distributions of predictors by region and binary and ordinal occupancy for main text ###')
