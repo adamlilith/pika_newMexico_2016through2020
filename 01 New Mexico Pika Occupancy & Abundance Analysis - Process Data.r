@@ -7,7 +7,7 @@
 ### process and clean pika data ###
 ### extract environmental data and calculate predictors ###
 ### distributions of predictors across all regions ###
-### spoke plots for correlations between variables ###
+### spoke and dendrogram plots for correlations between variables ###
 ### define regions and folds ###
 ### extract distance to nearest patches ###
 ### add PRISM cell number and calculate weights based on number of sites in each cell ###
@@ -1269,309 +1269,340 @@
 			
 		# ggsave(plot=fig, paste0('./Figures & Tables/Correlations between Density Variables Heat Map.png'), width=11, height=8.5, units='in')
 		
-# say('######################################################')
-# say('### spoke plots for correlations between variables ###')
-# say('######################################################')
+say('#####################################################################')
+say('### spoke and dendrogram plots for correlations between variables ###')
+say('#####################################################################')
 
-# 	### generalization
-# 	thold <- 0.7 # too much correlation!
+	### generalization
+	thold <- 0.7 # too much correlation!
 
-# 	inner <- 0.83 # move line start/end points to inner circle with a radius equal to this relative to outside circle
+	inner <- 0.83 # move line start/end points to inner circle with a radius equal to this relative to outside circle
 
-# 	### data
-# 	load('./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
+	### data
+	load('./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
 
-# 	pika <- pika[ , names(pika) %notin% c('occVar_subLethalHeat22deg_d_7yrWindow', 'occVar_subLethalHeat20deg_d_7yrWindow', 'occVar_subLethalHeat22deg_d_10yrWindow', 'occVar_subLethalHeat20deg_d_10yrWindow', 'densVar_subLethalHeat22deg_d_1yrPrior', 'densVar_subLethalHeat20deg_d_1yrPrior')]
+	pika <- pika[ , names(pika) %notin% c('occVar_subLethalHeat22deg_d_7yrWindow', 'occVar_subLethalHeat20deg_d_7yrWindow', 'occVar_subLethalHeat22deg_d_10yrWindow', 'occVar_subLethalHeat20deg_d_10yrWindow', 'densVar_subLethalHeat22deg_d_1yrPrior', 'densVar_subLethalHeat20deg_d_1yrPrior')]
 
-# 	### correlations for occupancy variables: spoke plot
-# 	####################################################
+	### correlations for occupancy variables: spoke plot
+	####################################################
 
-# 	for (occWindow in occWindows_y) {
+	for (occWindow in occWindows_y) {
 	
-# 		occVars <- names(pika)[grepl(names(pika), pattern='occVar_')]
-# 		occVars <- occVars[grepl(occVars, pattern=paste0(occWindow, 'yrWindow'))]
+		occVars <- names(pika)[grepl(names(pika), pattern='occVar_')]
+		occVars <- occVars[grepl(occVars, pattern=paste0(occWindow, 'yrWindow'))]
 
-# 		corr <- cor(pika[ , occVars])
+		corr <- cor(pika[ , occVars])
 		
-# 		# change variable names
-# 		niceVars <- makeNiceVars(colnames(corr), occOrDens='occupancy', incTime=FALSE)
-# 		niceVars <- gsub(niceVars, pattern = ' ', replacement = '\n')
+		# change variable names
+		niceVars <- makeNiceVars(colnames(corr), occOrDens='occupancy', incTime=FALSE)
+		niceVars <- gsub(niceVars, pattern = ' ', replacement = '\n')
 
-# 		# Set the number of items
-# 		n <- length(niceVars)
+		# Set the number of items
+		n <- length(niceVars)
 
-# 		# data frame with circular positions
-# 		angle <- seq(0, 2 * pi, length.out = n + 1)[-1]
-# 		items <- data.frame(
-# 			id = 1:n,
-# 			var = niceVars,
-# 			x = cos(angle),
-# 			y = sin(angle)
-# 		)
+		# data frame with circular positions
+		angle <- seq(0, 2 * pi, length.out = n + 1)[-1]
+		items <- data.frame(
+			id = 1:n,
+			var = niceVars,
+			x = cos(angle),
+			y = sin(angle)
+		)
 
-# 		# create data frame with strong positive correlations
-# 		posConnections <- data.frame()
-# 		for (i in 1:(nrow(corr) - 1)) {
-# 			for (j in (i + 1):nrow(corr)) {
-# 				if (corr[i, j] > thold) {
+		# create data frame with strong positive correlations
+		posConnections <- data.frame()
+		for (i in 1:(nrow(corr) - 1)) {
+			for (j in (i + 1):nrow(corr)) {
+				if (corr[i, j] > thold) {
 					
-# 					posConnections <- rbind(
-# 						posConnections,
-# 						data.frame(
-# 							from = i,
-# 							to = j,
-# 							v1 = niceVars[i],
-# 							v2 = niceVars[j]
-# 						)
+					posConnections <- rbind(
+						posConnections,
+						data.frame(
+							from = i,
+							to = j,
+							v1 = niceVars[i],
+							v2 = niceVars[j]
+						)
 						
-# 					)
-# 				}
-# 			}
-# 		}
+					)
+				}
+			}
+		}
 		
-# 		posConnections <- merge(posConnections, items, by.x = 'from', by.y = 'id', all.x = TRUE)
-# 		posConnections <- merge(posConnections, items, by.x = 'to', by.y = 'id', all.x = TRUE, suffixes = c('1', '2'))
+		posConnections <- merge(posConnections, items, by.x = 'from', by.y = 'id', all.x = TRUE)
+		posConnections <- merge(posConnections, items, by.x = 'to', by.y = 'id', all.x = TRUE, suffixes = c('1', '2'))
 
-# 		posConnections$innerx1 <- inner * posConnections$x1
-# 		posConnections$innery1 <- inner * posConnections$y1
+		posConnections$innerx1 <- inner * posConnections$x1
+		posConnections$innery1 <- inner * posConnections$y1
 
-# 		posConnections$innerx2 <- inner * posConnections$x2
-# 		posConnections$innery2 <- inner * posConnections$y2
+		posConnections$innerx2 <- inner * posConnections$x2
+		posConnections$innery2 <- inner * posConnections$y2
 
-# 		# create data frame with strong negative correlations
-# 		negConnections <- data.frame()
-# 		for (i in 1:(nrow(corr) - 1)) {
-# 			for (j in (i + 1):nrow(corr)) {
-# 				if (corr[i, j] < -thold) {
+		# create data frame with strong negative correlations
+		negConnections <- data.frame()
+		for (i in 1:(nrow(corr) - 1)) {
+			for (j in (i + 1):nrow(corr)) {
+				if (corr[i, j] < -thold) {
 					
-# 					negConnections <- rbind(
-# 						negConnections,
-# 						data.frame(
-# 							from = i,
-# 							to = j,
-# 							v1 = niceVars[i],
-# 							v2 = niceVars[j]
-# 						)
+					negConnections <- rbind(
+						negConnections,
+						data.frame(
+							from = i,
+							to = j,
+							v1 = niceVars[i],
+							v2 = niceVars[j]
+						)
 						
-# 					)
-# 				}
-# 			}
-# 		}
+					)
+				}
+			}
+		}
 		
-# 		negConnections <- merge(negConnections, items, by.x = 'from', by.y = 'id', all.x = TRUE)
-# 		negConnections <- merge(negConnections, items, by.x = 'to', by.y = 'id', all.x = TRUE, suffixes = c('1', '2'))
+		negConnections <- merge(negConnections, items, by.x = 'from', by.y = 'id', all.x = TRUE)
+		negConnections <- merge(negConnections, items, by.x = 'to', by.y = 'id', all.x = TRUE, suffixes = c('1', '2'))
 
-# 		negConnections$innerx1 <- inner * negConnections$x1
-# 		negConnections$innery1 <- inner * negConnections$y1
+		negConnections$innerx1 <- inner * negConnections$x1
+		negConnections$innery1 <- inner * negConnections$y1
 
-# 		negConnections$innerx2 <- inner * negConnections$x2
-# 		negConnections$innery2 <- inner * negConnections$y2
+		negConnections$innerx2 <- inner * negConnections$x2
+		negConnections$innery2 <- inner * negConnections$y2
 
-# 		# dummy data for custom legend
-# 		legData <- data.frame(
-# 			x = c(-100, -101),
-# 			y = c(-100, -101),
-# 			Correlation = c('≥ 0.7', '≤ -0.7')
-# 		)
+		# dummy data for custom legend
+		legData <- data.frame(
+			x = c(-100, -101),
+			y = c(-100, -101),
+			Correlation = c('≥ 0.7', '≤ -0.7')
+		)
 
-# 		occSpoke <- ggplot() +
+		occSpoke <- ggplot() +
 		
-# 			# geom_point(data = items, aes(x = x, y = y)) +
+			# geom_point(data = items, aes(x = x, y = y)) +
 
-# 			geom_curve(
-# 				data = negConnections,
-# 				aes(x = innerx1, y = innery1, xend = innerx2, yend = innery2),
-# 				curvature = 0,
-# 				linetype = 'dashed',
-# 				color = 'red',
-# 				linewidth = 1
-# 			) +
+			geom_curve(
+				data = negConnections,
+				aes(x = innerx1, y = innery1, xend = innerx2, yend = innery2),
+				curvature = 0,
+				linetype = 'dashed',
+				color = 'red',
+				linewidth = 1
+			) +
 
-# 			geom_curve(
-# 				data = posConnections,
-# 				aes(x = innerx1, y = innery1, xend = innerx2, yend = innery2),
-# 				curvature = 0,
-# 				color = 'blue',
-# 				linewidth = 0.6
-# 			) +
+			geom_curve(
+				data = posConnections,
+				aes(x = innerx1, y = innery1, xend = innerx2, yend = innery2),
+				curvature = 0,
+				color = 'blue',
+				linewidth = 0.6
+			) +
 
-# 			geom_text(data = items, aes(x = x, y = y, label = var), vjust = 0.5, size = 6) +
+			geom_text(data = items, aes(x = x, y = y, label = var), vjust = 0.5, size = 6) +
 			
-# 			# Add custom legend lines with specified line types and colors
-# 			geom_line(
-# 				data = legData,
-# 				aes(x = x, y = y, color = Correlation, linetype = Correlation),
-# 				size = 1, show.legend = TRUE
-# 			) +
-# 			scale_color_manual(
-# 				name = 'Correlation',
-# 				values = c('≥ 0.7' = 'blue', '≤ -0.7' = 'red')
-# 			) +
-# 			scale_linetype_manual(
-# 				name = 'Correlation',
-# 				values = c('≥ 0.7' = 'solid', '≤ -0.7' = 'dashed') # Linetypes for the legend
-# 			) +
+			# Add custom legend lines with specified line types and colors
+			geom_line(
+				data = legData,
+				aes(x = x, y = y, color = Correlation, linetype = Correlation),
+				size = 1, show.legend = TRUE
+			) +
+			scale_color_manual(
+				name = 'Correlation',
+				values = c('≥ 0.7' = 'blue', '≤ -0.7' = 'red')
+			) +
+			scale_linetype_manual(
+				name = 'Correlation',
+				values = c('≥ 0.7' = 'solid', '≤ -0.7' = 'dashed') # Linetypes for the legend
+			) +
 
-# 			ggtitle(paste0('Occupancy variables: ', occWindow, '-yr window')) +
-# 			coord_fixed() +
-# 			coord_cartesian(clip = 'off', xlim = c(-1, 1), ylim = c(-1, 1)) +
-# 			theme_void() +
-# 			theme(
-# 				legend.position = c(1, 0.1),
-# 				plot.title = element_text(size = 22),
-# 				plot.margin = margin(1, 3, 1, 1, 'cm'),
-# 				legend.title = element_text(size = 18),
-# 				legend.text = element_text(size = 18)
-# 			)
+			ggtitle(paste0('Occupancy variables: ', occWindow, '-yr window')) +
+			coord_fixed() +
+			coord_cartesian(clip = 'off', xlim = c(-1, 1), ylim = c(-1, 1)) +
+			theme_void() +
+			theme(
+				legend.position = c(1, 0.1),
+				plot.title = element_text(size = 22),
+				plot.margin = margin(1, 3, 1, 1, 'cm'),
+				legend.title = element_text(size = 18),
+				legend.text = element_text(size = 18)
+			)
 
-# 		ggsave(occSpoke, file = paste0('./Figures & Tables/Correlations between Occupancy Variables Using a ', occWindow, '-yr Window Spoke Plot.png'), width = 10.5, height = 10, dpi = 600, bg = 'white')
+		ggsave(occSpoke, file = paste0('./Figures & Tables/Correlations between Occupancy Variables Using a ', occWindow, '-yr Window Spoke Plot.png'), width = 10.5, height = 10, dpi = 600, bg = 'white')
 
-# 	}
+		### dendrogram plot for occupancy variables
+		###########################################
+		
+		dists <- 1 - abs(corr)
+		dists <- as.dist(dists)
+
+		clust <- hclust(dists)
+		clust$labels <- makeNiceVars(clust$labels, occOrDens = 'occupancy', incTime = FALSE, wrapTime = FALSE)
+
+		png(file = paste0('./Figures & Tables/Correlations between Occupancy Variables Using a ', occWindow, '-yr Window Dendrogram Plot.png'), res = 200, width = 1200, height = 1000)
+		par(cex.main = 1, cex = 0.8)
+		plot(clust, main = paste0('Correlations between Occupancy Variables with a ', occWindow, '-yr Window'), xlab = '', sub = '', ylab = '1 - |Correlation|')
+		abline(h = 0.3, col = 'red', lty = 'dashed')
+		dev.off()
+
+	}
 	
-# 	### correlations for occupancy variables: spoke plot
-# 	####################################################
+	### correlations for DENSITY variables: spoke plot
+	##################################################
 
-# 		inner <- 0.83 # move line start/end points to inner circle with a radius equal to this relative to outside circle
+		inner <- 0.83 # move line start/end points to inner circle with a radius equal to this relative to outside circle
 
-# 		densVars <- names(pika)[grepl(names(pika), pattern='densVar_')]
-# 		recordedDens <- which(!is.na(pika$latestDensSurveyYear))
-# 		corr <- cor(pika[recordedDens, densVars])
+		densVars <- names(pika)[grepl(names(pika), pattern='densVar_')]
+		recordedDens <- which(!is.na(pika$latestDensSurveyYear))
+		corr <- cor(pika[recordedDens, densVars])
 		
-# 		# change variable names
-# 		niceVars <- makeNiceVars(colnames(corr), occOrDens='density', incTime=TRUE)
-# 		niceVars <- gsub(niceVars, pattern = ' ', replacement = '\n')
+		# change variable names
+		niceVars <- makeNiceVars(colnames(corr), occOrDens='density', incTime=TRUE)
+		niceVars <- gsub(niceVars, pattern = ' ', replacement = '\n')
 		
-# 		niceVars <- gsub(niceVars, pattern = '\n\\(1\nyr\\)', replacement = ' \\(1 yr\\)')
-# 		niceVars <- gsub(niceVars, pattern = '\n\\(0\nyr\\)', replacement = ' \\(0 yr\\)')
+		niceVars <- gsub(niceVars, pattern = '\n\\(1\nyr\\)', replacement = ' \\(1 yr\\)')
+		niceVars <- gsub(niceVars, pattern = '\n\\(0\nyr\\)', replacement = ' \\(0 yr\\)')
 
-# 		# Set the number of items
-# 		n <- length(niceVars)
+		# Set the number of items
+		n <- length(niceVars)
 
-# 		# data frame with circular positions
-# 		angle <- seq(0, 2 * pi, length.out = n + 1)[-1]
-# 		items <- data.frame(
-# 			id = 1:n,
-# 			var = niceVars,
-# 			x = cos(angle),
-# 			y = sin(angle)
-# 		)
+		# data frame with circular positions
+		angle <- seq(0, 2 * pi, length.out = n + 1)[-1]
+		items <- data.frame(
+			id = 1:n,
+			var = niceVars,
+			x = cos(angle),
+			y = sin(angle)
+		)
 
-# 		# create data frame with strong positive correlations
-# 		posConnections <- data.frame()
-# 		for (i in 1:(nrow(corr) - 1)) {
-# 			for (j in (i + 1):nrow(corr)) {
-# 				if (corr[i, j] > thold) {
+		# create data frame with strong positive correlations
+		posConnections <- data.frame()
+		for (i in 1:(nrow(corr) - 1)) {
+			for (j in (i + 1):nrow(corr)) {
+				if (corr[i, j] > thold) {
 					
-# 					posConnections <- rbind(
-# 						posConnections,
-# 						data.frame(
-# 							from = i,
-# 							to = j,
-# 							v1 = niceVars[i],
-# 							v2 = niceVars[j]
-# 						)
+					posConnections <- rbind(
+						posConnections,
+						data.frame(
+							from = i,
+							to = j,
+							v1 = niceVars[i],
+							v2 = niceVars[j]
+						)
 						
-# 					)
-# 				}
-# 			}
-# 		}
+					)
+				}
+			}
+		}
 		
-# 		posConnections <- merge(posConnections, items, by.x = 'from', by.y = 'id', all.x = TRUE)
-# 		posConnections <- merge(posConnections, items, by.x = 'to', by.y = 'id', all.x = TRUE, suffixes = c('1', '2'))
+		posConnections <- merge(posConnections, items, by.x = 'from', by.y = 'id', all.x = TRUE)
+		posConnections <- merge(posConnections, items, by.x = 'to', by.y = 'id', all.x = TRUE, suffixes = c('1', '2'))
 
-# 		posConnections$innerx1 <- inner * posConnections$x1
-# 		posConnections$innery1 <- inner * posConnections$y1
+		posConnections$innerx1 <- inner * posConnections$x1
+		posConnections$innery1 <- inner * posConnections$y1
 
-# 		posConnections$innerx2 <- inner * posConnections$x2
-# 		posConnections$innery2 <- inner * posConnections$y2
+		posConnections$innerx2 <- inner * posConnections$x2
+		posConnections$innery2 <- inner * posConnections$y2
 
-# 		# create data frame with strong negative correlations
-# 		negConnections <- data.frame()
-# 		for (i in 1:(nrow(corr) - 1)) {
-# 			for (j in (i + 1):nrow(corr)) {
-# 				if (corr[i, j] < -thold) {
+		# create data frame with strong negative correlations
+		negConnections <- data.frame()
+		for (i in 1:(nrow(corr) - 1)) {
+			for (j in (i + 1):nrow(corr)) {
+				if (corr[i, j] < -thold) {
 					
-# 					negConnections <- rbind(
-# 						negConnections,
-# 						data.frame(
-# 							from = i,
-# 							to = j,
-# 							v1 = niceVars[i],
-# 							v2 = niceVars[j]
-# 						)
+					negConnections <- rbind(
+						negConnections,
+						data.frame(
+							from = i,
+							to = j,
+							v1 = niceVars[i],
+							v2 = niceVars[j]
+						)
 						
-# 					)
-# 				}
-# 			}
-# 		}
+					)
+				}
+			}
+		}
 		
-# 		negConnections <- merge(negConnections, items, by.x = 'from', by.y = 'id', all.x = TRUE)
-# 		negConnections <- merge(negConnections, items, by.x = 'to', by.y = 'id', all.x = TRUE, suffixes = c('1', '2'))
+		negConnections <- merge(negConnections, items, by.x = 'from', by.y = 'id', all.x = TRUE)
+		negConnections <- merge(negConnections, items, by.x = 'to', by.y = 'id', all.x = TRUE, suffixes = c('1', '2'))
 
-# 		negConnections$innerx1 <- inner * negConnections$x1
-# 		negConnections$innery1 <- inner * negConnections$y1
+		negConnections$innerx1 <- inner * negConnections$x1
+		negConnections$innery1 <- inner * negConnections$y1
 
-# 		negConnections$innerx2 <- inner * negConnections$x2
-# 		negConnections$innery2 <- inner * negConnections$y2
+		negConnections$innerx2 <- inner * negConnections$x2
+		negConnections$innery2 <- inner * negConnections$y2
 
-# 		# dummy data for custom legend
-# 		legData <- data.frame(
-# 			x = c(-100, -101),
-# 			y = c(-100, -101),
-# 			Correlation = c('≥ 0.7', '≤ -0.7')
-# 		)
+		# dummy data for custom legend
+		legData <- data.frame(
+			x = c(-100, -101),
+			y = c(-100, -101),
+			Correlation = c('≥ 0.7', '≤ -0.7')
+		)
 
-# 		densSpoke <- ggplot() +
+		densSpoke <- ggplot() +
 		
-# 			# geom_point(data = items, aes(x = x, y = y)) +
+			# geom_point(data = items, aes(x = x, y = y)) +
 
-# 			geom_curve(
-# 				data = negConnections,
-# 				aes(x = innerx1, y = innery1, xend = innerx2, yend = innery2),
-# 				curvature = 0,
-# 				linetype = 'dashed',
-# 				color = 'red',
-# 				linewidth = 1
-# 			) +
+			geom_curve(
+				data = negConnections,
+				aes(x = innerx1, y = innery1, xend = innerx2, yend = innery2),
+				curvature = 0,
+				linetype = 'dashed',
+				color = 'red',
+				linewidth = 1
+			) +
 
-# 			geom_curve(
-# 				data = posConnections,
-# 				aes(x = innerx1, y = innery1, xend = innerx2, yend = innery2),
-# 				curvature = 0,
-# 				color = 'blue',
-# 				linewidth = 0.6
-# 			) +
+			geom_curve(
+				data = posConnections,
+				aes(x = innerx1, y = innery1, xend = innerx2, yend = innery2),
+				curvature = 0,
+				color = 'blue',
+				linewidth = 0.6
+			) +
 
-# 			geom_text(data = items, aes(x = x, y = y, label = var), vjust = 0.5, size = 4) +
+			geom_text(data = items, aes(x = x, y = y, label = var), vjust = 0.5, size = 4) +
 			
-# 			# Add custom legend lines with specified line types and colors
-# 			geom_line(
-# 				data = legData,
-# 				aes(x = x, y = y, color = Correlation, linetype = Correlation),
-# 				size = 1, show.legend = TRUE
-# 			) +
-# 			scale_color_manual(
-# 				name = 'Correlation',
-# 				values = c('≥ 0.7' = 'blue', '≤ -0.7' = 'red')
-# 			) +
-# 			scale_linetype_manual(
-# 				name = 'Correlation',
-# 				values = c('≥ 0.7' = 'solid', '≤ -0.7' = 'dashed') # Linetypes for the legend
-# 			) +
+			# Add custom legend lines with specified line types and colors
+			geom_line(
+				data = legData,
+				aes(x = x, y = y, color = Correlation, linetype = Correlation),
+				size = 1, show.legend = TRUE
+			) +
+			scale_color_manual(
+				name = 'Correlation',
+				values = c('≥ 0.7' = 'blue', '≤ -0.7' = 'red')
+			) +
+			scale_linetype_manual(
+				name = 'Correlation',
+				values = c('≥ 0.7' = 'solid', '≤ -0.7' = 'dashed') # Linetypes for the legend
+			) +
 
-# 			ggtitle('Density variables') +
-# 			coord_fixed() +
-# 			coord_cartesian(clip = 'off', xlim = c(-1, 1), ylim = c(-1, 1)) +
-# 			theme_void() +
-# 			theme(
-# 				legend.position = c(1, 0.1),
-# 				plot.title = element_text(size = 22),
-# 				plot.margin = margin(1, 3, 1, 1, 'cm'),
-# 				legend.title = element_text(size = 16),
-# 				legend.text = element_text(size = 14)
-# 			)
+			ggtitle('Density variables') +
+			coord_fixed() +
+			coord_cartesian(clip = 'off', xlim = c(-1, 1), ylim = c(-1, 1)) +
+			theme_void() +
+			theme(
+				legend.position = c(1, 0.1),
+				plot.title = element_text(size = 22),
+				plot.margin = margin(1, 3, 1, 1, 'cm'),
+				legend.title = element_text(size = 16),
+				legend.text = element_text(size = 14)
+			)
 
-# 		ggsave(densSpoke, file = paste0('./Figures & Tables/Correlations between Density Variables Spoke Plot.png'), width = 10.5, height = 10, dpi = 600, bg = 'white')
+		ggsave(densSpoke, file = paste0('./Figures & Tables/Correlations between Density Variables Spoke Plot.png'), width = 10.5, height = 10, dpi = 600, bg = 'white')
+
+		### dendrogram plot for density variables
+		#########################################
+		
+		dists <- 1 - abs(corr)
+		dists <- as.dist(dists)
+
+		clust <- hclust(dists)
+		clust$labels <- makeNiceVars(clust$labels, occOrDens = 'density', incTime = TRUE, wrapTime = FALSE)
+
+		png(file = paste0('./Figures & Tables/Correlations between Density Variables Dendrogram Plot.png'), res = 200, width = 1200, height = 1000)
+		par(cex.main = 1, cex = 0.8)
+		plot(clust, main = paste0('Correlations between Density Variables'), xlab = '', sub = '', ylab = '1 - |Correlation|')
+		abline(h = 0.3, col = 'red', lty = 'dashed')
+		dev.off()
+
 
 # say('################################')
 # say('### define regions and folds ###')
