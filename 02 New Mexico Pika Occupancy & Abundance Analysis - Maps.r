@@ -5,8 +5,11 @@
 ###
 ### CONTENTS ###
 ### setup ###
+### fetch elevation raster ###
 ### map of sampling sites ###
 ### map of sampling sites & GBIF occurrences ###
+### map of sampling sites with color gradients for elevational bands ###
+### map of sampling sites with solid colors for elevational bands ###
 
 #############
 ### setup ###
@@ -405,14 +408,181 @@
 			
 # 	dev.off()
 
-say('#############################')
-say('### map of sampling sites ###')
-say('#############################')
+# say('########################################################################')
+# say('### map of sampling sites with color gradients for elevational bands ###')
+# say('########################################################################')
+
+# 	# user-defined
+
+# 		# 2935 m is the 25th quantile of currently occupied sites
+# 		# 2565 m is the lowest elevation with current pika presence
+# 		# 2303 m is the lowest elevation with past pika presence
+# 		# 2280 m is the lowest elevation sampled
+
+# 		min_high_elev_m <- 2935
+# 		min_mid_elev_m <- 2565
+# 		min_min_elev_m <- 2303
+
+# 	# North America
+# 	nam1 <- gadm(country = c('CAN', 'USA', 'MEX'), level = 1, path = paste0('C:/!Scratch/gadm'), version = 4.1, resolution = 1)
+# 	nam1 <- nam1[nam1$NAME_1 %notin% c('Alaska', 'Hawaii')]
+# 	nam1 <- nam1[nam1$NAME_1 %in% c('California', 'Oregon', 'Washington', 'British Columbia', 'Alberta', 'Saskatchewan', 'Manitoba', 'Yukon', 'Northwest Territories', 'Idaho', 'Montana', 'North Dakota', 'South Dakota', 'Colorado', 'Nebraska', 'Wyoming', 'Utah', 'Nevada', 'Arizona', 'New Mexico', 'Baja California', 'Sonora', 'Oklahoma', 'Texas', 'Kansas', 'Nebraska')]
+
+# 	# IUCN range
+# 	iucn <- vect('./Data/IUCN Range Map 2025-03-12/pika_range_map.gpkg')
+
+# 	# survey sites
+# 	load('./Data/02 New Mexico Pika - Environmental Values Extracted and Calculated.rda')
+# 	pika <- vect(pika, geom = ll, crs = getCRS('NAD83'))
+
+# 	# plot extent
+# 	extent_nm <- buffer(pika, width = 20000)
+# 	extent_nam <- buffer(iucn, width = 600000)
+
+# 	extent_nm <- ext(extent_nm)
+# 	extent_nam <- ext(extent_nam)
+
+# 	extent_nm <- as.polygons(extent_nm, crs = getCRS('WGS84'))
+# 	extent_nam <- as.polygons(extent_nam, crs = getCRS('WGS84'))
+
+# 	nam1_nm <- crop(nam1, extent_nm)
+
+# 	# cities
+# 	cities <- data.frame(
+# 		name = c('Santa Fe', 'Los Alamos'),
+# 		x = c(-105.964444, -106.263889),
+# 		y = c(35.667222, 35.891111)
+# 	)
+# 	cities <- vect(cities, geom = c('x', 'y'), crs = getCRS('NAD83'))
+	
+# 	# major rivers and lakes
+# 	rivers <- vect('C:/Kaji/Research Data/Rivers and Lakes - North America USGS/hydrography_l_rivers_v2.shp') # Adjust path to your rivers data
+# 	rivers <- makeValid(rivers)
+# 	extent_nm_proj <- project(extent_nm, rivers)
+# 	rivers <- crop(rivers, extent_nm_proj)
+	
+# 	# elevation
+# 	elev_fine_m <- rast('./Data/elev_fine_m.tif')
+# 	elev_fine_m <- crop(elev_fine_m, extent_nm)
+	
+# # elev_fine_m <- aggregate(elev_fine_m, 16, mean)
+
+# 	# hillshade
+# 	slope <- terrain(8 * elev_fine_m, 'slope', unit = 'radians')
+# 	aspect <- terrain(8 * elev_fine_m, 'aspect', unit = 'radians')
+# 	hs <- shade(slope, aspect, angle = 45, direction = 315)
+
+# 	# elevation above given threshold
+# 	elev_high_m <- elev_mid_m <- elev_low_m <- elev_fine_m
+# 	elev_high_m[elev_high_m < min_high_elev_m] <- NA
+# 	elev_mid_m[elev_mid_m < min_mid_elev_m | elev_mid_m >= min_high_elev_m] <- NA
+# 	elev_low_m[elev_low_m < min_min_elev_m | elev_low_m >= min_mid_elev_m] <- NA
+
+# 	max_high_elev_m <- globalx(elev_high_m, 'max')
+
+# 	# project
+# 	hs <- project(hs, getCRS('North America Lambert'))
+# 	pika <- project(pika, getCRS('North America Lambert'))
+# 	nam1 <- project(nam1, getCRS('North America Lambert'))
+# 	cities <- project(cities, getCRS('North America Lambert'))
+# 	rivers <- project(rivers, getCRS('North America Lambert'))
+# 	iucn <- project(iucn, getCRS('North America Lambert'))
+# 	extent_nm_proj <- project(extent_nm_proj, getCRS('North America Lambert'))
+# 	extent_nam_proj <- project(extent_nam, getCRS('North America Lambert'))
+
+# 	nam1_iucn <- iucn * nam1 
+
+# 	extent_nam_proj_vect <- as.vector(ext(extent_nam_proj))
+
+# 	iucn_nm <- crop(iucn, extent_nm_proj)
+
+# 	extent_nam_proj <- ext(extent_nam_proj)
+# 	extent_nam_proj <- as.vector(extent_nam_proj)
+
+# 	extent_nm_proj_vect <- as.vector(ext(extent_nm_proj))
+# 	say('Extent along x-axis is ', (extent_nm_proj_vect[2] - extent_nm_proj_vect[1]) / 1000, ' km')
+
+# 	# split records
+# 	present <- pika[pika$latestOccStatus %in% c('2 occupied')]
+# 	absent <- pika[pika$latestOccStatus %in% c('0 never', '1 old')]
+
+# 	# hillshade colors
+# 	hs_cols <- colorRampPalette(c('gray30', 'gray100'))(20)
+# 	high_cols <- colorRampPalette(c('forestgreen', 'green2'))(5)
+# 	mid_cols <- colorRampPalette(c('goldenrod3', 'gold'))(5)
+# 	low_cols <- colorRampPalette(c('indianred4', 'indianred1'))(5)
+
+# 	high_cols <- alpha(high_cols, 0.7)
+# 	mid_cols <- alpha(mid_cols, 0.7)
+# 	low_cols <- alpha(low_cols, 0.7)
+
+# 	### range map	
+# 	extent_nam_proj[1] <- extent_nam_proj[1] + 1300000
+# 	extent_nam_proj[2] <- extent_nam_proj[2] - 600000
+# 	extent_nam_proj[3] <- extent_nam_proj[3] + 600000
+# 	extent_nam_proj[4] <- extent_nam_proj[4] - 900000
+	
+# 	range_map <- ggplot() +
+# 		layer_spatial(nam1, fill = 'gray85') +
+# 		layer_spatial(iucn, fill = 'gray40') +
+# 		layer_spatial(extent_nm_proj, color = 'black', fill = NA, linewidth = 1) +
+# 		layer_spatial(nam1_iucn, color = 'gray60', fill = NA) +
+# 		xlim(extent_nam_proj[1], extent_nam_proj[2]) + ylim(extent_nam_proj[3], extent_nam_proj[4]) +
+# 		theme(
+# 			axis.text = element_text(size = 16)
+# 		)
+
+# 	### study region map
+# 	sr_map <- ggplot() +
+# 		layer_spatial(hs, aes(fill = stat(band1))) +
+# 		scale_fill_gradientn(colors = hs_cols, guide = 'none', na.value = 'transparent') +
+# 		new_scale_fill() +
+# 		layer_spatial(elev_low_m, aes(fill = stat(band1))) +
+# 		scale_fill_gradientn(colors = low_cols, name = 'Low\nElevation (m)', na.value = 'transparent', breaks = c(min_min_elev_m, min_mid_elev_m), guide = guide_colorbar(order = 3, label = FALSE)) +
+# 		new_scale_fill() +
+# 		layer_spatial(elev_mid_m, aes(fill = stat(band1))) +
+# 		scale_fill_gradientn(colors = mid_cols, name = 'Middle\nElevation (m)', na.value = 'transparent', breaks = c(min_mid_elev_m, min_high_elev_m), guide = guide_colorbar(order = 2, label = FALSE)) +
+# 		new_scale_fill() +
+# 		layer_spatial(elev_high_m, aes(fill = stat(band1))) +
+# 		scale_fill_gradientn(colors = high_cols, name = 'High\nElevation (m)', na.value = 'transparent', breaks = c(min_high_elev_m, max_high_elev_m), guide = guide_colorbar(order = 1, label = FALSE)) +
+# 		layer_spatial(rivers, color = 'blue', size = 0.5) +
+# 		layer_spatial(iucn_nm, fill = NA, color = 'black', linewidth = 1.2, linetype = 'dashed') +
+# 		layer_spatial(absent, pch = 2, size = 4.1, alpha = 1, color = 'red') +
+# 		layer_spatial(present, pch = 1, size = 4.2, alpha = 1, color = 'black') +
+# 		layer_spatial(cities, pch = 19, size = 5) +
+# 		layer_spatial(nam1_nm) +
+# 		geom_sf_text(data = st_as_sf(cities), aes(label = name), 
+# 			nudge_x = c(-10000, 10000), nudge_y = c(-5000, -5000),
+# 			size = 4.5, fontface = 'bold'
+# 		) +
+# 		xlim(extent_nm_proj_vect[1], extent_nm_proj_vect[2]) +
+# 		ylim(extent_nm_proj_vect[3], extent_nm_proj_vect[4]) +
+# 		coord_sf(expand = FALSE) +
+# 		theme_void() +
+# 		theme(
+# 			legend.position = c(-0.08, 0.3),
+# 			legend.key.height = unit(0.5, 'cm'),
+# 			legend.title = element_text(size = 16),
+# 			legend.text = element_text(size = 16),
+# 			plot.margin = margin(t = 1, r = 1, b = 1, l = 100, unit = 'pt')
+# 		)
+	
+# 	ggsave(sr_map, filename = './Figures & Tables/Study Region with Sampling Sites V2 Study Region.png', width = 10, height = 9, dpi = 600, bg = 'white')
+# 	ggsave(range_map, filename = './Figures & Tables/Study Region with Sampling Sites V2 Range Map.png', width = 6, height = 8, dpi = 600, bg = 'white')
+
+say('#####################################################################')
+say('### map of sampling sites with solid colors for elevational bands ###')
+say('#####################################################################')
 
 	# user-defined
 
-		min_high_elev_m <- 2829 # "high" elevation starts here
-		min_mid_elev_m <- 2303 # "middle" elevation starts here
+		# 2935 m is the 25th quantile of currently occupied sites
+		# 2565 m is the lowest elevation with current pika presence
+		# 2303 m is the lowest elevation with past pika presence
+		# 2280 m is the lowest elevation sampled
+
+		min_high_elev_m <- 2935
+		min_mid_elev_m <- 2565
 
 	# North America
 	nam1 <- gadm(country = c('CAN', 'USA', 'MEX'), level = 1, path = paste0('C:/!Scratch/gadm'), version = 4.1, resolution = 1)
@@ -459,14 +629,18 @@ say('#############################')
 # elev_fine_m <- aggregate(elev_fine_m, 16, mean)
 
 	# hillshade
-	slope <- terrain(elev_fine_m, 'slope', unit = 'radians')
-	aspect <- terrain(elev_fine_m, 'aspect', unit = 'radians')
-	hs <- shade(slope, aspect, angle = 15, direction = 45)
-
+	slope <- terrain(20 * elev_fine_m, 'slope', unit = 'radians')
+	aspect <- terrain(20 * elev_fine_m, 'aspect', unit = 'radians')
+	hs <- shade(slope, aspect, angle = 45, direction = 315)
+	hs <- hs - globalx(hs, 'mean')
+	
 	# elevation above given threshold
 	elev_high_m <- elev_mid_m <- elev_fine_m
 	elev_high_m[elev_high_m < min_high_elev_m] <- NA
 	elev_mid_m[elev_mid_m < min_mid_elev_m | elev_mid_m >= min_high_elev_m] <- NA
+
+	elev_high <- elev_high_m * 0 + 1
+	elev_mid <- elev_mid_m * 0 + 1
 
 	# project
 	hs <- project(hs, getCRS('North America Lambert'))
@@ -477,6 +651,8 @@ say('#############################')
 	iucn <- project(iucn, getCRS('North America Lambert'))
 	extent_nm_proj <- project(extent_nm_proj, getCRS('North America Lambert'))
 	extent_nam_proj <- project(extent_nam, getCRS('North America Lambert'))
+	elev_high <- project(elev_high, getCRS('North America Lambert'), method = 'near')
+	elev_mid <- project(elev_mid, getCRS('North America Lambert'), method = 'near')
 
 	nam1_iucn <- iucn * nam1 
 
@@ -495,9 +671,9 @@ say('#############################')
 	absent <- pika[pika$latestOccStatus %in% c('0 never', '1 old')]
 
 	# hillshade colors
-	hs_cols <- colorRampPalette(c('gray30', 'gray100'))(20)
-	high_cols <- rev(brewer.pal(9, 'YlGn')[1:6])
-	mid_cols <- brewer.pal(11, 'Spectral')[1:5]
+	hs_cols <- colorRampPalette(c('gray10', 'gray100'))(20)
+	high_cols <- 'forestgreen'
+	mid_cols <- 'springgreen3'
 
 	### range map	
 	extent_nam_proj[1] <- extent_nam_proj[1] + 1300000
@@ -507,7 +683,7 @@ say('#############################')
 	
 	range_map <- ggplot() +
 		layer_spatial(nam1, fill = 'gray85') +
-		layer_spatial(iucn, fill = 'gray40') +
+		layer_spatial(iucn, color = 'black', fill = '#6F4E37', linetype = 'solid') +
 		layer_spatial(extent_nm_proj, color = 'black', fill = NA, linewidth = 1) +
 		layer_spatial(nam1_iucn, color = 'gray60', fill = NA) +
 		xlim(extent_nam_proj[1], extent_nam_proj[2]) + ylim(extent_nam_proj[3], extent_nam_proj[4]) +
@@ -520,35 +696,45 @@ say('#############################')
 		layer_spatial(hs, aes(fill = stat(band1))) +
 		scale_fill_gradientn(colors = hs_cols, guide = 'none', na.value = 'transparent') +
 		new_scale_fill() +
-		layer_spatial(elev_mid_m, aes(fill = stat(band1))) +
-		scale_fill_gradientn(colors = mid_cols, name = 'Elevation (m)\n(Middle)', na.value = 'transparent') +
+		layer_spatial(elev_mid, aes(fill = stat(band1)), alpha = 0.5) +
+		scale_fill_gradientn(
+			colours = c(mid_cols[1], mid_cols[1]),
+			breaks = 1,
+			labels = 'Mid-elevation\n(2303-2829 m)',
+			name = NULL,
+			na.value = 'transparent'
+		) +
 		new_scale_fill() +
-		layer_spatial(elev_high_m, aes(fill = stat(band1))) +
-		scale_fill_gradientn(colors = high_cols, name = 'Elevation (m)\n(High)', na.value = 'transparent') +
-		layer_spatial(rivers, color = 'blue', size = 0.5) +
-		layer_spatial(iucn_nm, fill = NA, color = 'black', linewidth = 1.2) +
-		layer_spatial(absent, pch = 2, size = 3.2, alpha = 1, color = 'black') +
-		layer_spatial(present, pch = 1, size = 3.4, alpha = 1, color = 'darkgreen') +
-		layer_spatial(cities, pch = 19, size = 4) +
+		layer_spatial(elev_high, aes(fill = stat(band1)), alpha = 0.5) +
+		scale_fill_gradientn(
+			colours = c(high_cols[1], high_cols[1]),
+			breaks = 1,
+			labels = 'High-elevation\n(>2829 m)',
+			name = NULL,
+			na.value = 'transparent'
+		) +
+		layer_spatial(rivers, color = 'blue', size = 0.8) +
+		layer_spatial(iucn_nm, fill = NA, color = 'black', linewidth = 1.3, linetype = 'dashed') +
+		layer_spatial(absent, pch = 2, size = 3.8, alpha = 1, color = 'red') +
+		layer_spatial(present, pch = 1, size = 4.1, alpha = 1, color = 'black') +
+		layer_spatial(cities, pch = 19, size = 5) +
 		layer_spatial(nam1_nm) +
 		geom_sf_text(data = st_as_sf(cities), aes(label = name), 
 			nudge_x = c(-10000, 10000), nudge_y = c(-5000, -5000),
 			size = 4.5, fontface = 'bold'
 		) +
-		xlim(extent_nm_proj_vect[1], extent_nm_proj_vect[2]) +
-		ylim(extent_nm_proj_vect[3], extent_nm_proj_vect[4]) +
-		coord_sf(expand = FALSE) +
+		coord_sf(xlim = c(extent_nm_proj_vect[1], extent_nm_proj_vect[2]), ylim = c(extent_nm_proj_vect[3], extent_nm_proj_vect[4]), expand = FALSE) +
 		theme_void() +
 		theme(
-			legend.position = c(-0.07, 0.25),
-			legend.key.height = unit(0.7, 'cm'),
-			legend.title = element_text(size = 16),
-			legend.text = element_text(size = 16),
-			plot.margin = margin(t = 1, r = 1, b = 1, l = 100, unit = 'pt')
+			legend.position = 'none'
+			# legend.key.height = unit(0.7, 'cm'),
+			# legend.title = element_text(size = 16),
+			# legend.text = element_text(size = 16),
+			# plot.margin = margin(t = 1, r = 1, b = 5, l = 5, unit = 'pt')
 		)
 	
-	ggsave(sr_map, filename = './Figures & Tables/Study Region with Sampling Sites V2 Study Region.png', width = 10, height = 9, dpi = 600, bg = 'white')
-	ggsave(range_map, filename = './Figures & Tables/Study Region with Sampling Sites V2 Range Map.png', width = 6, height = 8, dpi = 600, bg = 'white')
+	ggsave(sr_map, filename = './Figures & Tables/Study Region with Sampling Sites V3 Study Region.png', width = 10, height = 9, dpi = 600, bg = 'white')
+	ggsave(range_map, filename = './Figures & Tables/Study Region with Sampling Sites V3 Range Map.png', width = 6, height = 8, dpi = 600, bg = 'white')
 
 
 say('DONE!!!', level=1, deco='%')
