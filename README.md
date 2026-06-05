@@ -33,32 +33,34 @@ All relevant code files are named with numbers indicating the order in which the
 	- Runs occupancy modeling with simple model sets, including both ordinal and binary formulations, model ranking, variable importance, predictions, and cross-validation products.
 	- Consumes cleaned and derived predictors from previous steps and generates core occupancy inference tables/figures later summarized in reporting scripts.
 
-5a. **03a New Mexico Pika Occupancy & Abundance Analysis - Occupancy with Simple Models - Accounting for Spatial Redundancies.r**
+5. **03a New Mexico Pika Occupancy & Abundance Analysis - Occupancy with Simple Models - Accounting for Spatial Redundancies.r**
 	- Repeats the occupancy modeling framework while accounting for shared PRISM-cell redundancy via weighting.
 	- Serves as a sensitivity/robustness counterpart to the main 03a occupancy analysis to evaluate how spatial non-independence affects inference.
 
-5b. **03a New Mexico Pika Occupancy & Abundance Analysis - Occupancy with Simple Models - Accounting for Spatial Autocorrelation.r**
+6. **03a New Mexico Pika Occupancy & Abundance Analysis - Occupancy with Simple Models - Accounting for Spatial Autocorrelation.r**
 	- Similar to the script above, repeats the occupancy modeling framework while accounting for spatial autocorrelation using a kriging term.
 	- Serves as a sensitivity/robustness counterpart to the main 03a occupancy analysis to evaluate how spatial non-independence affects inference.
 
-6. **03b New Mexico Pika Occupancy & Abundance Analysis - Density with Simple Models.r**
+7. **03b New Mexico Pika Occupancy & Abundance Analysis - Density with Simple Models.r**
 	- Fits density models for occupied sites (Gamma GLMs), compares climate/biogeographic/management model sets, and computes predictor importance.
 	- Complements occupancy analyses by modeling abundance patterns where pikas are present, enabling side-by-side interpretation of occupancy vs. density drivers.
 
-7. **03c Univariate Occupancy and Density Models.r**
+8. **03b New Mexico Pika Occupancy & Abundance Analysis - Density with Simple Models - Accounting for Spatial Autocorrelation.r**
+	- Fits density models for occupied sites (Gamma GAMs) with spatial kriging terms, compares climate/biogeographic/management model sets, and computes predictor importance.
+	- Serves as a sensitivity/robustness counterpart to the main 03b density analysis to evaluate how spatial non-independence affects inference.
+
+9. **03c Univariate Occupancy and Density Models.r**
 	- Fits univariate standardized-coefficient models for occupancy and density predictors.
 	- Provides effect-size-oriented checks that complement multi-predictor model-selection outputs from 03a and 03b.
 
-8. **04 Summaries.r**
+10. **04 Summaries.r**
 	- Produces synthesis outputs such as occupancy counts by region, elevation summaries, extent-of-occurrence calculations, variable-importance visual summaries, and distributional/statistical comparisons.
 	- Integrates and reports results from prior processing/modeling scripts into manuscript-ready summary tables and figures.
 
-9. **05 Data Collation for Publication.r**
+11. **05 Data Collation for Publication.r**
 	- Assembles and renames cleaned site-level fields and selected climate predictors into publication-ready data tables.
 	- Translates internal analysis objects into externally shareable outputs for manuscripts/data release.
 
-10. **06 Analysis of Occurrence vs Microclimate.r**
+12. **06 Analysis of Occurrence vs Microclimate.r**
 	 - Performs dedicated microclimate analyses (single-year and multi-year), including exploratory analyses, variable-correlation checks, and occurrence modeling workflows.
 	 - Extends the main occupancy/density pipeline with focused microclimate inference and generates additional targeted figures/tables.
-
-
