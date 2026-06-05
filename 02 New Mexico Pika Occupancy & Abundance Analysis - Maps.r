@@ -700,7 +700,7 @@ say('#####################################################################')
 		scale_fill_gradientn(
 			colours = c(mid_cols[1], mid_cols[1]),
 			breaks = 1,
-			labels = 'Mid-elevation\n(2303-2829 m)',
+			labels = 'Mid-elevation\n(2565-2935 m)',
 			name = NULL,
 			na.value = 'transparent'
 		) +
@@ -709,7 +709,7 @@ say('#####################################################################')
 		scale_fill_gradientn(
 			colours = c(high_cols[1], high_cols[1]),
 			breaks = 1,
-			labels = 'High-elevation\n(>2829 m)',
+			labels = 'High-elevation\n(>2935 m)',
 			name = NULL,
 			na.value = 'transparent'
 		) +
