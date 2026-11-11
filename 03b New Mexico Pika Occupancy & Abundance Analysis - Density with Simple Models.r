@@ -697,301 +697,301 @@ say('###################################################################')
 	}
 	write.csv(counts, file, row.names=FALSE)
 
-# say('##################################################################################')
-# say('### make response plots for top climate/biogeography/management DENSITY models ###')
-# say('##################################################################################')
+say('##################################################################################')
+say('### make response plots for top climate/biogeography/management DENSITY models ###')
+say('##################################################################################')
 
-# 	### models
-# 	##########
+	### models
+	##########
 
-# 		# all regions
-# 		file <- if (extended) {
-# 			paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models ', analysisDate, '/Density - Models with Management Variables All Region ', analysisDate, '.csv')
-# 		} else {
-# 			paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models ', analysisDate, '/Density - Models with Management Variables All Region ', analysisDate, '.csv')
-# 		}
-# 		allModelsReport <- read.csv(file)
-# 		allModelsReport <- allModelsReport[order(allModelsReport$aiccClimMgmt), ]
-# 		topAllModel <- allModelsReport[1, ]
+		# all regions
+		file <- if (extended) {
+			paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models ', analysisDate, '/Density - Models with Management Variables All Region ', analysisDate, '.csv')
+		} else {
+			paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models ', analysisDate, '/Density - Models with Management Variables All Region ', analysisDate, '.csv')
+		}
+		allModelsReport <- read.csv(file)
+		allModelsReport <- allModelsReport[order(allModelsReport$aiccClimMgmt), ]
+		topAllModel <- allModelsReport[1, ]
 
-# 		# Jemez region
-# 		file <- if (extended) {
-# 			paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models ', analysisDate, '/Density - Models with Management Variables Southwest Region ', analysisDate, '.csv')
-# 		} else {
-# 			paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models ', analysisDate, '/Density - Models with Management Variables Southwest Region ', analysisDate, '.csv')
-# 		}
-# 		southwestModelsReport <- read.csv(file)
-# 		southwestModelsReport <- southwestModelsReport[order(southwestModelsReport$aiccClimMgmt), ]
-# 		topSouthwestModel <- southwestModelsReport[1, ]
+		# Jemez region
+		file <- if (extended) {
+			paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models ', analysisDate, '/Density - Models with Management Variables Southwest Region ', analysisDate, '.csv')
+		} else {
+			paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models ', analysisDate, '/Density - Models with Management Variables Southwest Region ', analysisDate, '.csv')
+		}
+		southwestModelsReport <- read.csv(file)
+		southwestModelsReport <- southwestModelsReport[order(southwestModelsReport$aiccClimMgmt), ]
+		topSouthwestModel <- southwestModelsReport[1, ]
 
-# 		# all non-Jemez regions
-# 		file <- if (extended) {
-# 			paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models ', analysisDate, '/Density - Models with Management Variables Non-southwest Region ', analysisDate, '.csv')
-# 		} else {
-# 			paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models ', analysisDate, '/Density - Models with Management Variables Non-southwest Region ', analysisDate, '.csv')
-# 		}
-# 		nonSouthwestModelsReport <- read.csv(file)
-# 		nonSouthwestModelsReport <- nonSouthwestModelsReport[order(nonSouthwestModelsReport$aiccClimMgmt), ]
-# 		topNonSouthwestModel <- nonSouthwestModelsReport[1, ]
+		# all non-Jemez regions
+		file <- if (extended) {
+			paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models ', analysisDate, '/Density - Models with Management Variables Non-southwest Region ', analysisDate, '.csv')
+		} else {
+			paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models ', analysisDate, '/Density - Models with Management Variables Non-southwest Region ', analysisDate, '.csv')
+		}
+		nonSouthwestModelsReport <- read.csv(file)
+		nonSouthwestModelsReport <- nonSouthwestModelsReport[order(nonSouthwestModelsReport$aiccClimMgmt), ]
+		topNonSouthwestModel <- nonSouthwestModelsReport[1, ]
 
-# 	### pika data
-# 	#############
+	### pika data
+	#############
 		
-# 		load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
+		load('./Data/04 New Mexico Pika - Added Distance to Closest Patches.rda')
 
-# 		pika <- pika[!is.na(pika$latestDensity), ]
-# 		pika$region <- as.factor(pika$region)
-# 		vars <- getVars('density')
-# 		scaledVars <- scale(pika[ , vars])
-# 		centers <- attr(scaledVars, 'scaled:center')
-# 		scales <- attr(scaledVars, 'scaled:scale')
-# 		pika[ , vars] <- scaledVars
+		pika <- pika[!is.na(pika$latestDensity), ]
+		pika$region <- as.factor(pika$region)
+		vars <- getVars('density')
+		scaledVars <- scale(pika[ , vars])
+		centers <- attr(scaledVars, 'scaled:center')
+		scales <- attr(scaledVars, 'scaled:scale')
+		pika[ , vars] <- scaledVars
 
-# 		### collate "latest" version of each predictor
-# 		ecoVars <- c('perimBurnedMostRecent_perc', 'latestGrazing', 'latestGrassForb') # NB grass, forbs, and grass/form are highly correlated
+		### collate "latest" version of each predictor
+		ecoVars <- c('perimBurnedMostRecent_perc', 'latestGrazing', 'latestGrassForb') # NB grass, forbs, and grass/form are highly correlated
 
-# 		pika$latestGrazing <- pika$latestGrassForb <- NA
+		pika$latestGrazing <- pika$latestGrassForb <- NA
 		
-# 		for (i in 1:nrow(pika)) {
+		for (i in 1:nrow(pika)) {
 		
-# 			pika$latestGrazing[i] <- pika[i, paste0('grazing', pika$latestDensSurveyYear[i])]
-# 			pika$latestGrassForb[i] <- pika[i, paste0('grassForb', pika$latestDensSurveyYear[i], '_perc')]
+			pika$latestGrazing[i] <- pika[i, paste0('grazing', pika$latestDensSurveyYear[i])]
+			pika$latestGrassForb[i] <- pika[i, paste0('grassForb', pika$latestDensSurveyYear[i], '_perc')]
 		
 		
-# 		}
+		}
 		
-# 		# remove any records with NAs in predictors
-# 		nas <- which(
-# 			is.na(pika$latestGrazing) | is.na(pika$perimBurnedMostRecent_perc) | is.na(pika$latestGrassForb)
-# 		)
+		# remove any records with NAs in predictors
+		nas <- which(
+			is.na(pika$latestGrazing) | is.na(pika$perimBurnedMostRecent_perc) | is.na(pika$latestGrassForb)
+		)
 
-# 		if (length(nas) > 0) pika <- pika[-nas, ]
+		if (length(nas) > 0) pika <- pika[-nas, ]
 
-# 		ecoScales <- scale(pika[ , ecoVars[ecoVars != 'latestGrazing']])
-# 		centers <- c(centers, attr(ecoScales, 'scaled:center'))
-# 		scales <- c(scales, attr(ecoScales, 'scaled:scale'))
-# 		pika[ , ecoVars[ecoVars != 'latestGrazing']] <- ecoScales
-# 		pika$meanDistToClosest4Patches <- log10(pika$meanDistToClosest4Patches)
-# 		centers <- c(centers, 'meanDistToClosest4Patches' = mean(pika$meanDistToClosest4Patches))
-# 		scales <- c(scales, 'meanDistToClosest4Patches' = sd(pika$meanDistToClosest4Patches))
-# 		pika$meanDistToClosest4Patches <- as.numeric(scale(pika$meanDistToClosest4Patches))
+		ecoScales <- scale(pika[ , ecoVars[ecoVars != 'latestGrazing']])
+		centers <- c(centers, attr(ecoScales, 'scaled:center'))
+		scales <- c(scales, attr(ecoScales, 'scaled:scale'))
+		pika[ , ecoVars[ecoVars != 'latestGrazing']] <- ecoScales
+		pika$meanDistToClosest4Patches <- log10(pika$meanDistToClosest4Patches)
+		centers <- c(centers, 'meanDistToClosest4Patches' = mean(pika$meanDistToClosest4Patches))
+		scales <- c(scales, 'meanDistToClosest4Patches' = sd(pika$meanDistToClosest4Patches))
+		pika$meanDistToClosest4Patches <- as.numeric(scale(pika$meanDistToClosest4Patches))
 		
-# 		pika$region <- as.factor(pika$region)
+		pika$region <- as.factor(pika$region)
 
-# 		allModel <- glm(as.formula(topAllModel$model), data = pika, family = Gamma(link='log'))
-# 		southwestModel <- glm(as.formula(topSouthwestModel$model), data = pika, family = Gamma(link='log'))
-# 		nonSouthwestModel <- glm(as.formula(topNonSouthwestModel$model), data = pika, family = Gamma(link='log'))
+		allModel <- glm(as.formula(topAllModel$model), data = pika, family = Gamma(link='log'))
+		southwestModel <- glm(as.formula(topSouthwestModel$model), data = pika, family = Gamma(link='log'))
+		nonSouthwestModel <- glm(as.formula(topNonSouthwestModel$model), data = pika, family = Gamma(link='log'))
 
-# 	### plot each term
-# 	##################
+	### plot each term
+	##################
 		
-# 		topAllVars <- attr(terms(allModel), 'term.labels')
-# 		topSouthwestVars <- attr(terms(southwestModel), 'term.labels')
-# 		topNonSouthwestVars <- attr(terms(nonSouthwestModel), 'term.labels')
-# 		topVars <- unique(c(topAllVars, topSouthwestVars, topNonSouthwestVars))
+		topAllVars <- attr(terms(allModel), 'term.labels')
+		topSouthwestVars <- attr(terms(southwestModel), 'term.labels')
+		topNonSouthwestVars <- attr(terms(nonSouthwestModel), 'term.labels')
+		topVars <- unique(c(topAllVars, topSouthwestVars, topNonSouthwestVars))
 
-# 		if (any(grepl(topVars, pattern = ':'))) topVars <- topVars[!grepl(topVars, pattern = ':')]
+		if (any(grepl(topVars, pattern = ':'))) topVars <- topVars[!grepl(topVars, pattern = ':')]
 
-# 		for (var in c('perimBurnedMostRecent_perc', 'latestGrazing', 'meanDistToClosest4Patches')) {
+		for (var in c('perimBurnedMostRecent_perc', 'latestGrazing', 'meanDistToClosest4Patches')) {
 
-# 			if (any(topVars == var)) {
-# 				index <- which(topVars == var)
-# 				topVars <- if (index == 1) {
-# 					c(topVars[2:length(topVars)], topVars[index])
-# 				} else {
-# 					c(topVars[1:(index - 1)], topVars[(index + 1):length(topVars)], topVars[index])
-# 				}
-# 			}
+			if (any(topVars == var)) {
+				index <- which(topVars == var)
+				topVars <- if (index == 1) {
+					c(topVars[2:length(topVars)], topVars[index])
+				} else {
+					c(topVars[1:(index - 1)], topVars[(index + 1):length(topVars)], topVars[index])
+				}
+			}
 
-# 		}
+		}
 
-# 		baseData <- pika
+		baseData <- pika
 
-# 		ymax <- -Inf
-# 		plots <- list()
-# 		for (i in seq_along(topVars)) {
+		ymax <- -Inf
+		plots <- list()
+		for (i in seq_along(topVars)) {
 
-# 			var <- topVars[i]
+			var <- topVars[i]
 
-# 			if (var != 'latestGrazing') {
+			if (var != 'latestGrazing') {
 				
-# 				plotData <- data.frame(
-# 					var = seq(min(pika[ , var]), max(pika[ , var]), length.out = 100)
-# 				)
+				plotData <- data.frame(
+					var = seq(min(pika[ , var]), max(pika[ , var]), length.out = 100)
+				)
 
-# 			} else {
+			} else {
 
-# 				plotData <- data.frame(
-# 					var = c(0, 1)
-# 				)
+				plotData <- data.frame(
+					var = c(0, 1)
+				)
 
-# 			}
+			}
 
-# 			names(plotData) <- var
-# 			nonFocalVars <- topVars[topVars != var]
-# 			for (j in seq_along(nonFocalVars)) {
-# 				plotData$DUMMY <- 0
-# 				names(plotData)[ncol(plotData)] <- nonFocalVars[j]
-# 			}
+			names(plotData) <- var
+			nonFocalVars <- topVars[topVars != var]
+			for (j in seq_along(nonFocalVars)) {
+				plotData$DUMMY <- 0
+				names(plotData)[ncol(plotData)] <- nonFocalVars[j]
+			}
 
-# 			# all-regions model
+			# all-regions model
 
-# 				preds <- predict(allModel, newdata = plotData, type = 'link', se.fit = TRUE)
-# 				plotDataAll <- plotData
-# 				plotDataAll$predMean <- preds$fit
-# 				plotDataAll$predMeanPlus2SE <- preds$fit + 2 * preds$se.fit
-# 				plotDataAll$predMeanMinus2SE <- preds$fit - 2 * preds$se.fit
+				preds <- predict(allModel, newdata = plotData, type = 'link', se.fit = TRUE)
+				plotDataAll <- plotData
+				plotDataAll$predMean <- preds$fit
+				plotDataAll$predMeanPlus2SE <- preds$fit + 2 * preds$se.fit
+				plotDataAll$predMeanMinus2SE <- preds$fit - 2 * preds$se.fit
 
-# 				plotDataAll$predMean <- exp(plotDataAll$predMean)
-# 				plotDataAll$predMeanPlus2SE <- exp(plotDataAll$predMeanPlus2SE)
-# 				plotDataAll$predMeanMinus2SE <- exp(plotDataAll$predMeanMinus2SE)
+				plotDataAll$predMean <- exp(plotDataAll$predMean)
+				plotDataAll$predMeanPlus2SE <- exp(plotDataAll$predMeanPlus2SE)
+				plotDataAll$predMeanMinus2SE <- exp(plotDataAll$predMeanMinus2SE)
 			
-# 			# non-southwest model
+			# non-southwest model
 
-# 				preds <- predict(nonSouthwestModel, newdata = plotData, type = 'link', se.fit = TRUE)
-# 				plotDataNonSouthwest <- plotData
-# 				plotDataNonSouthwest$predMean <- preds$fit
-# 				plotDataNonSouthwest$predMeanPlus2SE <- preds$fit + 2 * preds$se.fit
-# 				plotDataNonSouthwest$predMeanMinus2SE <- preds$fit - 2 * preds$se.fit
+				preds <- predict(nonSouthwestModel, newdata = plotData, type = 'link', se.fit = TRUE)
+				plotDataNonSouthwest <- plotData
+				plotDataNonSouthwest$predMean <- preds$fit
+				plotDataNonSouthwest$predMeanPlus2SE <- preds$fit + 2 * preds$se.fit
+				plotDataNonSouthwest$predMeanMinus2SE <- preds$fit - 2 * preds$se.fit
 
-# 				plotDataNonSouthwest$predMean <- exp(plotDataNonSouthwest$predMean)
-# 				plotDataNonSouthwest$predMeanPlus2SE <- exp(plotDataNonSouthwest$predMeanPlus2SE)
-# 				plotDataNonSouthwest$predMeanMinus2SE <- exp(plotDataNonSouthwest$predMeanMinus2SE)
+				plotDataNonSouthwest$predMean <- exp(plotDataNonSouthwest$predMean)
+				plotDataNonSouthwest$predMeanPlus2SE <- exp(plotDataNonSouthwest$predMeanPlus2SE)
+				plotDataNonSouthwest$predMeanMinus2SE <- exp(plotDataNonSouthwest$predMeanMinus2SE)
 			
-# 			# southwest model
+			# southwest model
 
-# 				preds <- predict(southwestModel, newdata = plotData, type = 'link', se.fit = TRUE)
-# 				plotDataSouthwest <- plotData
-# 				plotDataSouthwest$predMean <- preds$fit
-# 				plotDataSouthwest$predMeanPlus2SE <- preds$fit + 2 * preds$se.fit
-# 				plotDataSouthwest$predMeanMinus2SE <- preds$fit - 2 * preds$se.fit
+				preds <- predict(southwestModel, newdata = plotData, type = 'link', se.fit = TRUE)
+				plotDataSouthwest <- plotData
+				plotDataSouthwest$predMean <- preds$fit
+				plotDataSouthwest$predMeanPlus2SE <- preds$fit + 2 * preds$se.fit
+				plotDataSouthwest$predMeanMinus2SE <- preds$fit - 2 * preds$se.fit
 
-# 				plotDataSouthwest$predMean <- exp(plotDataSouthwest$predMean)
-# 				plotDataSouthwest$predMeanPlus2SE <- exp(plotDataSouthwest$predMeanPlus2SE)
-# 				plotDataSouthwest$predMeanMinus2SE <- exp(plotDataSouthwest$predMeanMinus2SE)
+				plotDataSouthwest$predMean <- exp(plotDataSouthwest$predMean)
+				plotDataSouthwest$predMeanPlus2SE <- exp(plotDataSouthwest$predMeanPlus2SE)
+				plotDataSouthwest$predMeanMinus2SE <- exp(plotDataSouthwest$predMeanMinus2SE)
 			
-# 			# unscale for plotting
-# 			if (var != 'latestGrazing') {
-# 				plotDataAll$varUnscaled <- plotData[ , var] * scales[var] + centers[var]
-# 				plotDataNonSouthwest$varUnscaled <- plotData[ , var] * scales[var] + centers[var]
-# 				plotDataSouthwest$varUnscaled <- plotData[ , var] * scales[var] + centers[var]
-# 			} else {
-# 				plotDataAll$varUnscaled <- plotData[ , var]
-# 				plotDataNonSouthwest$varUnscaled <- plotData[ , var]
-# 				plotDataSouthwest$varUnscaled <- plotData[ , var]
-# 			}
+			# unscale for plotting
+			if (var != 'latestGrazing') {
+				plotDataAll$varUnscaled <- plotData[ , var] * scales[var] + centers[var]
+				plotDataNonSouthwest$varUnscaled <- plotData[ , var] * scales[var] + centers[var]
+				plotDataSouthwest$varUnscaled <- plotData[ , var] * scales[var] + centers[var]
+			} else {
+				plotDataAll$varUnscaled <- plotData[ , var]
+				plotDataNonSouthwest$varUnscaled <- plotData[ , var]
+				plotDataSouthwest$varUnscaled <- plotData[ , var]
+			}
 
-# 			plotDataAllSE <- data.frame(
-# 				var = c(plotDataAll$varUnscaled, rev(plotDataAll$varUnscaled)),
-# 				se = c(plotDataAll$predMeanPlus2SE, rev(plotDataAll$predMeanMinus2SE))
-# 			)
+			plotDataAllSE <- data.frame(
+				var = c(plotDataAll$varUnscaled, rev(plotDataAll$varUnscaled)),
+				se = c(plotDataAll$predMeanPlus2SE, rev(plotDataAll$predMeanMinus2SE))
+			)
 
-# 			plotDataNonSouthwestSE <- data.frame(
-# 				var = c(plotDataNonSouthwest$varUnscaled, rev(plotDataNonSouthwest$varUnscaled)),
-# 				se = c(plotDataNonSouthwest$predMeanPlus2SE, rev(plotDataNonSouthwest$predMeanMinus2SE))
-# 			)
+			plotDataNonSouthwestSE <- data.frame(
+				var = c(plotDataNonSouthwest$varUnscaled, rev(plotDataNonSouthwest$varUnscaled)),
+				se = c(plotDataNonSouthwest$predMeanPlus2SE, rev(plotDataNonSouthwest$predMeanMinus2SE))
+			)
 
-# 			plotDataSouthwestSE <- data.frame(
-# 				var = c(plotDataSouthwest$varUnscaled, rev(plotDataSouthwest$varUnscaled)),
-# 				se = c(plotDataSouthwest$predMeanPlus2SE, rev(plotDataSouthwest$predMeanMinus2SE))
-# 			)
+			plotDataSouthwestSE <- data.frame(
+				var = c(plotDataSouthwest$varUnscaled, rev(plotDataSouthwest$varUnscaled)),
+				se = c(plotDataSouthwest$predMeanPlus2SE, rev(plotDataSouthwest$predMeanMinus2SE))
+			)
 
-# 			if (var %in% c('latestGrazing', 'perimBurnedMostRecent_perc', 'meanDistToClosest4Patches')) {
-# 				if (var == 'latestGrazing') {
-# 					xlab <- 'Grazing'
-# 					title <- 'Grazing'
-# 				} else if (var == 'perimBurnedMostRecent_perc') {
-# 					xlab <- 'Perimeter burned (%)'
-# 					title <- 'Perimeter burned'
-# 				} else if (var == 'meanDistToClosest4Patches') {
-# 					xlab <- 'Isolation (log10, m)'
-# 					title <- 'Isolation'
-# 				}
+			if (var %in% c('latestGrazing', 'perimBurnedMostRecent_perc', 'meanDistToClosest4Patches')) {
+				if (var == 'latestGrazing') {
+					xlab <- 'Grazing'
+					title <- 'Grazing'
+				} else if (var == 'perimBurnedMostRecent_perc') {
+					xlab <- 'Perimeter burned (%)'
+					title <- 'Perimeter burned'
+				} else if (var == 'meanDistToClosest4Patches') {
+					xlab <- 'Isolation (log10, m)'
+					title <- 'Isolation'
+				}
 	
-# 			} else {
-# 				xlab <- makeNiceVars(var, 'density')
-# 				xlab <- paste0(toupper(substr(xlab, 1, 1)), substr(xlab, 2, nchar(xlab)))
-# 				title <- xlab
-# 				if (xlab == 'Chronic heat (0 yr)') {
-# 					xlab <- 'Chronic heat (0 yr, °C)'
-# 				} else if (xlab == 'GS precipitation (0 yr)') {
-# 					xlab <- 'GS precipitation (0 yr, mm)'
-# 				}
+			} else {
+				xlab <- makeNiceVars(var, 'density')
+				xlab <- paste0(toupper(substr(xlab, 1, 1)), substr(xlab, 2, nchar(xlab)))
+				title <- xlab
+				if (xlab == 'Chronic heat (0 yr)') {
+					xlab <- 'Chronic heat (0 yr, °C)'
+				} else if (xlab == 'GS precipitation (0 yr)') {
+					xlab <- 'GS precipitation (0 yr, mm)'
+				}
 
-# 			}
+			}
 			
-# 			if (var != 'latestGrazing') {
+			if (var != 'latestGrazing') {
 
-# 				plots[[i]] <- ggplot() +
-# 					geom_polygon(data = plotDataAllSE, mapping = aes(x = var, y = se), color = NA, fill = 'gray', alpha = 0.4) +
-# 					geom_line(data = plotDataAll, mapping = aes(x = varUnscaled, y = predMean), linewidth = 1.6) +
+				plots[[i]] <- ggplot() +
+					geom_polygon(data = plotDataAllSE, mapping = aes(x = var, y = se), color = NA, fill = 'gray', alpha = 0.4) +
+					geom_line(data = plotDataAll, mapping = aes(x = varUnscaled, y = predMean), linewidth = 1.6) +
 
-# 					geom_polygon(data = plotDataNonSouthwestSE, mapping = aes(x = var, y = se), color = NA, fill = '#1b9e77', alpha = 0.4) +
-# 					geom_line(data = plotDataNonSouthwest, mapping = aes(x = varUnscaled, y = predMean), color = '#1b9e77', linewidth = 1.6) +
+					geom_polygon(data = plotDataNonSouthwestSE, mapping = aes(x = var, y = se), color = NA, fill = '#1b9e77', alpha = 0.4) +
+					geom_line(data = plotDataNonSouthwest, mapping = aes(x = varUnscaled, y = predMean), color = '#1b9e77', linewidth = 1.6) +
 
-# 					geom_polygon(data = plotDataSouthwestSE, mapping = aes(x = var, y = se), color = NA, fill = '#d95f02', alpha = 0.4) +
-# 					geom_line(data = plotDataSouthwest, mapping = aes(x = varUnscaled, y = predMean), color = '#d95f02', linewidth = 1.6) +
+					geom_polygon(data = plotDataSouthwestSE, mapping = aes(x = var, y = se), color = NA, fill = '#d95f02', alpha = 0.4) +
+					geom_line(data = plotDataSouthwest, mapping = aes(x = varUnscaled, y = predMean), color = '#d95f02', linewidth = 1.6) +
 
-# 					labs(x = xlab, y = 'Predicted density') +
-# 					ggtitle(paste0(letters[i], ') ', title)) +
-# 					theme_bw()
+					labs(x = xlab, y = 'Predicted density') +
+					ggtitle(paste0(letters[i], ') ', title)) +
+					theme_bw()
 
-# 			} else {
+			} else {
 
-# 				plotDataAll$grazing <- plotDataAll$varUnscaled == 1
-# 				plotDataAllSE$grazing <- plotDataAllSE$var == 1
+				plotDataAll$grazing <- plotDataAll$varUnscaled == 1
+				plotDataAllSE$grazing <- plotDataAllSE$var == 1
 
-# 				plotDataNonSouthwest$grazing <- plotDataNonSouthwest$varUnscaled == 1
-# 				plotDataNonSouthwestSE$grazing <- plotDataNonSouthwestSE$var == 1
+				plotDataNonSouthwest$grazing <- plotDataNonSouthwest$varUnscaled == 1
+				plotDataNonSouthwestSE$grazing <- plotDataNonSouthwestSE$var == 1
 
-# 				plotDataSouthwest$grazing <- plotDataSouthwest$varUnscaled == 1
-# 				plotDataSouthwestSE$grazing <- plotDataSouthwestSE$var == 1
+				plotDataSouthwest$grazing <- plotDataSouthwest$varUnscaled == 1
+				plotDataSouthwestSE$grazing <- plotDataSouthwestSE$var == 1
 
-# 				nudge <- 0.2
-# 				size <- 2.2
-# 				pch <- 3
-# 				linewidth <- 1
+				nudge <- 0.2
+				size <- 2.2
+				pch <- 3
+				linewidth <- 1
 
-# 				plots[[i]] <- ggplot() +
+				plots[[i]] <- ggplot() +
 					
-# 					geom_point(data = plotDataAll, mapping = aes(x = grazing, y = predMean), position = position_nudge(x = -1 * nudge), size = size, pch = pch) +
-# 					geom_line(data = plotDataAllSE[!plotDataAllSE$grazing, ], mapping = aes(x = grazing, y = se), position = position_nudge(x = -1 * nudge), linewidth = linewidth) +
-# 					geom_line(data = plotDataAllSE[plotDataAllSE$grazing, ], mapping = aes(x = grazing, y = se), position = position_nudge(x = -1 * nudge), linewidth = linewidth) +
+					geom_point(data = plotDataAll, mapping = aes(x = grazing, y = predMean), position = position_nudge(x = -1 * nudge), size = size, pch = pch) +
+					geom_line(data = plotDataAllSE[!plotDataAllSE$grazing, ], mapping = aes(x = grazing, y = se), position = position_nudge(x = -1 * nudge), linewidth = linewidth) +
+					geom_line(data = plotDataAllSE[plotDataAllSE$grazing, ], mapping = aes(x = grazing, y = se), position = position_nudge(x = -1 * nudge), linewidth = linewidth) +
 
-# 					geom_point(data = plotDataNonSouthwest, mapping = aes(x = grazing, y = predMean), color = '#1b9e77', size = size, pch = pch) +
-# 					geom_line(data = plotDataNonSouthwestSE[!plotDataNonSouthwestSE$grazing, ], mapping = aes(x = grazing, y = se), color = '#1b9e77', linewidth = linewidth) +
-# 					geom_line(data = plotDataNonSouthwestSE[plotDataNonSouthwestSE$grazing, ], mapping = aes(x = grazing, y = se), color = '#1b9e77', linewidth = linewidth) +
+					geom_point(data = plotDataNonSouthwest, mapping = aes(x = grazing, y = predMean), color = '#1b9e77', size = size, pch = pch) +
+					geom_line(data = plotDataNonSouthwestSE[!plotDataNonSouthwestSE$grazing, ], mapping = aes(x = grazing, y = se), color = '#1b9e77', linewidth = linewidth) +
+					geom_line(data = plotDataNonSouthwestSE[plotDataNonSouthwestSE$grazing, ], mapping = aes(x = grazing, y = se), color = '#1b9e77', linewidth = linewidth) +
 					
-# 					geom_point(data = plotDataSouthwest, mapping = aes(x = grazing, y = predMean), color = '#d95f02', position = position_nudge(x = nudge), size = size, pch = pch) +
-# 					geom_line(data = plotDataSouthwestSE[!plotDataSouthwestSE$grazing, ], mapping = aes(x = grazing, y = se), color = '#d95f02', position = position_nudge(x = nudge), linewidth = linewidth) +
-# 					geom_line(data = plotDataSouthwestSE[plotDataSouthwestSE$grazing, ], mapping = aes(x = grazing, y = se), color = '#d95f02', position = position_nudge(x = nudge), linewidth = linewidth) +
+					geom_point(data = plotDataSouthwest, mapping = aes(x = grazing, y = predMean), color = '#d95f02', position = position_nudge(x = nudge), size = size, pch = pch) +
+					geom_line(data = plotDataSouthwestSE[!plotDataSouthwestSE$grazing, ], mapping = aes(x = grazing, y = se), color = '#d95f02', position = position_nudge(x = nudge), linewidth = linewidth) +
+					geom_line(data = plotDataSouthwestSE[plotDataSouthwestSE$grazing, ], mapping = aes(x = grazing, y = se), color = '#d95f02', position = position_nudge(x = nudge), linewidth = linewidth) +
 					
-# 					labs(x = xlab, y = 'Predicted density') +
-# 					ggtitle(paste0(letters[i], ') ', title)) +
-# 					theme_bw()
+					labs(x = xlab, y = 'Predicted density') +
+					ggtitle(paste0(letters[i], ') ', title)) +
+					theme_bw()
 
-# 			}
+			}
 
-# 			ymax <- max(ymax, quantile(plotDataAllSE$se, 0.75), quantile(plotDataNonSouthwestSE$se, 0.75), quantile(plotDataSouthwestSE$se, 0.75))
+			ymax <- max(ymax, quantile(plotDataAllSE$se, 0.75), quantile(plotDataNonSouthwestSE$se, 0.75), quantile(plotDataSouthwestSE$se, 0.75))
 
-# 		}
+		}
 
-# 	for (i in seq_along(plots)) {
-# 		plots[[i]] <- plots[[i]] +
-# 			coord_cartesian(ylim = c(0, ymax)) +
-# 			theme(
-# 				axis.title = element_text(size = 12)
-# 			)
-# 	}
+	for (i in seq_along(plots)) {
+		plots[[i]] <- plots[[i]] +
+			coord_cartesian(ylim = c(0, ymax)) +
+			theme(
+				axis.title = element_text(size = 12)
+			)
+	}
 	
-# 	combo <- plot_grid(plotlist = plots, nrow = 2, align = 'hv')
+	combo <- plot_grid(plotlist = plots, nrow = 2, align = 'hv')
 
-# 	file <- if (extended) {
-# 		paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models ', analysisDate, '/Density - Response Curves for Top Model ', analysisDate, '.png')
-# 	} else {
-# 		paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models ', analysisDate, '/Density - Response Curves for Top Model ', analysisDate, '.png')
-# 	}
-# 	ggsave(combo, filename = file, width = 10, height = 7, bg = 'white', dpi = 600)
+	file <- if (extended) {
+		paste0('./Figures & Tables/Density - Simple Models with Extended Set of Climate Models ', analysisDate, '/Density - Response Curves for Top Model ', analysisDate, '.png')
+	} else {
+		paste0('./Figures & Tables/Density - Simple Models with Original Set of Climate Models ', analysisDate, '/Density - Response Curves for Top Model ', analysisDate, '.png')
+	}
+	ggsave(combo, filename = file, width = 10, height = 7, bg = 'white', dpi = 600)
 
 
 say('DONE!!!', level=1, deco='%')
