@@ -14,8 +14,6 @@ This repository contains scripts for the following peer-reviewed articles:
 --------------------------------
 # Combined summary of results
 
-# Combined summary of results
-
 <img src="ordinal_vs_binary_models_table_chart.png" align="center" alt="Different inferences between ordinal and binary species distribution models"/>
 
 **Differences in inferences between ordinal and binary species distribution models (Beever et al. 2025)** Top-ranked models (ΔAICc<4) for **a)** ordinal occupancy, and **b)** binary occupancy. "HRs" denotes number of home ranges that a patch could potentially support. "GS" = growing-season. Inclusion of the variable "region" indicates that occupancy differed significantly among sub-regions in a given model; it appeared in all top models. The variable "isolation" reflects mean distance to the nearest four patches from each focal patch. We used Nagelkerke’s R2 to calculate pseudo-R2 (Nagelkerke 1991). "Model Weight" = AICc-based model weight. Note that R2 values can only be meaningfully compared within the same model structure. Variable importance in information-theoretic analyses of **c)** ordinal occupancy, and **d)** binary occupancy. Width of each horizontal bar represents average AICc (model) weight for the models in which each variable appears (i.e., summed variable weight/number of models). Values on the right of each bar represent that predictor's variable weight (i.e., the sum of the weight of all models in which the predictor appears).
