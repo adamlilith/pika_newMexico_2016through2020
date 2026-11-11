@@ -420,24 +420,24 @@ say('###########################################################################
 		
 	sink()
 
-# say('##################################################')
-# say('### summarize support for 7- and 10-yr windows ###')
-# say('##################################################')
+say('##################################################')
+say('### summarize support for 7- and 10-yr windows ###')
+say('##################################################')
 
-	# file <- paste0('./Figures & Tables/Occupancy - Simple Models - Accounting for Spatial Redundancies/Occupancy - Simple Ordinal Models Using All Data - 7 & 10-yr Windows - Accounting for Spatial Redundancies.csv')
-	# results <- read.csv(file)
-	# results <- results[results$region, ]
-	# deltaAicc <- results$aicc - min(results$aicc)
-	# w <- exp(-0.5 * deltaAicc)
-	# w <- w / sum(w)
+	file <- paste0('./Figures & Tables/Occupancy - Simple Models - Accounting for Spatial Redundancies/Occupancy - Simple Ordinal Models Using All Data - 7 & 10-yr Windows - Accounting for Spatial Redundancies.csv')
+	results <- read.csv(file)
+	results <- results[results$region, ]
+	deltaAicc <- results$aicc - min(results$aicc)
+	w <- exp(-0.5 * deltaAicc)
+	w <- w / sum(w)
 
-	# say('Relative support for 7- vs 10-yr windows for climatic variables:')
-	# say(date(), post=1)
+	say('Relative support for 7- vs 10-yr windows for climatic variables:')
+	say(date(), post=1)
 	
-	# aicc7yr <- sum(w[results$period == '7-yr'], na.rm=TRUE)
-	# aicc10yr <- sum(w[results$period == '10-yr'], na.rm=TRUE)
-	# say('Sum of AICc across all models using 7-yr period:  ', aicc7yr)
-	# say('Sum of AICc across all models using 10-yr period: ', aicc10yr)
+	aicc7yr <- sum(w[results$period == '7-yr'], na.rm=TRUE)
+	aicc10yr <- sum(w[results$period == '10-yr'], na.rm=TRUE)
+	say('Sum of AICc across all models using 7-yr period:  ', aicc7yr)
+	say('Sum of AICc across all models using 10-yr period: ', aicc10yr)
 
 say('#################################################################################################')
 say('### compile table of predictor weights for ORDINAL simple OCCUPANCY analysis: all-data models ###')

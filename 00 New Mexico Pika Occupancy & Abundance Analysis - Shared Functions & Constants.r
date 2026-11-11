@@ -50,6 +50,7 @@
 	library(glmnet)
 	library(lubridate)
 	library(MASS)
+	library(mgcv)
 	library(MuMIn)
 	library(ordinalNet)
 	library(omnibus)
